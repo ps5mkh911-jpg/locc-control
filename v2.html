@@ -35,7 +35,7 @@
         ::-webkit-scrollbar-track { background: var(--bg-dark); }
         ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 3px; }
 
-        /* ══════════════ NOTIFICATIONS ══════════════ */
+        /* ══════════════════ NOTIFICATIONS ══════════════════ */
         .notifications-container {
             position: fixed;
             top: 60px;
@@ -57,1016 +57,1450 @@
             cursor: pointer;
             backdrop-filter: blur(10px);
         }
-        .notification.success { background: linear-gradient(135deg, rgba(27,94,32,0.95), rgba(46,125,50,0.95)); border-left: 5px solid var(--green); }
-        .notification.error { background: linear-gradient(135deg, rgba(183,28,28,0.95), rgba(198,40,40,0.95)); border-left: 5px solid var(--red); }
-        .notification.warning { background: linear-gradient(135deg, rgba(230,81,0,0.95), rgba(245,124,0,0.95)); border-left: 5px solid var(--orange); }
-        .notification.info { background: linear-gradient(135deg, rgba(13,71,161,0.95), rgba(21,101,192,0.95)); border-left: 5px solid var(--blue); }
-        .notification-icon { font-size: 24px; }
+        .notification.success { background: linear-gradient(135deg, rgba(27,94,32,0.95), rgba(46,125,50,0.95)); border-right: 4px solid #4caf50; }
+        .notification.warning { background: linear-gradient(135deg, rgba(230,81,0,0.95), rgba(245,124,0,0.95)); border-right: 4px solid #ff9800; }
+        .notification.error { background: linear-gradient(135deg, rgba(183,28,28,0.95), rgba(211,47,47,0.95)); border-right: 4px solid #f44336; }
+        .notification.info { background: linear-gradient(135deg, rgba(13,71,161,0.95), rgba(25,118,210,0.95)); border-right: 4px solid #2196f3; }
+        .notification-icon { font-size: 1.5rem; }
         .notification-content { flex: 1; }
-        .notification-title { font-weight: 700; font-size: 13px; }
-        .notification-message { font-size: 11px; opacity: 0.9; margin-top: 3px; }
-        .notification-close { background: none; border: none; color: #fff; font-size: 18px; cursor: pointer; opacity: 0.7; }
+        .notification-title { font-weight: bold; margin-bottom: 2px; }
+        .notification-message { font-size: 0.85rem; opacity: 0.9; }
+        .notification-close { cursor: pointer; opacity: 0.7; font-size: 1.2rem; }
         .notification-close:hover { opacity: 1; }
-        @keyframes slideIn { from { transform: translateX(-120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes slideIn { from { transform: translateX(-100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
-        /* ══════════════ TOGGLE PANEL ══════════════ */
-        .toggle-panel {
-            position: fixed;
-            top: 50%;
-            right: 0;
-            transform: translateY(-50%);
-            background: var(--primary);
-            color: #000;
-            padding: 15px 8px;
-            cursor: pointer;
-            z-index: 1001;
-            border-radius: 8px 0 0 8px;
-            font-weight: 700;
-            writing-mode: vertical-rl;
-            transition: all 0.3s;
-            font-size: 12px;
-        }
-        .toggle-panel:hover { padding-right: 15px; background: #fff; }
-        .toggle-panel.panel-visible { right: var(--panel-width); }
-
-        /* ══════════════ CONTROL PANEL ══════════════ */
-        .control-panel {
-            position: fixed;
-            top: 0;
-            right: 0;
-            width: var(--panel-width);
-            height: 100vh;
-            background: linear-gradient(180deg, #1a1a1a 0%, #0d0d0d 100%);
-            border-left: 3px solid var(--primary);
-            z-index: 1000;
-            transition: transform 0.3s;
-            display: flex;
-            flex-direction: column;
-        }
-        .control-panel.hidden { transform: translateX(100%); }
-
-        .panel-tabs {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 2px;
-            padding: 8px;
-            flex-shrink: 0;
-            background: var(--bg-dark);
-            border-bottom: 1px solid var(--primary);
-        }
-        .panel-tab {
-            flex: 1 1 auto;
-            min-width: 45px;
-            padding: 6px 3px;
-            background: var(--bg-input);
-            border: 1px solid var(--primary);
-            color: var(--text-muted);
-            border-radius: 5px 5px 0 0;
-            cursor: pointer;
-            font-size: 9px;
-            text-align: center;
-            transition: all 0.3s;
-            position: relative;
-        }
-        .panel-tab.active { background: var(--primary); color: #000; font-weight: 700; }
-        .panel-tab .badge {
-            position: absolute;
-            top: -5px;
-            left: -5px;
-            background: var(--red);
-            color: #fff;
-            font-size: 8px;
-            padding: 2px 5px;
-            border-radius: 10px;
-            min-width: 16px;
-        }
-
-        .panel-content { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 8px; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-
-        .control-section {
-            background: rgba(255,215,0,0.03);
-            border: 1px solid rgba(255,215,0,0.3);
-            border-radius: 6px;
-            padding: 10px;
-            margin-bottom: 10px;
-        }
-        .control-title {
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 8px;
-            padding-bottom: 5px;
-            border-bottom: 1px solid rgba(255,215,0,0.3);
-        }
-        .control-group { margin-bottom: 8px; }
-        .control-label { display: block; font-size: 10px; color: var(--text-muted); margin-bottom: 3px; }
-        .control-input, .control-select {
-            width: 100%;
-            padding: 6px 8px;
-            background: var(--bg-input);
-            border: 1px solid rgba(255,215,0,0.5);
-            color: var(--text);
-            border-radius: 4px;
-            font-size: 11px;
-        }
-        .control-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .control-button {
-            width: 100%;
-            padding: 8px;
-            background: linear-gradient(135deg, var(--primary), #ffed4e);
-            color: #000;
-            border: none;
-            border-radius: 5px;
-            font-weight: 700;
-            cursor: pointer;
-            font-size: 11px;
-            transition: all 0.3s;
-            margin-top: 5px;
-        }
-        .control-button:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255,215,0,0.4); }
-        .control-button.danger { background: linear-gradient(135deg, var(--red), #e57373); color: #fff; }
-        .control-button.success { background: linear-gradient(135deg, var(--green), #81c784); color: #fff; }
-        .control-button.info { background: linear-gradient(135deg, var(--blue), #64b5f6); color: #fff; }
-
-        /* ══════════════ FORM LIST ══════════════ */
-        .form-list-item {
-            padding: 12px;
-            background: var(--bg-input);
-            border: 2px solid rgba(255,215,0,0.3);
-            border-radius: 8px;
-            margin-bottom: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .form-list-item:hover {
-            background: rgba(255,215,0,0.1);
-            border-color: var(--primary);
-            transform: translateX(-5px);
-        }
-        .form-list-item .form-name { font-size: 12px; font-weight: 700; color: var(--primary); }
-        .form-list-item .form-name-ar { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
-
-        /* ══════════════ BUS LIST ══════════════ */
-        .bus-list-item {
-            padding: 10px;
-            background: var(--bg-input);
-            border: 2px solid rgba(255,215,0,0.3);
-            border-radius: 8px;
-            margin-bottom: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .bus-list-item:hover { background: rgba(255,215,0,0.1); border-color: var(--primary); }
-        .bus-list-item.in-parking { border-color: var(--green); }
-        .bus-list-item .bus-plate { font-size: 14px; font-weight: 700; color: var(--primary); }
-        .bus-list-item .bus-flight { font-size: 11px; color: var(--cyan); }
-        .bus-list-item .bus-details { font-size: 9px; color: var(--text-muted); margin-top: 4px; }
-        .bus-list-item .progress-bar {
-            display: flex;
-            gap: 3px;
-            margin-top: 8px;
-        }
-        .bus-list-item .progress-step {
-            flex: 1;
-            height: 4px;
-            background: #333;
-            border-radius: 2px;
-        }
-        .bus-list-item .progress-step.done { background: var(--green); }
-        .bus-list-item .progress-step.current { background: var(--orange); }
-
-        /* ══════════════ ALERTS LOG ══════════════ */
-        .alerts-container {
-            max-height: 500px;
-            overflow-y: auto;
-            background: var(--bg-dark);
-            border-radius: 5px;
-        }
-        .alert-item {
-            padding: 10px 12px;
-            margin-bottom: 6px;
-            border-radius: 6px;
-            font-size: 10px;
-            border-right: 4px solid;
-            background: var(--bg-input);
-        }
-        .alert-item.critical { border-color: var(--red); background: rgba(244,67,54,0.1); }
-        .alert-item.warning { border-color: var(--orange); background: rgba(255,152,0,0.1); }
-        .alert-item.info { border-color: var(--blue); background: rgba(33,150,243,0.1); }
-        .alert-item.success { border-color: var(--green); background: rgba(76,175,80,0.1); }
-        .alert-icon { font-size: 14px; margin-left: 8px; }
-        .alert-message { font-size: 11px; line-height: 1.5; }
-        .alert-time { font-size: 9px; color: var(--text-muted); margin-top: 4px; }
-
-        /* ══════════════ HEADER ══════════════ */
+        /* ══════════════════ HEADER ══════════════════ */
         .header {
-            height: 50px;
-            background: linear-gradient(180deg, #1a1a1a 0%, #0a0a0a 100%);
-            padding: 0 20px;
-            border-bottom: 3px solid var(--primary);
+            background: linear-gradient(135deg, var(--bg-card), #252525);
+            padding: 10px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-shrink: 0;
-            transition: margin-right 0.3s;
-        }
-        .header.panel-open { margin-right: var(--panel-width); }
-        .header-title { font-size: 16px; font-weight: 700; color: var(--primary); }
-        .header-controls { display: flex; gap: 8px; }
-        .header-btn {
-            padding: 6px 12px;
-            background: rgba(255,215,0,0.1);
-            border: 2px solid var(--primary);
-            color: var(--primary);
-            border-radius: 5px;
-            font-weight: 600;
-            font-size: 11px;
-            cursor: pointer;
-        }
-        .header-btn:hover { background: var(--primary); color: #000; }
-
-        /* ══════════════ STATS ══════════════ */
-        .daily-stats {
-            height: 40px;
-            background: rgba(255,215,0,0.03);
-            padding: 5px 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 15px;
-            border-bottom: 1px solid rgba(255,215,0,0.3);
-            flex-shrink: 0;
-            transition: margin-right 0.3s;
-        }
-        .daily-stats.panel-open { margin-right: var(--panel-width); }
-        .daily-stat {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            padding: 4px 10px;
-            background: var(--bg-card);
-            border: 1px solid var(--primary);
-            border-radius: 5px;
-        }
-        .daily-stat-value { font-size: 14px; font-weight: 700; color: var(--primary); }
-        .daily-stat-label { font-size: 8px; color: var(--text-muted); }
-
-        .stats-bar {
-            height: 70px;
-            background: var(--bg-card);
-            padding: 8px 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 15px;
             border-bottom: 2px solid var(--primary);
             flex-shrink: 0;
-            transition: margin-right 0.3s;
         }
-        .stats-bar.panel-open { margin-right: var(--panel-width); }
-        .stat-card {
-            background: rgba(255,215,0,0.05);
-            border: 2px solid var(--primary);
-            border-radius: 8px;
-            padding: 6px 18px;
-            text-align: center;
-            cursor: pointer;
-            min-width: 110px;
+        .header h1 {
+            font-size: 1.3rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
-        .stat-card.green { border-color: var(--green); }
-        .stat-card.blue { border-color: var(--blue); }
-        .stat-card.red { border-color: var(--red); animation: pulse-card 0.4s infinite; }
-        @keyframes pulse-card {
-            0%,100% { box-shadow: 0 0 10px var(--red); }
-            50% { box-shadow: 0 0 30px var(--red), 0 0 60px var(--red); }
+        .clock {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            font-family: 'Courier New', monospace;
         }
-        .stat-value { font-size: 24px; font-weight: 700; color: var(--primary); }
-        .stat-card.green .stat-value { color: var(--green); }
-        .stat-card.blue .stat-value { color: var(--blue); }
-        .stat-card.red .stat-value { color: var(--red); }
-        .stat-label { font-size: 9px; color: var(--text-muted); }
 
-        /* ══════════════ MAIN CONTAINER ══════════════ */
+        /* ══════════════════ LAYOUT ══════════════════ */
         .main-container {
+            display: flex;
             flex: 1;
-            overflow: auto;
-            transition: margin-right 0.3s;
+            overflow: hidden;
+        }
+
+        /* ══════════════════ SIDEBAR ══════════════════ */
+        .sidebar {
+            width: var(--panel-width);
+            background: var(--bg-card);
+            display: flex;
+            flex-direction: column;
+            border-left: 2px solid var(--primary);
+            flex-shrink: 0;
+        }
+        .sidebar-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            background: var(--bg-dark);
+            border-bottom: 1px solid #333;
+        }
+        .sidebar-tab {
+            flex: 1;
+            min-width: 50%;
+            padding: 10px 5px;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 0.75rem;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+        }
+        .sidebar-tab:hover { background: var(--bg-input); color: var(--text); }
+        .sidebar-tab.active { background: var(--bg-card); color: var(--primary); border-bottom: 2px solid var(--primary); }
+        .sidebar-tab span { font-size: 1.2rem; }
+
+        .sidebar-content {
+            flex: 1;
+            overflow-y: auto;
             padding: 15px;
         }
-        .main-container.panel-open { margin-right: var(--panel-width); }
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
 
-        .parking-wrapper {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            justify-content: center;
-            align-content: flex-start;
-        }
-
-        .section-label {
-            width: 100%;
-            text-align: center;
-            background: rgba(255,215,0,0.15);
-            border: 2px solid var(--primary);
-            padding: 8px 15px;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: 700;
-            color: var(--primary);
-            margin: 10px 0;
-        }
-
-        /* ══════════════ PARKING SPOTS ══════════════ */
-        .parking-spot {
-            width: calc(10% - 8px);
-            min-width: 80px;
-            max-width: 120px;
-            aspect-ratio: 3/4;
-            background: var(--bg-input);
-            border: 3px solid #333;
-            border-radius: 8px;
-            padding: 5px;
-            position: relative;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            flex-direction: column;
-        }
-
-        @media (max-width: 1400px) { .parking-spot { width: calc(11% - 8px); } }
-        @media (max-width: 1200px) { .parking-spot { width: calc(12.5% - 8px); } }
-        @media (max-width: 1000px) { .parking-spot { width: calc(14.28% - 8px); } }
-        @media (max-width: 800px) { .parking-spot { width: calc(16.66% - 8px); min-width: 70px; } }
-
-        .parking-spot:hover {
-            transform: scale(1.08);
-            box-shadow: 0 0 25px rgba(255,215,0,0.6);
-            z-index: 10;
-        }
-        .parking-spot.early {
-            background: linear-gradient(135deg, #1b5e20, #2e7d32);
-            border-color: var(--green);
-            box-shadow: 0 0 15px rgba(76,175,80,0.5);
-        }
-        .parking-spot.ontime {
-            background: linear-gradient(135deg, #0d47a1, #1565c0);
-            border-color: var(--blue);
-            box-shadow: 0 0 15px rgba(33,150,243,0.5);
-        }
-        .parking-spot.late {
-            background: linear-gradient(135deg, #b71c1c, #d32f2f);
-            border-color: var(--red);
-            animation: spot-pulse-intense 0.3s infinite;
-        }
-        @keyframes spot-pulse-intense {
-            0%, 100% { 
-                box-shadow: 0 0 20px var(--red), 0 0 40px var(--red);
-                transform: scale(1);
-            }
-            50% { 
-                box-shadow: 0 0 50px var(--red), 0 0 100px var(--red), 0 0 150px rgba(244,67,54,0.5);
-                transform: scale(1.03);
-                border-color: #fff;
-            }
-        }
-        .parking-spot.empty {
-            background: rgba(30,30,30,0.5);
-            border-color: #333;
-            opacity: 0.35;
-        }
-        .parking-spot.empty:hover { opacity: 0.7; }
-        .parking-spot.selected {
-            border: 4px solid #fff !important;
-            box-shadow: 0 0 30px #fff !important;
-            animation: none !important;
-        }
-
-        .spot-number {
-            position: absolute;
-            top: 3px;
-            right: 3px;
-            background: rgba(0,0,0,0.9);
-            color: var(--primary);
-            padding: 2px 5px;
-            border-radius: 4px;
-            font-size: 9px;
-            font-weight: 700;
-        }
-        .spot-badge {
-            position: absolute;
-            top: 3px;
-            left: 3px;
-            padding: 2px 5px;
-            border-radius: 4px;
-            font-size: 7px;
-            font-weight: 700;
-        }
-        .bus-info {
+        /* ══════════════════ PARKING AREA ══════════════════ */
+        .parking-area {
             flex: 1;
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            gap: 2px;
-            margin-top: 18px;
-            font-size: 8px;
-        }
-        .info-line {
-            display: flex;
-            align-items: center;
-            gap: 3px;
-            white-space: nowrap;
             overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .info-icon { font-size: 9px; }
-        
-        /* ══════════════ COUNTDOWN TIMER ══════════════ */
-        .countdown-timer {
-            text-align: center;
-            font-size: 10px;
-            font-weight: 700;
-            padding: 4px;
-            background: rgba(0,0,0,0.6);
-            border-radius: 4px;
-            margin-top: auto;
-        }
-        .countdown-timer.urgent {
-            background: rgba(244,67,54,0.8);
-            animation: blink 0.5s infinite;
-        }
-        @keyframes blink {
-            50% { opacity: 0.5; }
-        }
-        .countdown-timer .timer-label { font-size: 7px; color: var(--text-muted); }
-        .countdown-timer .timer-value { font-size: 11px; }
-
-        .empty-text {
-            text-align: center;
-            color: #444;
-            font-size: 16px;
-            margin-top: 30%;
+            padding: 15px;
+            gap: 15px;
         }
 
-        /* ══════════════ MODAL ══════════════ */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9);
-            z-index: 2000;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
+        .parking-sections {
+            display: flex;
+            gap: 20px;
+            flex: 1;
+            overflow: hidden;
         }
-        .modal.active { display: flex; }
-        .modal-content {
+
+        .parking-section {
+            flex: 1;
             background: var(--bg-card);
-            border: 3px solid var(--primary);
             border-radius: 12px;
-            padding: 20px;
-            max-width: 650px;
-            width: 100%;
-            max-height: 90vh;
-            overflow-y: auto;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
         }
-        .modal-header {
-            font-size: 16px;
-            font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid var(--primary);
+        .section-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #333;
         }
+        .section-title {
+            font-size: 1rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .section-count {
+            background: var(--bg-input);
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+        }
+
+        .parking-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 8px;
+            flex: 1;
+            overflow-y: auto;
+            padding: 5px;
+        }
+
+        .parking-spot {
+            aspect-ratio: 1;
+            background: var(--bg-input);
+            border: 2px solid #444;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.7rem;
+            position: relative;
+            min-height: 60px;
+        }
+        .parking-spot:hover {
+            transform: scale(1.05);
+            border-color: var(--primary);
+            z-index: 10;
+        }
+        .parking-spot.occupied {
+            border-width: 3px;
+        }
+        .parking-spot .spot-number {
+            font-weight: bold;
+            color: var(--text-muted);
+            font-size: 0.65rem;
+            position: absolute;
+            top: 2px;
+            right: 4px;
+        }
+        .parking-spot .bus-plate {
+            font-weight: bold;
+            font-size: 0.7rem;
+            margin-top: 8px;
+        }
+        .parking-spot .countdown {
+            font-size: 0.65rem;
+            margin-top: 2px;
+        }
+        .parking-spot.status-green { border-color: var(--green); background: rgba(76,175,80,0.15); }
+        .parking-spot.status-blue { border-color: var(--blue); background: rgba(33,150,243,0.15); }
+        .parking-spot.status-red { border-color: var(--red); background: rgba(244,67,54,0.15); }
+        .parking-spot.status-red.late-blink { animation: lateBlink 1s infinite; }
+        @keyframes lateBlink {
+            0%, 100% { background: rgba(244,67,54,0.15); }
+            50% { background: rgba(244,67,54,0.4); }
+        }
+
+        /* ══════════════════ FORM SELECTION MENU ══════════════════ */
+        .form-menu {
+            position: fixed;
+            background: var(--bg-card);
+            border: 2px solid var(--primary);
+            border-radius: 10px;
+            padding: 10px 0;
+            z-index: 2000;
+            min-width: 200px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.7);
+            display: none;
+        }
+        .form-menu.show { display: block; }
+        .form-menu-title {
+            padding: 8px 15px;
+            color: var(--primary);
+            font-weight: bold;
+            border-bottom: 1px solid #333;
+            margin-bottom: 5px;
+        }
+        .form-menu-item {
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .form-menu-item:hover { background: var(--bg-input); color: var(--primary); }
+        .form-menu-item span { font-size: 1.2rem; }
+
+        /* ══════════════════ MODAL ══════════════════ */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.85);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+        }
+        .modal-overlay.show { display: flex; }
+        .modal {
+            background: var(--bg-card);
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 85vh;
+            overflow: hidden;
+            border: 2px solid var(--primary);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+        .modal-header {
+            background: linear-gradient(135deg, var(--bg-input), #333);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--primary);
+        }
+        .modal-title { font-size: 1.1rem; color: var(--primary); }
         .modal-close {
             background: none;
             border: none;
             color: var(--text);
-            font-size: 24px;
+            font-size: 1.5rem;
             cursor: pointer;
         }
-        .form-group { margin-bottom: 12px; }
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
-        .form-label { display: block; font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
-        .form-input, .form-select {
-            width: 100%;
-            padding: 10px;
+        .modal-body {
+            padding: 20px;
+            overflow-y: auto;
+            max-height: calc(85vh - 130px);
+        }
+        .modal-footer {
+            padding: 15px 20px;
+            border-top: 1px solid #333;
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        /* ══════════════════ FORM STYLES ══════════════════ */
+        .form-section {
+            margin-bottom: 20px;
+            padding: 15px;
             background: var(--bg-input);
-            border: 2px solid #444;
-            color: var(--text);
-            border-radius: 6px;
-            font-size: 13px;
+            border-radius: 10px;
         }
-        .form-input:focus, .form-select:focus { outline: none; border-color: var(--primary); }
-        .modal-buttons { display: flex; gap: 10px; margin-top: 20px; }
-        .modal-btn {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            border-radius: 6px;
-            font-weight: 700;
-            cursor: pointer;
-            font-size: 14px;
-        }
-        .modal-btn.primary { background: linear-gradient(135deg, var(--primary), #ffed4e); color: #000; }
-        .modal-btn.secondary { background: var(--bg-input); color: var(--text); border: 2px solid #444; }
-        .modal-btn:hover { transform: translateY(-2px); }
-
-        /* ══════════════ TOOLTIP ══════════════ */
-        .tooltip {
-            position: fixed;
-            background: rgba(0,0,0,0.95);
-            border: 2px solid var(--primary);
-            padding: 12px;
-            border-radius: 8px;
-            pointer-events: none;
-            z-index: 1500;
-            display: none;
-            min-width: 220px;
-            box-shadow: 0 10px 40px rgba(255,215,0,0.3);
-        }
-        .tooltip-title { font-size: 13px; font-weight: 700; color: var(--primary); margin-bottom: 8px; border-bottom: 1px solid var(--primary); padding-bottom: 5px; }
-        .tooltip-line { font-size: 11px; margin: 4px 0; }
-
-        .fullscreen-btn {
-            position: fixed;
-            bottom: 15px;
-            left: 15px;
-            background: var(--primary);
-            color: #000;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 700;
-            z-index: 999;
-        }
-
-        .zoom-btns { display: flex; gap: 5px; }
-        .zoom-btn {
-            flex: 1;
-            padding: 8px;
-            background: var(--bg-input);
-            border: 1px solid var(--primary);
+        .form-section-title {
             color: var(--primary);
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: 700;
+            font-size: 0.95rem;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #444;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-        .zoom-btn:hover { background: var(--primary); color: #000; }
-
-        .search-box {
-            width: 100%;
-            padding: 8px 12px;
-            background: var(--bg-input);
-            border: 1px solid var(--primary);
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        .form-group { display: flex; flex-direction: column; gap: 5px; }
+        .form-group.full-width { grid-column: span 2; }
+        .form-group label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            padding: 10px;
+            background: var(--bg-dark);
+            border: 1px solid #444;
+            border-radius: 6px;
             color: var(--text);
+            font-size: 0.9rem;
+        }
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        /* ══════════════════ BUTTONS ══════════════════ */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.3s;
+        }
+        .btn-primary { background: var(--primary); color: #000; }
+        .btn-primary:hover { background: #ffed4a; }
+        .btn-secondary { background: var(--bg-input); color: var(--text); }
+        .btn-secondary:hover { background: #444; }
+        .btn-danger { background: var(--red); color: #fff; }
+        .btn-danger:hover { background: #d32f2f; }
+        .btn-success { background: var(--green); color: #fff; }
+        .btn-success:hover { background: #388e3c; }
+
+        /* ══════════════════ SETTINGS TAB ══════════════════ */
+        .settings-section {
+            background: var(--bg-input);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        .settings-section h3 {
+            color: var(--primary);
+            font-size: 0.95rem;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #333;
+        }
+        .setting-item:last-child { border-bottom: none; }
+        .setting-label { font-size: 0.85rem; }
+        .setting-value {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .toggle {
+            width: 44px;
+            height: 24px;
+            background: #444;
+            border-radius: 12px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .toggle.active { background: var(--green); }
+        .toggle::after {
+            content: '';
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            background: #fff;
+            border-radius: 50%;
+            top: 3px;
+            right: 3px;
+            transition: all 0.3s;
+        }
+        .toggle.active::after { right: 23px; }
+
+        /* ══════════════════ ALERTS TAB ══════════════════ */
+        .alerts-list {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        .alert-item {
+            padding: 12px;
+            margin-bottom: 8px;
+            background: var(--bg-input);
+            border-radius: 8px;
+            border-right: 3px solid;
+            display: flex;
+            gap: 10px;
+        }
+        .alert-item.alert-danger { border-color: var(--red); }
+        .alert-item.alert-warning { border-color: var(--orange); }
+        .alert-item.alert-info { border-color: var(--blue); }
+        .alert-item.alert-success { border-color: var(--green); }
+        .alert-icon { font-size: 1.3rem; }
+        .alert-content { flex: 1; }
+        .alert-title { font-weight: bold; font-size: 0.9rem; margin-bottom: 3px; }
+        .alert-message { font-size: 0.8rem; color: var(--text-muted); }
+        .alert-time { font-size: 0.7rem; color: var(--text-muted); margin-top: 5px; }
+
+        /* ══════════════════ KPIs TAB ══════════════════ */
+        .kpi-card {
+            background: var(--bg-input);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 12px;
+            border-right: 3px solid var(--primary);
+        }
+        .kpi-title { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px; }
+        .kpi-value { font-size: 1.8rem; font-weight: bold; color: var(--primary); }
+        .kpi-subtitle { font-size: 0.75rem; color: var(--text-muted); margin-top: 5px; }
+        .kpi-chart {
+            height: 60px;
+            background: linear-gradient(90deg, var(--green) 30%, var(--blue) 30% 60%, var(--red) 60%);
             border-radius: 5px;
-            font-size: 12px;
+            margin-top: 10px;
+        }
+
+        /* ══════════════════ REGISTERED BUSES TAB ══════════════════ */
+        .bus-record {
+            background: var(--bg-input);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-right: 3px solid var(--primary);
+        }
+        .bus-record-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 10px;
         }
+        .bus-record-plate {
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: var(--primary);
+        }
+        .bus-record-spot {
+            background: var(--bg-dark);
+            padding: 4px 10px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+        }
+        .progress-bar {
+            height: 8px;
+            background: var(--bg-dark);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+        .progress-fill {
+            height: 100%;
+            transition: width 0.3s;
+        }
+        .progress-fill.green { background: var(--green); }
+        .progress-fill.blue { background: var(--blue); }
+        .progress-fill.red { background: var(--red); }
+        .bus-record-forms {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+        .form-badge {
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            background: var(--bg-dark);
+            color: var(--text-muted);
+        }
+        .form-badge.completed { background: var(--green); color: #fff; }
+        .form-badge.in-progress { background: var(--orange); color: #fff; }
+
+        /* ══════════════════ FORMS TAB ══════════════════ */
+        .form-card {
+            background: var(--bg-input);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid transparent;
+        }
+        .form-card:hover { border-color: var(--primary); }
+        .form-card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+        .form-card-icon { font-size: 1.5rem; }
+        .form-card-title { font-weight: bold; font-size: 0.95rem; }
+        .form-card-desc { font-size: 0.8rem; color: var(--text-muted); }
+
+        /* ══════════════════ LEGEND ══════════════════ */
+        .legend {
+            display: flex;
+            gap: 20px;
+            padding: 10px 15px;
+            background: var(--bg-card);
+            border-radius: 8px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.8rem;
+        }
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+        }
+        .legend-color.green { background: var(--green); }
+        .legend-color.blue { background: var(--blue); }
+        .legend-color.red { background: var(--red); }
     </style>
 </head>
 <body>
     <!-- Notifications Container -->
     <div class="notifications-container" id="notificationsContainer"></div>
 
-    <div class="toggle-panel panel-visible" id="toggleBtn" onclick="togglePanel()">⚙️ التحكم</div>
-    <button class="fullscreen-btn" onclick="toggleFullscreen()">⛶ ملء الشاشة</button>
-
-    <!-- Control Panel -->
-    <div class="control-panel" id="controlPanel">
-        <div class="panel-tabs">
-            <div class="panel-tab active" onclick="switchTab('main')">🏠</div>
-            <div class="panel-tab" onclick="switchTab('forms')">📝 نماذج</div>
-            <div class="panel-tab" onclick="switchTab('buses')">🚌 حافلات<span class="badge" id="busCount">0</span></div>
-            <div class="panel-tab" onclick="switchTab('alerts')">🔔<span class="badge" id="alertCount">0</span></div>
-            <div class="panel-tab" onclick="switchTab('settings')">⚙️</div>
+    <!-- Form Selection Menu -->
+    <div class="form-menu" id="formMenu">
+        <div class="form-menu-title">📋 اختر النموذج</div>
+        <div class="form-menu-item" onclick="selectForm('ScrLogIn')">
+            <span>🚌</span> تسجيل الدخول
         </div>
-
-        <div class="panel-content">
-            <!-- Main Tab -->
-            <div class="tab-content active" id="tab-main">
-                <div class="control-section">
-                    <div class="control-title">🔍 التكبير</div>
-                    <div class="zoom-btns">
-                        <button class="zoom-btn" onclick="zoomOut()">➖</button>
-                        <button class="zoom-btn" onclick="zoomReset()"><span id="zoomValue">100</span>%</button>
-                        <button class="zoom-btn" onclick="zoomIn()">➕</button>
-                    </div>
-                </div>
-
-                <div class="control-section">
-                    <div class="control-title">📊 إحصائيات المواقف</div>
-                    <div style="font-size:11px;line-height:2;color:var(--text-muted)">
-                        <div>📌 إجمالي المواقف: <b style="color:var(--primary)">87</b></div>
-                        <div>✅ مشغول: <b id="statOccupied" style="color:var(--primary)">0</b></div>
-                        <div>⬜ فارغ: <b id="statEmpty">87</b></div>
-                        <div style="color:var(--green)">🟢 مبكر: <b id="statEarly">0</b></div>
-                        <div style="color:var(--blue)">🔵 في الموعد: <b id="statOntime">0</b></div>
-                        <div style="color:var(--red)">🔴 متأخر: <b id="statLate">0</b></div>
-                    </div>
-                </div>
-
-                <div class="control-section" id="selectedActions" style="display:none">
-                    <div class="control-title">📍 الموقف #<span id="selectedNum">-</span></div>
-                    <button class="control-button" onclick="viewBusDetails()">👁️ عرض التفاصيل</button>
-                    <button class="control-button info" onclick="openMoveModal()">🔄 نقل الحافلة</button>
-                    <button class="control-button danger" onclick="deleteFromSpot()">🗑️ إخلاء الموقف</button>
-                </div>
-
-                <div class="control-section">
-                    <div class="control-title">💾 إدارة البيانات</div>
-                    <button class="control-button" onclick="exportJSON()">💾 تصدير JSON</button>
-                    <button class="control-button info" onclick="exportCSV()">📊 تصدير CSV</button>
-                    <button class="control-button" onclick="document.getElementById('importFile').click()">📥 استيراد</button>
-                    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(event)">
-                    <button class="control-button danger" onclick="resetAll()">🔄 مسح الكل</button>
-                </div>
-            </div>
-
-            <!-- Forms Tab -->
-            <div class="tab-content" id="tab-forms">
-                <div class="control-section">
-                    <div class="control-title">📝 النماذج المتاحة</div>
-                    <p style="font-size:10px;color:var(--text-muted);margin-bottom:10px">اختر نموذج لتسجيل بيانات جديدة</p>
-                    
-                    <div class="form-list-item" onclick="openForm('ScrLogIn')">
-                        <div class="form-name">1️⃣ ScrLogIn</div>
-                        <div class="form-name-ar">تسجيل الدخول</div>
-                    </div>
-                    
-                    <div class="form-list-item" onclick="openForm('ScrSegregationIn')">
-                        <div class="form-name">2️⃣ ScrSegregationIn</div>
-                        <div class="form-name-ar">دخول الحافلات للفرز</div>
-                    </div>
-                    
-                    <div class="form-list-item" onclick="openForm('ScrWelcomeLounge')">
-                        <div class="form-name">3️⃣ ScrWelcomeLounge</div>
-                        <div class="form-name-ar">صالة الترحيب ⭐</div>
-                    </div>
-                    
-                    <div class="form-list-item" onclick="openForm('ScrSegregationExit')">
-                        <div class="form-name">4️⃣ ScrSegregationExit</div>
-                        <div class="form-name-ar">خروج الحافلات من الفرز</div>
-                    </div>
-                    
-                    <div class="form-list-item" onclick="openForm('ScrCurbside')">
-                        <div class="form-name">5️⃣ ScrCurbside</div>
-                        <div class="form-name-ar">الرصيف</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Buses Tab -->
-            <div class="tab-content" id="tab-buses">
-                <div class="control-section">
-                    <div class="control-title">🚌 الحافلات المسجلة</div>
-                    <input type="text" class="search-box" placeholder="🔍 بحث بالوحة أو رقم الرحلة..." oninput="filterBusList(this.value)">
-                    <div id="busList"></div>
-                </div>
-            </div>
-
-            <!-- Alerts Tab -->
-            <div class="tab-content" id="tab-alerts">
-                <div class="control-section">
-                    <div class="control-title">🔔 سجل التنبيهات والأحداث</div>
-                    <button class="control-button danger" onclick="clearAlerts()" style="margin-bottom:10px">🗑️ مسح السجل</button>
-                    <div class="alerts-container" id="alertsList"></div>
-                </div>
-            </div>
-
-            <!-- Settings Tab -->
-            <div class="tab-content" id="tab-settings">
-                <div class="control-section">
-                    <div class="control-title">⏱️ حدود التفويج (بالساعات)</div>
-                    <div class="control-row">
-                        <div class="control-group">
-                            <label class="control-label">مبكر أكبر من</label>
-                            <input type="number" class="control-input" id="earlyThreshold" value="7" min="1" onchange="updateThresholds()">
-                        </div>
-                        <div class="control-group">
-                            <label class="control-label">متأخر أقل من</label>
-                            <input type="number" class="control-input" id="lateThreshold" value="3" min="1" onchange="updateThresholds()">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="control-section">
-                    <div class="control-title">🔔 إعدادات التنبيهات</div>
-                    <label style="font-size:10px;display:flex;align-items:center;gap:8px;margin-bottom:8px">
-                        <input type="checkbox" id="soundEnabled" checked> تفعيل الصوت
-                    </label>
-                    <label style="font-size:10px;display:flex;align-items:center;gap:8px">
-                        <input type="checkbox" id="notifyEnabled" checked> تفعيل الإشعارات
-                    </label>
-                </div>
-
-                <div class="control-section">
-                    <div class="control-title">💾 الإعدادات</div>
-                    <button class="control-button" onclick="saveSettings()">💾 حفظ الإعدادات</button>
-                    <button class="control-button danger" onclick="resetSettings()">🔄 إعادة تعيين</button>
-                </div>
-            </div>
+        <div class="form-menu-item" onclick="selectForm('ScrSegregationIn')">
+            <span>📥</span> دخول الفرز
+        </div>
+        <div class="form-menu-item" onclick="selectForm('ScrWelcomeLounge')">
+            <span>☕</span> صالة الترحيب
+        </div>
+        <div class="form-menu-item" onclick="selectForm('ScrSegregationExit')">
+            <span>📤</span> خروج الفرز
+        </div>
+        <div class="form-menu-item" onclick="selectForm('ScrCurbside')">
+            <span>🛑</span> نقطة الإنزال
         </div>
     </div>
 
     <!-- Header -->
-    <header class="header panel-open" id="header">
-        <div class="header-title">🚌 إدارة عمليات الساحات الخارجية والمواصلات</div>
-        <div class="header-controls">
-            <div class="header-btn" id="timeDisplay">--:--:--</div>
-            <div class="header-btn" id="shiftDisplay">نوبة -</div>
-            <div class="header-btn" id="dateDisplay">--/--/----</div>
-        </div>
+    <header class="header">
+        <h1>🚌 إدارة عمليات الساحات الخارجية والمواصلات</h1>
+        <div class="clock" id="clock">00:00:00</div>
     </header>
 
-    <!-- Daily Stats -->
-    <div class="daily-stats panel-open" id="dailyStats">
-        <div class="daily-stat">
-            <span>👥</span>
-            <div>
-                <div class="daily-stat-value" id="dailyPax">0</div>
-                <div class="daily-stat-label">مسافر اليوم</div>
-            </div>
-        </div>
-        <div class="daily-stat">
-            <span>🚌</span>
-            <div>
-                <div class="daily-stat-value" id="dailyBuses">0</div>
-                <div class="daily-stat-label">حافلة اليوم</div>
-            </div>
-        </div>
-        <div class="daily-stat">
-            <span>✈️</span>
-            <div>
-                <div class="daily-stat-value" id="dailyFlights">0</div>
-                <div class="daily-stat-label">رحلة اليوم</div>
-            </div>
-        </div>
-        <div class="daily-stat">
-            <span>📊</span>
-            <div>
-                <div class="daily-stat-value" id="occupancyRate">0%</div>
-                <div class="daily-stat-label">نسبة الإشغال</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Stats Bar -->
-    <div class="stats-bar panel-open" id="statsBar">
-        <div class="stat-card" onclick="filterByStatus('all')">
-            <div class="stat-value" id="totalInParking">0</div>
-            <div class="stat-label">إجمالي في المواقف</div>
-        </div>
-        <div class="stat-card green" onclick="filterByStatus('early')">
-            <div class="stat-value" id="earlyCount">0</div>
-            <div class="stat-label">🟢 مبكر (>7 ساعات)</div>
-        </div>
-        <div class="stat-card blue" onclick="filterByStatus('ontime')">
-            <div class="stat-value" id="ontimeCount">0</div>
-            <div class="stat-label">🔵 في الموعد (3-7)</div>
-        </div>
-        <div class="stat-card red" onclick="filterByStatus('late')">
-            <div class="stat-value" id="lateCount">0</div>
-            <div class="stat-label">🔴 متأخر (&lt;3 ساعات)</div>
-        </div>
-    </div>
-
     <!-- Main Container -->
-    <main class="main-container panel-open" id="mainContainer">
-        <div class="parking-wrapper" id="parkingWrapper"></div>
-    </main>
-
-    <!-- Form Modal -->
-    <div class="modal" id="formModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <span id="formModalTitle">نموذج</span>
-                <button class="modal-close" onclick="closeModal('formModal')">&times;</button>
+    <div class="main-container">
+        <!-- Parking Area -->
+        <div class="parking-area">
+            <div class="legend">
+                <div class="legend-item"><div class="legend-color green"></div> مبكر (أكثر من 7 ساعات)</div>
+                <div class="legend-item"><div class="legend-color blue"></div> في الموعد (3-7 ساعات)</div>
+                <div class="legend-item"><div class="legend-color red"></div> متأخر (أقل من 3 ساعات)</div>
             </div>
-            <div id="formModalBody"></div>
-            <div class="modal-buttons">
-                <button class="modal-btn primary" onclick="saveForm()">💾 حفظ</button>
-                <button class="modal-btn secondary" onclick="closeModal('formModal')">إلغاء</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Move Modal -->
-    <div class="modal" id="moveModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <span>🔄 نقل الحافلة</span>
-                <button class="modal-close" onclick="closeModal('moveModal')">&times;</button>
-            </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label class="form-label">من الموقف</label>
-                    <input type="number" class="form-input" id="moveFrom" readonly>
+            <div class="parking-sections">
+                <!-- Section 1: Spots 1-42 -->
+                <div class="parking-section">
+                    <div class="section-header">
+                        <div class="section-title">📥 منطقة الدخول (1-42)</div>
+                        <div class="section-count" id="section1Count">0/42</div>
+                    </div>
+                    <div class="parking-grid" id="section1Grid"></div>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">إلى الموقف</label>
-                    <input type="number" class="form-input" id="moveTo" min="1" max="87">
+                <!-- Section 2: Spots 43-87 -->
+                <div class="parking-section">
+                    <div class="section-header">
+                        <div class="section-title">📤 منطقة الخروج (43-87)</div>
+                        <div class="section-count" id="section2Count">0/45</div>
+                    </div>
+                    <div class="parking-grid" id="section2Grid"></div>
                 </div>
             </div>
-            <div class="modal-buttons">
-                <button class="modal-btn primary" onclick="moveBus()">✅ نقل</button>
-                <button class="modal-btn secondary" onclick="closeModal('moveModal')">إلغاء</button>
-            </div>
         </div>
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-tabs">
+                <button class="sidebar-tab active" onclick="switchTab('main')">
+                    <span>🏠</span> رئيسية
+                </button>
+                <button class="sidebar-tab" onclick="switchTab('settings')">
+                    <span>⚙️</span> إعدادات
+                </button>
+                <button class="sidebar-tab" onclick="switchTab('alerts')">
+                    <span>🔔</span> تنبيهات
+                </button>
+                <button class="sidebar-tab" onclick="switchTab('kpis')">
+                    <span>📊</span> KPIs
+                </button>
+                <button class="sidebar-tab" onclick="switchTab('forms')">
+                    <span>📋</span> نماذج
+                </button>
+                <button class="sidebar-tab" onclick="switchTab('buses')">
+                    <span>🚌</span> مسجلة
+                </button>
+            </div>
+
+            <div class="sidebar-content">
+                <!-- Main Tab -->
+                <div class="tab-panel active" id="mainTab">
+                    <div class="kpi-card">
+                        <div class="kpi-title">إجمالي الحافلات</div>
+                        <div class="kpi-value" id="totalBuses">0</div>
+                    </div>
+                    <div class="kpi-card" style="border-color: var(--green);">
+                        <div class="kpi-title">مبكر</div>
+                        <div class="kpi-value" style="color: var(--green);" id="earlyBuses">0</div>
+                    </div>
+                    <div class="kpi-card" style="border-color: var(--blue);">
+                        <div class="kpi-title">في الموعد</div>
+                        <div class="kpi-value" style="color: var(--blue);" id="onTimeBuses">0</div>
+                    </div>
+                    <div class="kpi-card" style="border-color: var(--red);">
+                        <div class="kpi-title">متأخر</div>
+                        <div class="kpi-value" style="color: var(--red);" id="lateBuses">0</div>
+                    </div>
+                </div>
+
+                <!-- Settings Tab -->
+                <div class="tab-panel" id="settingsTab">
+                    <div class="settings-section">
+                        <h3>⏰ إعدادات الوقت</h3>
+                        <div class="setting-item">
+                            <span class="setting-label">حد المبكر (ساعات)</span>
+                            <div class="setting-value">
+                                <input type="number" id="earlyThreshold" value="7" style="width: 60px; padding: 5px; text-align: center;">
+                            </div>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">حد المتأخر (ساعات)</span>
+                            <div class="setting-value">
+                                <input type="number" id="lateThreshold" value="3" style="width: 60px; padding: 5px; text-align: center;">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="settings-section">
+                        <h3>🔔 إعدادات التنبيهات</h3>
+                        <div class="setting-item">
+                            <span class="setting-label">تنبيهات صوتية</span>
+                            <div class="toggle" id="soundToggle" onclick="toggleSetting('sound')"></div>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">إشعارات منبثقة</span>
+                            <div class="toggle active" id="popupToggle" onclick="toggleSetting('popup')"></div>
+                        </div>
+                    </div>
+                    <div class="settings-section">
+                        <h3>📊 تصدير البيانات</h3>
+                        <button class="btn btn-primary" onclick="exportToJSON()" style="width: 100%; margin-bottom: 8px;">
+                            📥 تصدير JSON
+                        </button>
+                        <button class="btn btn-secondary" onclick="exportToCSV()" style="width: 100%;">
+                            📥 تصدير CSV
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Alerts Tab -->
+                <div class="tab-panel" id="alertsTab">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <h3 style="color: var(--primary);">سجل التنبيهات</h3>
+                        <button class="btn btn-secondary" onclick="clearAlerts()" style="padding: 5px 10px; font-size: 0.75rem;">مسح</button>
+                    </div>
+                    <div class="alerts-list" id="alertsList">
+                        <div style="text-align: center; color: var(--text-muted); padding: 20px;">
+                            لا توجد تنبيهات
+                        </div>
+                    </div>
+                </div>
+
+                <!-- KPIs Tab -->
+                <div class="tab-panel" id="kpisTab">
+                    <div class="kpi-card">
+                        <div class="kpi-title">نسبة الإشغال</div>
+                        <div class="kpi-value" id="occupancyRate">0%</div>
+                        <div class="progress-bar" style="margin-top: 10px;">
+                            <div class="progress-fill blue" id="occupancyBar" style="width: 0%;"></div>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-title">متوسط وقت الانتظار</div>
+                        <div class="kpi-value" id="avgWaitTime">0 د</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-title">توزيع الحالات</div>
+                        <div class="kpi-chart" id="statusChart"></div>
+                        <div style="display: flex; justify-content: space-between; margin-top: 8px; font-size: 0.75rem;">
+                            <span style="color: var(--green);" id="earlyPct">0%</span>
+                            <span style="color: var(--blue);" id="onTimePct">0%</span>
+                            <span style="color: var(--red);" id="latePct">0%</span>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-title">إجمالي اليوم</div>
+                        <div class="kpi-value" id="dailyTotal">0</div>
+                        <div class="kpi-subtitle">حافلة تمت معالجتها</div>
+                    </div>
+                </div>
+
+                <!-- Forms Tab -->
+                <div class="tab-panel" id="formsTab">
+                    <div class="form-card" onclick="showFormInfo('ScrLogIn')">
+                        <div class="form-card-header">
+                            <span class="form-card-icon">🚌</span>
+                            <span class="form-card-title">ScrLogIn - تسجيل الدخول</span>
+                        </div>
+                        <div class="form-card-desc">تسجيل دخول الحافلة للموقف</div>
+                    </div>
+                    <div class="form-card" onclick="showFormInfo('ScrSegregationIn')">
+                        <div class="form-card-header">
+                            <span class="form-card-icon">📥</span>
+                            <span class="form-card-title">ScrSegregationIn - دخول الفرز</span>
+                        </div>
+                        <div class="form-card-desc">تسجيل دخول منطقة الفرز</div>
+                    </div>
+                    <div class="form-card" onclick="showFormInfo('ScrWelcomeLounge')">
+                        <div class="form-card-header">
+                            <span class="form-card-icon">☕</span>
+                            <span class="form-card-title">ScrWelcomeLounge - صالة الترحيب</span>
+                        </div>
+                        <div class="form-card-desc">تسجيل بيانات صالة الترحيب</div>
+                    </div>
+                    <div class="form-card" onclick="showFormInfo('ScrSegregationExit')">
+                        <div class="form-card-header">
+                            <span class="form-card-icon">📤</span>
+                            <span class="form-card-title">ScrSegregationExit - خروج الفرز</span>
+                        </div>
+                        <div class="form-card-desc">تسجيل خروج من منطقة الفرز</div>
+                    </div>
+                    <div class="form-card" onclick="showFormInfo('ScrCurbside')">
+                        <div class="form-card-header">
+                            <span class="form-card-icon">🛑</span>
+                            <span class="form-card-title">ScrCurbside - نقطة الإنزال</span>
+                        </div>
+                        <div class="form-card-desc">تسجيل عند نقطة الإنزال</div>
+                    </div>
+                </div>
+
+                <!-- Registered Buses Tab -->
+                <div class="tab-panel" id="busesTab">
+                    <div id="busRecordsList">
+                        <div style="text-align: center; color: var(--text-muted); padding: 20px;">
+                            لا توجد حافلات مسجلة
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
     </div>
 
-    <!-- Bus Details Modal -->
-    <div class="modal" id="detailsModal">
-        <div class="modal-content">
+    <!-- Modal -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
             <div class="modal-header">
-                <span>📋 تفاصيل الحافلة</span>
-                <button class="modal-close" onclick="closeModal('detailsModal')">&times;</button>
+                <h3 class="modal-title" id="modalTitle">نموذج جديد</h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
             </div>
-            <div id="detailsBody"></div>
-            <div class="modal-buttons">
-                <button class="modal-btn secondary" onclick="closeModal('detailsModal')">إغلاق</button>
+            <div class="modal-body" id="modalBody"></div>
+            <div class="modal-footer" id="modalFooter">
+                <button class="btn btn-secondary" onclick="closeModal()">إلغاء</button>
+                <button class="btn btn-primary" onclick="saveForm()">💾 حفظ</button>
             </div>
         </div>
     </div>
-
-    <!-- Tooltip -->
-    <div class="tooltip" id="tooltip"></div>
 
     <script>
-        // ══════════════════════════════════════════════════════════════
-        // DATA STRUCTURES - Power BI Best Practices
-        // ══════════════════════════════════════════════════════════════
-        
-        // Main data store - like Power BI Fact Table
+        // ══════════════════ DATA STORE ══════════════════
         let busRecords = [];
-        
-        // Configuration - like Power BI Parameters
-        let config = {
-            thresholds: { early: 7, late: 3 },
-            sound: true,
-            notify: true
-        };
-        
-        // State management
-        let selectedSpot = null;
-        let currentFilter = 'all';
-        let panelVisible = true;
-        let zoomLevel = 100;
         let alerts = [];
-        let currentFormType = null;
-        let currentEditBus = null;
-
-        // Form definitions - Power BI Data Model
-        const FORMS = {
-            ScrLogIn: {
-                title: 'تسجيل الدخول',
-                fields: [
-                    { id: 'WorkLoc', label: 'موقع العمل', type: 'select', options: ['ScrLogIn', 'ScrSegregationIn', 'ScrWelcomeLounge', 'ScrSegregationExit', 'ScrCurbside'] }
-                ]
-            },
-            ScrSegregationIn: {
-                title: 'دخول الحافلات للفرز',
-                fields: [
-                    { id: 'BusPlate', label: 'لوحة الحافلة', type: 'text' },
-                    { id: 'BusNO', label: 'رقم الحافلة', type: 'number' },
-                    { id: 'FlightNo', label: 'رقم الرحلة', type: 'text' },
-                    { id: 'TripCount', label: 'عدد الرحلات', type: 'number' },
-                    { id: 'DepDate', label: 'تاريخ المغادرة', type: 'date' },
-                    { id: 'DepHour', label: 'ساعة المغادرة', type: 'hour' },
-                    { id: 'DepMin', label: 'دقيقة المغادرة', type: 'minute' },
-                    { id: 'CurDate', label: 'تاريخ الدخول', type: 'date' },
-                    { id: 'CurHour', label: 'ساعة الدخول', type: 'hour' },
-                    { id: 'CurMin', label: 'دقيقة الدخول', type: 'minute' },
-                    { id: 'TerminalCd', label: 'كود المبنى', type: 'select', options: ['HT', 'NT', 'T1'] },
-                    { id: 'TotalPax', label: 'إجمالي الركاب', type: 'number' },
-                    { id: 'PaxCount', label: 'عدد الركاب', type: 'number' },
-                    { id: 'Destination', label: 'الوجهة', type: 'text' },
-                    { id: 'DispatchSts', label: 'حالة الإرسال', type: 'select', options: ['خاطئ', 'مبكر', 'متأخر', 'مشترك رحلات', 'مشترك رحلات وصالات'] },
-                    { id: 'VisaType', label: 'نوع التأشيرة', type: 'select', options: ['Hajj', 'GCC', 'Visit', 'Tourism', 'Work'] },
-                    { id: 'UmrahCop', label: 'شركة العمرة', type: 'text' }
-                ]
-            },
-            ScrWelcomeLounge: {
-                title: 'صالة الترحيب',
-                fields: [
-                    { id: 'BusPlate', label: 'لوحة الحافلة', type: 'text' },
-                    { id: 'BusNO', label: 'رقم الحافلة', type: 'number' },
-                    { id: 'ParkNO', label: 'رقم الموقف (1-87)', type: 'number', min: 1, max: 87 },
-                    { id: 'BagStatus', label: 'حالة الأمتعة', type: 'select', options: ['دينة', 'لا يوجد', 'مختلط'] },
-                    { id: 'T3CALLDate', label: 'تاريخ الاتصال', type: 'date' },
-                    { id: 'T3CALLHour', label: 'ساعة الاتصال', type: 'hour' },
-                    { id: 'T3CALLMin', label: 'دقيقة الاتصال', type: 'minute' },
-                    { id: 'FlightSts', label: 'حالة الرحلة', type: 'select', options: ['أقلعت', 'أُلغيت', 'متأخرة'] },
-                    { id: 'T3ACT', label: 'الوصول الفعلي', type: 'select', options: ['Approval', 'Waiting'] },
-                    { id: 'GetaNO', label: 'رقم البوابة', type: 'select', options: ['A1', 'A2', 'B1', 'B2', 'C1', 'C2', 'D1', 'D2', 'E1', 'E2'] },
-                    { id: 'T3APRODate', label: 'تاريخ الاقتراب', type: 'date' },
-                    { id: 'T3APROHour', label: 'ساعة الاقتراب', type: 'hour' },
-                    { id: 'T3APROMin', label: 'دقيقة الاقتراب', type: 'minute' }
-                ]
-            },
-            ScrSegregationExit: {
-                title: 'خروج الحافلات من الفرز',
-                fields: [
-                    { id: 'BusPlate', label: 'لوحة الحافلة', type: 'text' },
-                    { id: 'BusNO', label: 'رقم الحافلة', type: 'number' },
-                    { id: 'FlightNo', label: 'رقم الرحلة', type: 'text' },
-                    { id: 'ExitDate', label: 'تاريخ الخروج', type: 'date' },
-                    { id: 'ExitHour', label: 'ساعة الخروج', type: 'hour' },
-                    { id: 'ExitMin', label: 'دقيقة الخروج', type: 'minute' }
-                ]
-            },
-            ScrCurbside: {
-                title: 'الرصيف',
-                fields: [
-                    { id: 'BusPlate', label: 'لوحة الحافلة', type: 'text' },
-                    { id: 'BusNO', label: 'رقم الحافلة', type: 'number' },
-                    { id: 'BusArrDate', label: 'تاريخ وصول الحافلة', type: 'date' },
-                    { id: 'BusArrHour', label: 'ساعة الوصول', type: 'hour' },
-                    { id: 'BusArrMin', label: 'دقيقة الوصول', type: 'minute' },
-                    { id: 'PaxDisembarkDate', label: 'تاريخ نزول الركاب', type: 'date' },
-                    { id: 'PaxDisembarkHour', label: 'ساعة النزول', type: 'hour' },
-                    { id: 'PaxDisembarkMin', label: 'دقيقة النزول', type: 'minute' },
-                    { id: 'BusDepDate', label: 'تاريخ مغادرة الحافلة', type: 'date' },
-                    { id: 'BusDepHour', label: 'ساعة المغادرة', type: 'hour' },
-                    { id: 'BusDepMin', label: 'دقيقة المغادرة', type: 'minute' },
-                    { id: 'DelayReason', label: 'سبب التأخير', type: 'select', options: ['ZMZM', 'Operations', 'Bags', 'Passport Distribution'] },
-                    { id: 'FlightSts', label: 'حالة الرحلة', type: 'select', options: ['أقلعت', 'أُلغيت', 'متأخرة'] },
-                    { id: 'GetaNO', label: 'رقم البوابة', type: 'select', options: ['A1', 'A2', 'B1', 'B2', 'C1', 'C2', 'D1', 'D2', 'E1', 'E2'] }
-                ]
-            }
+        let currentSpot = null;
+        let currentForm = null;
+        let settings = {
+            sound: false,
+            popup: true,
+            earlyThreshold: 7,
+            lateThreshold: 3
         };
 
-        // ══════════════════════════════════════════════════════════════
-        // NOTIFICATIONS SYSTEM
-        // ══════════════════════════════════════════════════════════════
-        
-        function showNotification(type, title, message, duration = 5000) {
-            if (!config.notify) return;
+        // ══════════════════ INITIALIZE ══════════════════
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeParkingGrid();
+            startClock();
+            initializeSampleBuses(); // Add 30 sample buses
+            updateStats();
+            startCountdownUpdater();
+            
+            // Close form menu on outside click
+            document.addEventListener('click', (e) => {
+                const menu = document.getElementById('formMenu');
+                if (!menu.contains(e.target) && !e.target.closest('.parking-spot')) {
+                    menu.classList.remove('show');
+                }
+            });
+        });
+
+        // ══════════════════ PARKING GRID ══════════════════
+        function initializeParkingGrid() {
+            const section1 = document.getElementById('section1Grid');
+            const section2 = document.getElementById('section2Grid');
+            
+            // Section 1: 1-42
+            for (let i = 1; i <= 42; i++) {
+                section1.appendChild(createParkingSpot(i));
+            }
+            
+            // Section 2: 43-87
+            for (let i = 43; i <= 87; i++) {
+                section2.appendChild(createParkingSpot(i));
+            }
+        }
+
+        function createParkingSpot(number) {
+            const spot = document.createElement('div');
+            spot.className = 'parking-spot';
+            spot.id = `spot-${number}`;
+            spot.innerHTML = `<span class="spot-number">${number}</span>`;
+            spot.onclick = (e) => handleSpotClick(number, e);
+            return spot;
+        }
+
+        function handleSpotClick(spotNumber, event) {
+            event.stopPropagation();
+            const bus = busRecords.find(b => b.spotNumber === spotNumber);
+            
+            if (bus) {
+                // Occupied spot - open ScrWelcomeLounge
+                currentSpot = spotNumber;
+                currentForm = 'ScrWelcomeLounge';
+                openFormModal('ScrWelcomeLounge', bus);
+            } else {
+                // Empty spot - show form menu
+                currentSpot = spotNumber;
+                showFormMenu(event);
+            }
+        }
+
+        function showFormMenu(event) {
+            const menu = document.getElementById('formMenu');
+            menu.style.top = event.clientY + 'px';
+            menu.style.left = event.clientX + 'px';
+            menu.classList.add('show');
+        }
+
+        function selectForm(formName) {
+            document.getElementById('formMenu').classList.remove('show');
+            currentForm = formName;
+            openFormModal(formName, null);
+        }
+
+        // ══════════════════ FORM MODAL ══════════════════
+        function openFormModal(formName, existingBus) {
+            const modal = document.getElementById('modalOverlay');
+            const title = document.getElementById('modalTitle');
+            const body = document.getElementById('modalBody');
+            
+            const formTitles = {
+                'ScrLogIn': '🚌 تسجيل الدخول - موقف ' + currentSpot,
+                'ScrSegregationIn': '📥 دخول الفرز - موقف ' + currentSpot,
+                'ScrWelcomeLounge': '☕ صالة الترحيب - موقف ' + currentSpot,
+                'ScrSegregationExit': '📤 خروج الفرز - موقف ' + currentSpot,
+                'ScrCurbside': '🛑 نقطة الإنزال - موقف ' + currentSpot
+            };
+            
+            title.textContent = formTitles[formName] || 'نموذج جديد';
+            body.innerHTML = getFormHTML(formName, existingBus);
+            modal.classList.add('show');
+        }
+
+        function getFormHTML(formName, bus) {
+            const plate = bus ? bus.BusPlate : '';
+            const now = new Date();
+            const timeStr = now.toTimeString().slice(0,5);
+            const dateStr = now.toISOString().slice(0,10);
+            
+            switch(formName) {
+                case 'ScrLogIn':
+                    return `
+                        <div class="form-section">
+                            <div class="form-section-title">🚌 بيانات الحافلة</div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>لوحة الحافلة *</label>
+                                    <input type="text" id="busPlate" value="${plate}" placeholder="ABC 123" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>رقم الرحلة</label>
+                                    <input type="text" id="flightNumber" placeholder="SV 1234">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>وقت الوصول</label>
+                                    <input type="time" id="arrivalTime" value="${timeStr}">
+                                </div>
+                                <div class="form-group">
+                                    <label>موعد التفويج المتوقع</label>
+                                    <input type="time" id="dispatchTime">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>عدد الركاب</label>
+                                    <input type="number" id="passengerCount" placeholder="45">
+                                </div>
+                                <div class="form-group">
+                                    <label>الناقل</label>
+                                    <select id="carrier">
+                                        <option value="">اختر...</option>
+                                        <option value="مصر للطيران">مصر للطيران</option>
+                                        <option value="السعودية">الخطوط السعودية</option>
+                                        <option value="طيران الإمارات">طيران الإمارات</option>
+                                        <option value="أخرى">أخرى</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                
+                case 'ScrSegregationIn':
+                    return `
+                        <div class="form-section">
+                            <div class="form-section-title">📥 دخول منطقة الفرز</div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>لوحة الحافلة</label>
+                                    <input type="text" id="busPlate" value="${plate}" ${plate ? 'readonly' : ''}>
+                                </div>
+                                <div class="form-group">
+                                    <label>وقت الدخول</label>
+                                    <input type="time" id="entryTime" value="${timeStr}">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>بوابة الدخول</label>
+                                    <select id="entryGate">
+                                        <option value="G1">بوابة 1</option>
+                                        <option value="G2">بوابة 2</option>
+                                        <option value="G3">بوابة 3</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>حالة الفحص</label>
+                                    <select id="inspectionStatus">
+                                        <option value="passed">ناجح</option>
+                                        <option value="pending">قيد المراجعة</option>
+                                        <option value="failed">فشل</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                
+                case 'ScrWelcomeLounge':
+                    return `
+                        <div class="form-section">
+                            <div class="form-section-title">☕ صالة الترحيب</div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>لوحة الحافلة</label>
+                                    <input type="text" id="busPlate" value="${plate}" readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label>وقت الدخول للصالة</label>
+                                    <input type="time" id="loungeEntryTime" value="${timeStr}">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>رقم الصالة</label>
+                                    <select id="loungeNumber">
+                                        <option value="L1">صالة 1</option>
+                                        <option value="L2">صالة 2</option>
+                                        <option value="L3">صالة 3</option>
+                                        <option value="VIP">VIP</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>نوع الخدمة</label>
+                                    <select id="serviceType">
+                                        <option value="standard">عادي</option>
+                                        <option value="premium">مميز</option>
+                                        <option value="vip">VIP</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group full-width">
+                                    <label>ملاحظات</label>
+                                    <textarea id="loungeNotes" rows="2" placeholder="أي ملاحظات إضافية..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                
+                case 'ScrSegregationExit':
+                    return `
+                        <div class="form-section">
+                            <div class="form-section-title">📤 خروج من منطقة الفرز</div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>لوحة الحافلة</label>
+                                    <input type="text" id="busPlate" value="${plate}" ${plate ? 'readonly' : ''}>
+                                </div>
+                                <div class="form-group">
+                                    <label>وقت الخروج</label>
+                                    <input type="time" id="exitTime" value="${timeStr}">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>بوابة الخروج</label>
+                                    <select id="exitGate">
+                                        <option value="G1">بوابة 1</option>
+                                        <option value="G2">بوابة 2</option>
+                                        <option value="G3">بوابة 3</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>حالة الخروج</label>
+                                    <select id="exitStatus">
+                                        <option value="completed">مكتمل</option>
+                                        <option value="partial">جزئي</option>
+                                        <option value="cancelled">ملغي</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div style="background: rgba(244,67,54,0.1); padding: 10px; border-radius: 8px; margin-top: 10px; border: 1px solid var(--red);">
+                                <span style="color: var(--red);">⚠️ تنبيه: عند إكمال هذا النموذج سيتم إخلاء الموقف تلقائياً</span>
+                            </div>
+                        </div>
+                    `;
+                
+                case 'ScrCurbside':
+                    return `
+                        <div class="form-section">
+                            <div class="form-section-title">🛑 نقطة الإنزال</div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>لوحة الحافلة</label>
+                                    <input type="text" id="busPlate" value="${plate}" ${plate ? 'readonly' : ''}>
+                                </div>
+                                <div class="form-group">
+                                    <label>وقت الوصول</label>
+                                    <input type="time" id="curbsideTime" value="${timeStr}">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>رقم نقطة الإنزال</label>
+                                    <select id="curbsidePoint">
+                                        <option value="C1">نقطة 1</option>
+                                        <option value="C2">نقطة 2</option>
+                                        <option value="C3">نقطة 3</option>
+                                        <option value="C4">نقطة 4</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>عدد الركاب النازلين</label>
+                                    <input type="number" id="droppedCount" placeholder="45">
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                
+                default:
+                    return '<p>نموذج غير معروف</p>';
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('modalOverlay').classList.remove('show');
+            currentSpot = null;
+            currentForm = null;
+        }
+
+        function saveForm() {
+            const plateInput = document.getElementById('busPlate');
+            if (!plateInput || !plateInput.value.trim()) {
+                showNotification('error', 'خطأ', 'يرجى إدخال لوحة الحافلة');
+                return;
+            }
+            
+            const plate = plateInput.value.trim().toUpperCase();
+            let bus = busRecords.find(b => b.BusPlate === plate);
+            
+            if (!bus) {
+                // New bus
+                bus = {
+                    BusPlate: plate,
+                    spotNumber: currentSpot,
+                    forms: {},
+                    createdAt: new Date().toISOString(),
+                    lastUpdated: new Date().toISOString(),
+                    dispatchTime: null
+                };
+                busRecords.push(bus);
+            }
+            
+            // Save form data
+            bus.forms[currentForm] = collectFormData(currentForm);
+            bus.lastUpdated = new Date().toISOString();
+            
+            // Update dispatch time if available
+            const dispatchInput = document.getElementById('dispatchTime');
+            if (dispatchInput && dispatchInput.value) {
+                const today = new Date().toISOString().slice(0,10);
+                bus.dispatchTime = new Date(today + 'T' + dispatchInput.value);
+            }
+            
+            // Check if ScrSegregationExit is completed - remove bus
+            if (currentForm === 'ScrSegregationExit') {
+                const exitStatus = document.getElementById('exitStatus');
+                if (exitStatus && exitStatus.value === 'completed') {
+                    removeBus(plate);
+                    showNotification('success', 'تم الإخلاء', `تم إخلاء الحافلة ${plate} من الموقف ${currentSpot}`);
+                    closeModal();
+                    return;
+                }
+            }
+            
+            updateSpotDisplay(currentSpot, bus);
+            updateStats();
+            updateBusRecordsList();
+            showNotification('success', 'تم الحفظ', `تم حفظ بيانات الحافلة ${plate}`);
+            closeModal();
+        }
+
+        function collectFormData(formName) {
+            const data = { timestamp: new Date().toISOString() };
+            const inputs = document.querySelectorAll('#modalBody input, #modalBody select, #modalBody textarea');
+            inputs.forEach(input => {
+                if (input.id && input.id !== 'busPlate') {
+                    data[input.id] = input.value;
+                }
+            });
+            return data;
+        }
+
+        function removeBus(plate) {
+            const bus = busRecords.find(b => b.BusPlate === plate);
+            if (bus) {
+                const spot = document.getElementById(`spot-${bus.spotNumber}`);
+                if (spot) {
+                    spot.className = 'parking-spot';
+                    spot.innerHTML = `<span class="spot-number">${bus.spotNumber}</span>`;
+                }
+                busRecords = busRecords.filter(b => b.BusPlate !== plate);
+                addAlert('success', 'خروج حافلة', `الحافلة ${plate} غادرت الموقف`);
+            }
+        }
+
+        // ══════════════════ SPOT DISPLAY ══════════════════
+        function updateSpotDisplay(spotNumber, bus) {
+            const spot = document.getElementById(`spot-${spotNumber}`);
+            if (!spot || !bus) return;
+            
+            const status = getTimeStatus(bus);
+            const countdown = getCountdown(bus);
+            
+            spot.className = `parking-spot occupied status-${status}`;
+            if (status === 'red') spot.classList.add('late-blink');
+            
+            spot.innerHTML = `
+                <span class="spot-number">${spotNumber}</span>
+                <div class="bus-plate">${bus.BusPlate}</div>
+                <div class="countdown">${countdown}</div>
+            `;
+        }
+
+        function getTimeStatus(bus) {
+            if (!bus.dispatchTime) return 'blue';
+            
+            const now = new Date();
+            const dispatch = new Date(bus.dispatchTime);
+            const hoursLeft = (dispatch - now) / (1000 * 60 * 60);
+            
+            if (hoursLeft > settings.earlyThreshold) return 'green';
+            if (hoursLeft > settings.lateThreshold) return 'blue';
+            return 'red';
+        }
+
+        function getCountdown(bus) {
+            if (!bus.dispatchTime) return '--:--';
+            
+            const now = new Date();
+            const dispatch = new Date(bus.dispatchTime);
+            const diff = dispatch - now;
+            
+            if (diff <= 0) return 'متأخر!';
+            
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            
+            return `${hours.toString().padStart(2,'0')}:${minutes.toString().padStart(2,'0')}`;
+        }
+
+        // ══════════════════ SAMPLE BUSES (30 buses) ══════════════════
+        function initializeSampleBuses() {
+            const now = new Date();
+            const sampleBuses = [
+                // مبكر (أكثر من 7 ساعات) - 10 حافلات
+                { plate: 'ABC 1001', spot: 1, hoursOffset: 10 },
+                { plate: 'ABC 1002', spot: 3, hoursOffset: 12 },
+                { plate: 'ABC 1003', spot: 5, hoursOffset: 9 },
+                { plate: 'ABC 1004', spot: 7, hoursOffset: 11 },
+                { plate: 'ABC 1005', spot: 9, hoursOffset: 8 },
+                { plate: 'ABC 1006', spot: 11, hoursOffset: 14 },
+                { plate: 'ABC 1007', spot: 13, hoursOffset: 10 },
+                { plate: 'ABC 1008', spot: 15, hoursOffset: 9 },
+                { plate: 'ABC 1009', spot: 43, hoursOffset: 12 },
+                { plate: 'ABC 1010', spot: 45, hoursOffset: 8 },
+                
+                // في الموعد (3-7 ساعات) - 10 حافلات
+                { plate: 'DEF 2001', spot: 17, hoursOffset: 5 },
+                { plate: 'DEF 2002', spot: 19, hoursOffset: 6 },
+                { plate: 'DEF 2003', spot: 21, hoursOffset: 4 },
+                { plate: 'DEF 2004', spot: 23, hoursOffset: 5.5 },
+                { plate: 'DEF 2005', spot: 25, hoursOffset: 6.5 },
+                { plate: 'DEF 2006', spot: 27, hoursOffset: 4.5 },
+                { plate: 'DEF 2007', spot: 47, hoursOffset: 5 },
+                { plate: 'DEF 2008', spot: 49, hoursOffset: 6 },
+                { plate: 'DEF 2009', spot: 51, hoursOffset: 4 },
+                { plate: 'DEF 2010', spot: 53, hoursOffset: 5.5 },
+                
+                // متأخر (أقل من 3 ساعات) - 10 حافلات
+                { plate: 'GHI 3001', spot: 29, hoursOffset: 2 },
+                { plate: 'GHI 3002', spot: 31, hoursOffset: 1.5 },
+                { plate: 'GHI 3003', spot: 33, hoursOffset: 0.5 },
+                { plate: 'GHI 3004', spot: 35, hoursOffset: 2.5 },
+                { plate: 'GHI 3005', spot: 37, hoursOffset: 1 },
+                { plate: 'GHI 3006', spot: 39, hoursOffset: 0.25 },
+                { plate: 'GHI 3007', spot: 55, hoursOffset: 2 },
+                { plate: 'GHI 3008', spot: 57, hoursOffset: 1.5 },
+                { plate: 'GHI 3009', spot: 59, hoursOffset: 0.5 },
+                { plate: 'GHI 3010', spot: 61, hoursOffset: -0.5 } // Already late!
+            ];
+            
+            sampleBuses.forEach(sample => {
+                const dispatchTime = new Date(now.getTime() + (sample.hoursOffset * 60 * 60 * 1000));
+                
+                const bus = {
+                    BusPlate: sample.plate,
+                    spotNumber: sample.spot,
+                    forms: {
+                        ScrLogIn: {
+                            timestamp: new Date(now.getTime() - 2*60*60*1000).toISOString(),
+                            arrivalTime: new Date(now.getTime() - 2*60*60*1000).toTimeString().slice(0,5),
+                            dispatchTime: dispatchTime.toTimeString().slice(0,5),
+                            passengerCount: Math.floor(Math.random() * 30) + 20,
+                            carrier: ['مصر للطيران', 'السعودية', 'طيران الإمارات'][Math.floor(Math.random() * 3)]
+                        }
+                    },
+                    createdAt: new Date(now.getTime() - 2*60*60*1000).toISOString(),
+                    lastUpdated: new Date().toISOString(),
+                    dispatchTime: dispatchTime
+                };
+                
+                busRecords.push(bus);
+                updateSpotDisplay(sample.spot, bus);
+            });
+            
+            updateBusRecordsList();
+            showNotification('info', 'بيانات تجريبية', 'تم تحميل 30 حافلة للمعاينة');
+        }
+
+        // ══════════════════ STATS ══════════════════
+        function updateStats() {
+            let early = 0, onTime = 0, late = 0;
+            
+            busRecords.forEach(bus => {
+                const status = getTimeStatus(bus);
+                if (status === 'green') early++;
+                else if (status === 'blue') onTime++;
+                else late++;
+            });
+            
+            const total = busRecords.length;
+            
+            document.getElementById('totalBuses').textContent = total;
+            document.getElementById('earlyBuses').textContent = early;
+            document.getElementById('onTimeBuses').textContent = onTime;
+            document.getElementById('lateBuses').textContent = late;
+            
+            // Section counts
+            const section1 = busRecords.filter(b => b.spotNumber <= 42).length;
+            const section2 = busRecords.filter(b => b.spotNumber > 42).length;
+            document.getElementById('section1Count').textContent = `${section1}/42`;
+            document.getElementById('section2Count').textContent = `${section2}/45`;
+            
+            // KPIs
+            const occupancy = total / 87 * 100;
+            document.getElementById('occupancyRate').textContent = occupancy.toFixed(1) + '%';
+            document.getElementById('occupancyBar').style.width = occupancy + '%';
+            document.getElementById('dailyTotal').textContent = total;
+            
+            if (total > 0) {
+                const earlyPct = (early / total * 100).toFixed(0);
+                const onTimePct = (onTime / total * 100).toFixed(0);
+                const latePct = (late / total * 100).toFixed(0);
+                
+                document.getElementById('earlyPct').textContent = earlyPct + '%';
+                document.getElementById('onTimePct').textContent = onTimePct + '%';
+                document.getElementById('latePct').textContent = latePct + '%';
+                
+                document.getElementById('statusChart').style.background = 
+                    `linear-gradient(90deg, var(--green) ${earlyPct}%, var(--blue) ${earlyPct}% ${parseFloat(earlyPct)+parseFloat(onTimePct)}%, var(--red) ${parseFloat(earlyPct)+parseFloat(onTimePct)}%)`;
+            }
+        }
+
+        function updateBusRecordsList() {
+            const container = document.getElementById('busRecordsList');
+            
+            if (busRecords.length === 0) {
+                container.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 20px;">لا توجد حافلات مسجلة</div>';
+                return;
+            }
+            
+            container.innerHTML = busRecords.map(bus => {
+                const completedForms = Object.keys(bus.forms).length;
+                const progress = (completedForms / 5) * 100;
+                const status = getTimeStatus(bus);
+                
+                return `
+                    <div class="bus-record">
+                        <div class="bus-record-header">
+                            <span class="bus-record-plate">${bus.BusPlate}</span>
+                            <span class="bus-record-spot">موقف ${bus.spotNumber}</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill ${status}" style="width: ${progress}%;"></div>
+                        </div>
+                        <div class="bus-record-forms">
+                            ${['ScrLogIn', 'ScrSegregationIn', 'ScrWelcomeLounge', 'ScrSegregationExit', 'ScrCurbside'].map(form => 
+                                `<span class="form-badge ${bus.forms[form] ? 'completed' : ''}">${form.replace('Scr','')}</span>`
+                            ).join('')}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ══════════════════ COUNTDOWN UPDATER ══════════════════
+        function startCountdownUpdater() {
+            setInterval(() => {
+                busRecords.forEach(bus => {
+                    updateSpotDisplay(bus.spotNumber, bus);
+                });
+                updateStats();
+            }, 60000); // Update every minute
+        }
+
+        // ══════════════════ TABS ══════════════════
+        function switchTab(tabName) {
+            document.querySelectorAll('.sidebar-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+            
+            event.target.closest('.sidebar-tab').classList.add('active');
+            document.getElementById(tabName + 'Tab').classList.add('active');
+        }
+
+        // ══════════════════ CLOCK ══════════════════
+        function startClock() {
+            function updateClock() {
+                const now = new Date();
+                document.getElementById('clock').textContent = now.toLocaleTimeString('ar-SA', { hour12: false });
+            }
+            updateClock();
+            setInterval(updateClock, 1000);
+        }
+
+        // ══════════════════ NOTIFICATIONS ══════════════════
+        function showNotification(type, title, message) {
+            if (!settings.popup) return;
             
             const container = document.getElementById('notificationsContainer');
-            const icons = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
+            const icons = { success: '✅', warning: '⚠️', error: '❌', info: 'ℹ️' };
             
-            const notif = document.createElement('div');
-            notif.className = `notification ${type}`;
-            notif.innerHTML = `
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
                 <span class="notification-icon">${icons[type]}</span>
                 <div class="notification-content">
                     <div class="notification-title">${title}</div>
                     <div class="notification-message">${message}</div>
                 </div>
-                <button class="notification-close" onclick="this.parentElement.remove()">&times;</button>
+                <span class="notification-close" onclick="this.parentElement.remove()">×</span>
             `;
             
-            container.appendChild(notif);
+            container.appendChild(notification);
+            addAlert(type === 'success' ? 'success' : type === 'warning' ? 'warning' : type === 'error' ? 'danger' : 'info', title, message);
             
-            setTimeout(() => notif.remove(), duration);
-            
-            // Add to alerts log
-            addAlert(type === 'error' ? 'critical' : type, `${title}: ${message}`);
+            setTimeout(() => notification.remove(), 5000);
         }
 
-        // ══════════════════════════════════════════════════════════════
-        // ALERTS LOG
-        // ══════════════════════════════════════════════════════════════
-        
-        function addAlert(type, message) {
+        // ══════════════════ ALERTS ══════════════════
+        function addAlert(type, title, message) {
             const now = new Date();
             alerts.unshift({
-                type,
-                message,
-                time: now.toLocaleTimeString('ar-SA'),
-                date: now.toLocaleDateString('ar-SA')
+                type: type,
+                title: title,
+                message: message,
+                time: now.toLocaleTimeString('ar-SA', { hour12: false })
             });
             
             if (alerts.length > 100) alerts.pop();
-            
-            renderAlerts();
-            updateAlertBadge();
+            updateAlertsList();
         }
 
-        function renderAlerts() {
+        function updateAlertsList() {
             const container = document.getElementById('alertsList');
-            const icons = { critical: '🚨', warning: '⚠️', info: 'ℹ️', success: '✅' };
+            const icons = { danger: '🔴', warning: '🟠', info: '🔵', success: '🟢' };
             
             if (alerts.length === 0) {
-                container.innerHTML = '<div style="text-align:center;padding:30px;color:var(--text-muted)">لا توجد تنبيهات</div>';
+                container.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 20px;">لا توجد تنبيهات</div>';
                 return;
             }
             
-            container.innerHTML = alerts.map(a => `
-                <div class="alert-item ${a.type}">
-                    <span class="alert-icon">${icons[a.type]}</span>
+            container.innerHTML = alerts.map(alert => `
+                <div class="alert-item alert-${alert.type}">
+                    <span class="alert-icon">${icons[alert.type]}</span>
                     <div class="alert-content">
-                        <div class="alert-message">${a.message}</div>
-                        <div class="alert-time">${a.date} - ${a.time}</div>
+                        <div class="alert-title">${alert.title}</div>
+                        <div class="alert-message">${alert.message}</div>
+                        <div class="alert-time">${alert.time}</div>
                     </div>
                 </div>
             `).join('');
@@ -1074,785 +1508,54 @@
 
         function clearAlerts() {
             alerts = [];
-            renderAlerts();
-            updateAlertBadge();
-            showNotification('info', 'تم المسح', 'تم مسح سجل التنبيهات');
+            updateAlertsList();
         }
 
-        function updateAlertBadge() {
-            document.getElementById('alertCount').textContent = alerts.length;
+        // ══════════════════ SETTINGS ══════════════════
+        function toggleSetting(setting) {
+            settings[setting] = !settings[setting];
+            const toggle = document.getElementById(setting + 'Toggle');
+            toggle.classList.toggle('active', settings[setting]);
         }
 
-        // ══════════════════════════════════════════════════════════════
-        // FORM GENERATION
-        // ══════════════════════════════════════════════════════════════
-        
-        function openForm(formType, busPlate = null) {
-            currentFormType = formType;
-            currentEditBus = busPlate ? busRecords.find(b => b.BusPlate === busPlate) : null;
-            
-            const form = FORMS[formType];
-            document.getElementById('formModalTitle').textContent = `📝 ${form.title}`;
-            
-            let html = '';
-            const fields = form.fields;
-            
-            for (let i = 0; i < fields.length; i += 2) {
-                html += '<div class="form-row">';
-                html += generateFieldHTML(fields[i]);
-                if (fields[i + 1]) {
-                    html += generateFieldHTML(fields[i + 1]);
-                }
-                html += '</div>';
-            }
-            
-            document.getElementById('formModalBody').innerHTML = html;
-            
-            // Pre-fill if editing
-            if (currentEditBus) {
-                fields.forEach(f => {
-                    const el = document.getElementById('field_' + f.id);
-                    if (el && currentEditBus[f.id] !== undefined) {
-                        el.value = currentEditBus[f.id];
-                    }
-                });
-            }
-            
-            document.getElementById('formModal').classList.add('active');
-        }
-
-        function generateFieldHTML(field) {
-            let inputHTML = '';
-            const value = currentEditBus ? (currentEditBus[field.id] || '') : '';
-            
-            switch (field.type) {
-                case 'text':
-                    inputHTML = `<input type="text" class="form-input" id="field_${field.id}" value="${value}">`;
-                    break;
-                case 'number':
-                    const min = field.min ? `min="${field.min}"` : '';
-                    const max = field.max ? `max="${field.max}"` : '';
-                    inputHTML = `<input type="number" class="form-input" id="field_${field.id}" value="${value}" ${min} ${max}>`;
-                    break;
-                case 'date':
-                    inputHTML = `<input type="date" class="form-input" id="field_${field.id}" value="${value}">`;
-                    break;
-                case 'hour':
-                    let hourOptions = '';
-                    for (let h = 0; h < 24; h++) {
-                        const hStr = h.toString().padStart(2, '0');
-                        hourOptions += `<option value="${hStr}" ${value == hStr ? 'selected' : ''}>${hStr}</option>`;
-                    }
-                    inputHTML = `<select class="form-select" id="field_${field.id}">${hourOptions}</select>`;
-                    break;
-                case 'minute':
-                    let minOptions = '';
-                    for (let m = 0; m < 60; m++) {
-                        const mStr = m.toString().padStart(2, '0');
-                        minOptions += `<option value="${mStr}" ${value == mStr ? 'selected' : ''}>${mStr}</option>`;
-                    }
-                    inputHTML = `<select class="form-select" id="field_${field.id}">${minOptions}</select>`;
-                    break;
-                case 'select':
-                    let options = field.options.map(o => 
-                        `<option value="${o}" ${value === o ? 'selected' : ''}>${o}</option>`
-                    ).join('');
-                    inputHTML = `<select class="form-select" id="field_${field.id}"><option value="">-- اختر --</option>${options}</select>`;
-                    break;
-            }
-            
-            return `
-                <div class="form-group">
-                    <label class="form-label">${field.label}</label>
-                    ${inputHTML}
-                </div>
-            `;
-        }
-
-        function saveForm() {
-            const form = FORMS[currentFormType];
-            const data = { formType: currentFormType, timestamp: new Date().toISOString() };
-            
-            form.fields.forEach(f => {
-                const el = document.getElementById('field_' + f.id);
-                if (el) data[f.id] = el.value;
-            });
-            
-            // Find or create bus record by BusPlate
-            const busPlate = data.BusPlate;
-            if (!busPlate) {
-                showNotification('warning', 'تنبيه', 'يرجى إدخال لوحة الحافلة');
-                return;
-            }
-            
-            let bus = busRecords.find(b => b.BusPlate === busPlate);
-            
-            if (!bus) {
-                bus = { BusPlate: busPlate, forms: {}, createdAt: new Date().toISOString() };
-                busRecords.push(bus);
-            }
-            
-            // Save form data
-            bus.forms[currentFormType] = data;
-            bus.lastUpdated = new Date().toISOString();
-            
-            // Copy important fields to bus level
-            Object.assign(bus, data);
-            
-            closeModal('formModal');
-            save();
-            render();
-            renderBusList();
-            
-            showNotification('success', 'تم الحفظ', `تم حفظ ${form.title} للحافلة ${busPlate}`);
-            
-            // Check if now visible in parking
-            if (currentFormType === 'ScrWelcomeLounge' && data.ParkNO) {
-                showNotification('info', 'تم التعيين', `الحافلة ${busPlate} في الموقف رقم ${data.ParkNO}`);
-            }
-        }
-
-        // ══════════════════════════════════════════════════════════════
-        // BUS LIST
-        // ══════════════════════════════════════════════════════════════
-        
-        function renderBusList(filter = '') {
-            const container = document.getElementById('busList');
-            document.getElementById('busCount').textContent = busRecords.length;
-            
-            let filtered = busRecords;
-            if (filter) {
-                const f = filter.toLowerCase();
-                filtered = busRecords.filter(b => 
-                    (b.BusPlate && b.BusPlate.toLowerCase().includes(f)) ||
-                    (b.FlightNo && b.FlightNo.toLowerCase().includes(f))
-                );
-            }
-            
-            if (filtered.length === 0) {
-                container.innerHTML = '<div style="text-align:center;padding:30px;color:var(--text-muted)">لا توجد حافلات مسجلة</div>';
-                return;
-            }
-            
-            container.innerHTML = filtered.map(bus => {
-                const inParking = bus.forms && bus.forms.ScrWelcomeLounge && bus.forms.ScrWelcomeLounge.ParkNO;
-                const formsDone = Object.keys(bus.forms || {}).length;
-                
-                return `
-                    <div class="bus-list-item ${inParking ? 'in-parking' : ''}" onclick="openBusForEdit('${bus.BusPlate}')">
-                        <div class="bus-plate">🚌 ${bus.BusPlate}</div>
-                        <div class="bus-flight">✈️ ${bus.FlightNo || '-'} | 👥 ${bus.PaxCount || bus.TotalPax || '-'}</div>
-                        <div class="bus-details">
-                            ${inParking ? '📍 موقف: ' + bus.forms.ScrWelcomeLounge.ParkNO : '⏳ لم يدخل الموقف بعد'}
-                            | النماذج: ${formsDone}/5
-                        </div>
-                        <div class="progress-bar">
-                            <div class="progress-step ${bus.forms?.ScrLogIn ? 'done' : ''}"></div>
-                            <div class="progress-step ${bus.forms?.ScrSegregationIn ? 'done' : ''}"></div>
-                            <div class="progress-step ${bus.forms?.ScrWelcomeLounge ? 'done' : ''}"></div>
-                            <div class="progress-step ${bus.forms?.ScrSegregationExit ? 'done' : ''}"></div>
-                            <div class="progress-step ${bus.forms?.ScrCurbside ? 'done' : ''}"></div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function filterBusList(value) {
-            renderBusList(value);
-        }
-
-        function openBusForEdit(busPlate) {
-            const bus = busRecords.find(b => b.BusPlate === busPlate);
-            if (!bus) return;
-            
-            // Find next form to complete
-            const formOrder = ['ScrLogIn', 'ScrSegregationIn', 'ScrWelcomeLounge', 'ScrSegregationExit', 'ScrCurbside'];
-            
-            for (const formType of formOrder) {
-                if (!bus.forms || !bus.forms[formType]) {
-                    openForm(formType, busPlate);
-                    return;
-                }
-            }
-            
-            // All forms completed - show details
-            viewBusFullDetails(busPlate);
-        }
-
-        function viewBusFullDetails(busPlate) {
-            const bus = busRecords.find(b => b.BusPlate === busPlate);
-            if (!bus) return;
-            
-            let html = `<h3 style="color:var(--primary);margin-bottom:15px">🚌 ${bus.BusPlate}</h3>`;
-            
-            const formOrder = ['ScrLogIn', 'ScrSegregationIn', 'ScrWelcomeLounge', 'ScrSegregationExit', 'ScrCurbside'];
-            
-            formOrder.forEach(formType => {
-                const formData = bus.forms?.[formType];
-                const formDef = FORMS[formType];
-                
-                html += `<div style="background:var(--bg-input);padding:10px;border-radius:6px;margin-bottom:10px;">`;
-                html += `<div style="color:${formData ? 'var(--green)' : 'var(--text-muted)'};font-weight:700;margin-bottom:8px">`;
-                html += `${formData ? '✅' : '⬜'} ${formDef.title}</div>`;
-                
-                if (formData) {
-                    formDef.fields.forEach(f => {
-                        if (formData[f.id]) {
-                            html += `<div style="font-size:10px;margin:3px 0"><b>${f.label}:</b> ${formData[f.id]}</div>`;
-                        }
-                    });
-                }
-                html += `</div>`;
-            });
-            
-            document.getElementById('detailsBody').innerHTML = html;
-            document.getElementById('detailsModal').classList.add('active');
-        }
-
-        // ══════════════════════════════════════════════════════════════
-        // STATUS CALCULATION - Power BI DAX Logic
-        // ══════════════════════════════════════════════════════════════
-        
-        function getStatus(bus) {
-            const welcomeData = bus.forms?.ScrWelcomeLounge || bus.forms?.ScrSegregationIn;
-            if (!welcomeData) return null;
-            
-            // Get departure time
-            let depDate = bus.DepDate || welcomeData.DepDate;
-            let depHour = bus.DepHour || welcomeData.DepHour;
-            let depMin = bus.DepMin || welcomeData.DepMin;
-            
-            if (!depDate || !depHour) {
-                // Fallback: use a default time
-                const now = new Date();
-                depDate = now.toISOString().split('T')[0];
-                depHour = (now.getHours() + 5).toString().padStart(2, '0');
-                depMin = '00';
-            }
-            
-            const departure = new Date(`${depDate}T${depHour}:${depMin || '00'}`);
-            const now = new Date();
-            
-            const diffMs = departure - now;
-            const diffHours = diffMs / (1000 * 60 * 60);
-            const diffMinutes = Math.floor(diffMs / (1000 * 60));
-            
-            let status, label;
-            if (diffHours > config.thresholds.early) {
-                status = 'early';
-                label = 'مبكر';
-            } else if (diffHours < config.thresholds.late) {
-                status = 'late';
-                label = 'متأخر';
-            } else {
-                status = 'ontime';
-                label = 'في الموعد';
-            }
-            
-            return { status, label, diffHours, diffMinutes, departure };
-        }
-
-        function formatCountdown(minutes) {
-            if (minutes < 0) return 'انتهى الوقت!';
-            const h = Math.floor(minutes / 60);
-            const m = minutes % 60;
-            if (h > 0) {
-                return `${h}س ${m}د`;
-            }
-            return `${m} دقيقة`;
-        }
-
-        // ══════════════════════════════════════════════════════════════
-        // RENDER PARKING - Power BI Visual Logic
-        // ══════════════════════════════════════════════════════════════
-        
-        function render() {
-            const wrapper = document.getElementById('parkingWrapper');
-            wrapper.innerHTML = '';
-            
-            // Section 1: Entrance (1-42)
-            wrapper.innerHTML += '<div class="section-label">🚪 جهة المدخل (42 موقف)</div>';
-            for (let i = 1; i <= 42; i++) {
-                wrapper.appendChild(createSpot(i));
-            }
-            
-            // Section 2: Exit (43-87)
-            wrapper.innerHTML += '<div class="section-label">🚪 جهة المخرج (45 موقف)</div>';
-            for (let i = 43; i <= 87; i++) {
-                wrapper.appendChild(createSpot(i));
-            }
-            
-            updateStats();
-        }
-
-        function createSpot(num) {
-            const spot = document.createElement('div');
-            spot.className = 'parking-spot';
-            spot.dataset.spot = num;
-            
-            // Find bus in this spot - ONLY if ScrWelcomeLounge is filled with ParkNO
-            const bus = busRecords.find(b => {
-                const welcomeForm = b.forms?.ScrWelcomeLounge;
-                return welcomeForm && parseInt(welcomeForm.ParkNO) === num;
-            });
-            
-            if (bus) {
-                const statusInfo = getStatus(bus);
-                
-                if (statusInfo) {
-                    if (currentFilter !== 'all' && statusInfo.status !== currentFilter) {
-                        spot.style.opacity = '0.15';
-                    }
-                    
-                    spot.classList.add(statusInfo.status);
-                    if (selectedSpot === num) spot.classList.add('selected');
-                    
-                    const colors = { early: 'var(--green)', ontime: 'var(--blue)', late: 'var(--red)' };
-                    const welcomeData = bus.forms.ScrWelcomeLounge;
-                    
-                    spot.innerHTML = `
-                        <div class="spot-number">#${num}</div>
-                        <div class="spot-badge" style="background:${colors[statusInfo.status]}">${statusInfo.label}</div>
-                        <div class="bus-info">
-                            <div class="info-line"><span class="info-icon">🚌</span>${bus.BusPlate}</div>
-                            <div class="info-line"><span class="info-icon">✈️</span>${bus.FlightNo || '-'}</div>
-                            <div class="info-line"><span class="info-icon">👥</span>${bus.PaxCount || bus.TotalPax || '-'}</div>
-                            <div class="info-line"><span class="info-icon">🚪</span>${welcomeData.GetaNO || '-'}</div>
-                        </div>
-                        <div class="countdown-timer ${statusInfo.status === 'late' ? 'urgent' : ''}" style="color:${colors[statusInfo.status]}">
-                            <div class="timer-label">الوقت المتبقي</div>
-                            <div class="timer-value" data-departure="${statusInfo.departure.toISOString()}">${formatCountdown(statusInfo.diffMinutes)}</div>
-                        </div>
-                    `;
-                    
-                    spot.onmouseenter = e => showTooltip(e, bus, statusInfo, num);
-                    spot.onmousemove = moveTooltip;
-                    spot.onmouseleave = hideTooltip;
-                    spot.onclick = () => selectSpot(num, bus);
-                }
-            } else {
-                spot.classList.add('empty');
-                spot.innerHTML = `<div class="spot-number">#${num}</div><div class="empty-text">—</div>`;
-                spot.onclick = () => {
-                    // Quick add bus to this spot
-                    document.getElementById('field_ParkNO')?.value;
-                    openForm('ScrWelcomeLounge');
-                    setTimeout(() => {
-                        const parkInput = document.getElementById('field_ParkNO');
-                        if (parkInput) parkInput.value = num;
-                    }, 100);
-                };
-            }
-            
-            return spot;
-        }
-
-        // ══════════════════════════════════════════════════════════════
-        // COUNTDOWN UPDATE
-        // ══════════════════════════════════════════════════════════════
-        
-        function updateCountdowns() {
-            document.querySelectorAll('.timer-value[data-departure]').forEach(el => {
-                const dep = new Date(el.dataset.departure);
-                const now = new Date();
-                const diffMin = Math.floor((dep - now) / (1000 * 60));
-                el.textContent = formatCountdown(diffMin);
-                
-                // Update urgency
-                const timer = el.closest('.countdown-timer');
-                if (diffMin < 60) {
-                    timer.classList.add('urgent');
-                } else {
-                    timer.classList.remove('urgent');
-                }
-            });
-        }
-
-        // ══════════════════════════════════════════════════════════════
-        // STATS - Power BI Measures
-        // ══════════════════════════════════════════════════════════════
-        
-        function updateStats() {
-            let early = 0, ontime = 0, late = 0, inParking = 0;
-            let totalPax = 0;
-            const flights = new Set();
-            
-            busRecords.forEach(bus => {
-                if (bus.forms?.ScrWelcomeLounge?.ParkNO) {
-                    inParking++;
-                    const s = getStatus(bus);
-                    if (s) {
-                        if (s.status === 'early') early++;
-                        else if (s.status === 'ontime') ontime++;
-                        else late++;
-                    }
-                }
-                totalPax += parseInt(bus.PaxCount || bus.TotalPax || 0);
-                if (bus.FlightNo) flights.add(bus.FlightNo);
-            });
-            
-            const occ = Math.round((inParking / 87) * 100);
-            
-            document.getElementById('totalInParking').textContent = inParking;
-            document.getElementById('earlyCount').textContent = early;
-            document.getElementById('ontimeCount').textContent = ontime;
-            document.getElementById('lateCount').textContent = late;
-            document.getElementById('occupancyRate').textContent = occ + '%';
-            
-            document.getElementById('statOccupied').textContent = inParking;
-            document.getElementById('statEmpty').textContent = 87 - inParking;
-            document.getElementById('statEarly').textContent = early;
-            document.getElementById('statOntime').textContent = ontime;
-            document.getElementById('statLate').textContent = late;
-            
-            document.getElementById('dailyBuses').textContent = busRecords.length;
-            document.getElementById('dailyPax').textContent = totalPax.toLocaleString();
-            document.getElementById('dailyFlights').textContent = flights.size;
-            
-            // Update red card animation
-            const redCard = document.querySelector('.stat-card.red');
-            if (late > 0) {
-                redCard.style.animation = 'pulse-card 0.4s infinite';
-            } else {
-                redCard.style.animation = 'none';
-            }
-        }
-
-        // ══════════════════════════════════════════════════════════════
-        // SPOT ACTIONS
-        // ══════════════════════════════════════════════════════════════
-        
-        function selectSpot(num, bus) {
-            selectedSpot = num;
-            document.getElementById('selectedNum').textContent = num;
-            document.getElementById('selectedActions').style.display = 'block';
-            render();
-        }
-
-        function viewBusDetails() {
-            if (!selectedSpot) return;
-            const bus = busRecords.find(b => 
-                b.forms?.ScrWelcomeLounge && 
-                parseInt(b.forms.ScrWelcomeLounge.ParkNO) === selectedSpot
-            );
-            if (bus) viewBusFullDetails(bus.BusPlate);
-        }
-
-        function openMoveModal() {
-            if (!selectedSpot) return;
-            document.getElementById('moveFrom').value = selectedSpot;
-            document.getElementById('moveTo').value = '';
-            document.getElementById('moveModal').classList.add('active');
-        }
-
-        function moveBus() {
-            const from = parseInt(document.getElementById('moveFrom').value);
-            const to = parseInt(document.getElementById('moveTo').value);
-            
-            if (!to || to < 1 || to > 87) {
-                showNotification('error', 'خطأ', 'رقم الموقف غير صحيح');
-                return;
-            }
-            
-            const bus = busRecords.find(b => 
-                b.forms?.ScrWelcomeLounge && 
-                parseInt(b.forms.ScrWelcomeLounge.ParkNO) === from
-            );
-            
-            if (!bus) return;
-            
-            // Check if target is occupied
-            const targetBus = busRecords.find(b => 
-                b.forms?.ScrWelcomeLounge && 
-                parseInt(b.forms.ScrWelcomeLounge.ParkNO) === to
-            );
-            
-            if (targetBus) {
-                if (!confirm(`الموقف ${to} مشغول. هل تريد التبديل؟`)) return;
-                targetBus.forms.ScrWelcomeLounge.ParkNO = from.toString();
-            }
-            
-            bus.forms.ScrWelcomeLounge.ParkNO = to.toString();
-            selectedSpot = to;
-            
-            closeModal('moveModal');
-            save();
-            render();
-            
-            showNotification('success', 'تم النقل', `تم نقل الحافلة من ${from} إلى ${to}`);
-        }
-
-        function deleteFromSpot() {
-            if (!selectedSpot) return;
-            if (!confirm(`إخلاء الموقف رقم ${selectedSpot}؟`)) return;
-            
-            const bus = busRecords.find(b => 
-                b.forms?.ScrWelcomeLounge && 
-                parseInt(b.forms.ScrWelcomeLounge.ParkNO) === selectedSpot
-            );
-            
-            if (bus && bus.forms.ScrWelcomeLounge) {
-                bus.forms.ScrWelcomeLounge.ParkNO = '';
-            }
-            
-            selectedSpot = null;
-            document.getElementById('selectedActions').style.display = 'none';
-            save();
-            render();
-            
-            showNotification('info', 'تم الإخلاء', 'تم إخلاء الموقف');
-        }
-
-        // ══════════════════════════════════════════════════════════════
-        // TOOLTIP
-        // ══════════════════════════════════════════════════════════════
-        
-        function showTooltip(e, bus, info, num) {
-            const t = document.getElementById('tooltip');
-            t.style.display = 'block';
-            const colors = { early: 'var(--green)', ontime: 'var(--blue)', late: 'var(--red)' };
-            const welcomeData = bus.forms?.ScrWelcomeLounge || {};
-            
-            t.innerHTML = `
-                <div class="tooltip-title">🚌 موقف #${num}</div>
-                <div class="tooltip-line"><b>اللوحة:</b> ${bus.BusPlate}</div>
-                <div class="tooltip-line"><b>الرحلة:</b> ${bus.FlightNo || '-'}</div>
-                <div class="tooltip-line"><b>الركاب:</b> ${bus.PaxCount || bus.TotalPax || '-'}</div>
-                <div class="tooltip-line"><b>البوابة:</b> ${welcomeData.GetaNO || '-'}</div>
-                <div class="tooltip-line"><b>المبنى:</b> ${bus.TerminalCd || '-'}</div>
-                <div class="tooltip-line"><b>التأشيرة:</b> ${bus.VisaType || '-'}</div>
-                <div class="tooltip-line"><b>الوقت المتبقي:</b> ${formatCountdown(info.diffMinutes)}</div>
-                <div class="tooltip-line" style="color:${colors[info.status]}"><b>الحالة:</b> ${info.label}</div>
-            `;
-            moveTooltip(e);
-        }
-        
-        function moveTooltip(e) {
-            const t = document.getElementById('tooltip');
-            t.style.left = (e.pageX + 15) + 'px';
-            t.style.top = (e.pageY + 15) + 'px';
-        }
-        
-        function hideTooltip() {
-            document.getElementById('tooltip').style.display = 'none';
-        }
-
-        // ══════════════════════════════════════════════════════════════
-        // PANEL & UI
-        // ══════════════════════════════════════════════════════════════
-        
-        function togglePanel() {
-            panelVisible = !panelVisible;
-            document.getElementById('controlPanel').classList.toggle('hidden', !panelVisible);
-            document.getElementById('toggleBtn').classList.toggle('panel-visible', panelVisible);
-            ['header', 'dailyStats', 'statsBar', 'mainContainer'].forEach(id => {
-                document.getElementById(id).classList.toggle('panel-open', panelVisible);
-            });
-        }
-
-        function switchTab(tab) {
-            document.querySelectorAll('.panel-tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            event.target.closest('.panel-tab').classList.add('active');
-            document.getElementById('tab-' + tab).classList.add('active');
-        }
-
-        function closeModal(id) {
-            document.getElementById(id).classList.remove('active');
-        }
-
-        function toggleFullscreen() {
-            if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen();
-            } else {
-                document.exitFullscreen();
-            }
-        }
-
-        // ══════════════════════════════════════════════════════════════
-        // ZOOM
-        // ══════════════════════════════════════════════════════════════
-        
-        function setZoom(val) {
-            zoomLevel = parseInt(val);
-            document.getElementById('zoomValue').textContent = zoomLevel;
-            document.getElementById('parkingWrapper').style.transform = `scale(${zoomLevel/100})`;
-            document.getElementById('parkingWrapper').style.transformOrigin = 'top center';
-        }
-        function zoomIn() { setZoom(Math.min(zoomLevel + 10, 150)); }
-        function zoomOut() { setZoom(Math.max(zoomLevel - 10, 50)); }
-        function zoomReset() { setZoom(100); }
-
-        // ══════════════════════════════════════════════════════════════
-        // FILTER
-        // ══════════════════════════════════════════════════════════════
-        
-        function filterByStatus(status) {
-            currentFilter = status;
-            render();
-        }
-
-        // ══════════════════════════════════════════════════════════════
-        // SETTINGS
-        // ══════════════════════════════════════════════════════════════
-        
-        function updateThresholds() {
-            config.thresholds.early = parseInt(document.getElementById('earlyThreshold').value) || 7;
-            config.thresholds.late = parseInt(document.getElementById('lateThreshold').value) || 3;
-            render();
-            showNotification('info', 'تم التحديث', 'تم تحديث حدود التفويج');
-        }
-
-        function saveSettings() {
-            config.sound = document.getElementById('soundEnabled').checked;
-            config.notify = document.getElementById('notifyEnabled').checked;
-            localStorage.setItem('LOCC_Config', JSON.stringify(config));
-            showNotification('success', 'تم الحفظ', 'تم حفظ الإعدادات');
-        }
-
-        function resetSettings() {
-            config = { thresholds: { early: 7, late: 3 }, sound: true, notify: true };
-            document.getElementById('earlyThreshold').value = 7;
-            document.getElementById('lateThreshold').value = 3;
-            document.getElementById('soundEnabled').checked = true;
-            document.getElementById('notifyEnabled').checked = true;
-            localStorage.removeItem('LOCC_Config');
-            render();
-            showNotification('info', 'تم إعادة التعيين', 'تم إعادة الإعدادات للوضع الافتراضي');
-        }
-
-        // ══════════════════════════════════════════════════════════════
-        // DATA MANAGEMENT
-        // ══════════════════════════════════════════════════════════════
-        
-        function save() {
-            localStorage.setItem('LOCC_Data', JSON.stringify(busRecords));
-        }
-
-        function load() {
-            const data = localStorage.getItem('LOCC_Data');
-            if (data) {
-                busRecords = JSON.parse(data);
-                return true;
-            }
-            return false;
-        }
-
-        function exportJSON() {
+        // ══════════════════ EXPORT ══════════════════
+        function exportToJSON() {
             const data = JSON.stringify(busRecords, null, 2);
-            download(data, 'LOCC_Export.json', 'application/json');
-            showNotification('success', 'تم التصدير', 'تم تصدير البيانات بصيغة JSON');
+            downloadFile(data, 'bus_records.json', 'application/json');
+            showNotification('success', 'تصدير', 'تم تصدير البيانات بصيغة JSON');
         }
 
-        function exportCSV() {
-            let csv = 'BusPlate,FlightNo,PaxCount,ParkNO,TerminalCd,VisaType,GetaNO,DepDate,DepHour\n';
-            busRecords.forEach(b => {
-                const w = b.forms?.ScrWelcomeLounge || {};
-                csv += `${b.BusPlate},${b.FlightNo || ''},${b.PaxCount || ''},${w.ParkNO || ''},${b.TerminalCd || ''},${b.VisaType || ''},${w.GetaNO || ''},${b.DepDate || ''},${b.DepHour || ''}\n`;
+        function exportToCSV() {
+            let csv = 'BusPlate,SpotNumber,DispatchTime,Status,FormsCompleted\n';
+            busRecords.forEach(bus => {
+                csv += `${bus.BusPlate},${bus.spotNumber},${bus.dispatchTime || ''},${getTimeStatus(bus)},${Object.keys(bus.forms).length}\n`;
             });
-            download(csv, 'LOCC_Export.csv', 'text/csv');
-            showNotification('success', 'تم التصدير', 'تم تصدير البيانات بصيغة CSV');
+            downloadFile(csv, 'bus_records.csv', 'text/csv');
+            showNotification('success', 'تصدير', 'تم تصدير البيانات بصيغة CSV');
         }
 
-        function download(data, filename, type) {
-            const blob = new Blob([data], { type });
+        function downloadFile(content, filename, type) {
+            const blob = new Blob([content], { type: type });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
             a.download = filename;
             a.click();
+            URL.revokeObjectURL(url);
         }
 
-        function importJSON(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(ev) {
-                try {
-                    busRecords = JSON.parse(ev.target.result);
-                    save();
-                    render();
-                    renderBusList();
-                    showNotification('success', 'تم الاستيراد', `تم استيراد ${busRecords.length} حافلة`);
-                } catch {
-                    showNotification('error', 'خطأ', 'فشل في قراءة الملف');
-                }
+        // ══════════════════ FORM INFO ══════════════════
+        function showFormInfo(formName) {
+            const descriptions = {
+                'ScrLogIn': 'نموذج تسجيل دخول الحافلة للموقف. يتضمن بيانات الحافلة الأساسية ووقت الوصول ووقت التفويج المتوقع.',
+                'ScrSegregationIn': 'نموذج دخول منطقة الفرز. يسجل وقت الدخول وبوابة الدخول وحالة الفحص.',
+                'ScrWelcomeLounge': 'نموذج صالة الترحيب. يسجل دخول الركاب للصالة ونوع الخدمة المقدمة.',
+                'ScrSegregationExit': 'نموذج خروج من الفرز. عند إكماله تلقائياً يتم إخلاء الموقف.',
+                'ScrCurbside': 'نموذج نقطة الإنزال. يسجل وصول الحافلة لنقطة الإنزال وعدد الركاب.'
             };
-            reader.readAsText(file);
-        }
-
-        function resetAll() {
-            if (!confirm('⚠️ هل أنت متأكد من حذف جميع البيانات؟')) return;
-            busRecords = [];
-            alerts = [];
-            selectedSpot = null;
-            document.getElementById('selectedActions').style.display = 'none';
-            localStorage.removeItem('LOCC_Data');
-            render();
-            renderBusList();
-            renderAlerts();
-            showNotification('warning', 'تم المسح', 'تم مسح جميع البيانات');
-        }
-
-        // ══════════════════════════════════════════════════════════════
-        // TIME UPDATE
-        // ══════════════════════════════════════════════════════════════
-        
-        function updateTime() {
-            const now = new Date();
-            document.getElementById('timeDisplay').textContent = now.toLocaleTimeString('ar-SA', { hour12: false });
-            document.getElementById('dateDisplay').textContent = now.toLocaleDateString('ar-SA');
-            const h = now.getHours();
-            const shift = h >= 6 && h < 14 ? 'A' : h >= 14 && h < 22 ? 'B' : 'C';
-            document.getElementById('shiftDisplay').textContent = 'نوبة ' + shift;
-        }
-
-        // ══════════════════════════════════════════════════════════════
-        // INIT
-        // ══════════════════════════════════════════════════════════════
-        
-        function init() {
-            // Load saved config
-            const savedConfig = localStorage.getItem('LOCC_Config');
-            if (savedConfig) {
-                config = { ...config, ...JSON.parse(savedConfig) };
-                document.getElementById('earlyThreshold').value = config.thresholds.early;
-                document.getElementById('lateThreshold').value = config.thresholds.late;
-            }
             
-            // Load data
-            load();
-            
-            // Initial render
-            render();
-            renderBusList();
-            renderAlerts();
-            updateTime();
-            
-            // Update intervals
-            setInterval(updateTime, 1000);
-            setInterval(updateCountdowns, 1000);
-            setInterval(save, 30000);
-            setInterval(() => { render(); }, 60000); // Refresh every minute
-            
-            // Welcome notification
-            showNotification('info', 'مرحباً', 'نظام إدارة عمليات الساحات جاهز للعمل');
+            showNotification('info', formName, descriptions[formName] || 'معلومات غير متوفرة');
         }
-
-        // Keyboard shortcuts
-        document.addEventListener('keydown', e => {
-            if (e.ctrlKey && e.key === 's') { e.preventDefault(); exportJSON(); }
-            if (e.key === 'Escape') {
-                closeModal('formModal');
-                closeModal('moveModal');
-                closeModal('detailsModal');
-            }
-            if (e.key === 'F11') { e.preventDefault(); toggleFullscreen(); }
-        });
-
-        // Initialize
-        init();
     </script>
 </body>
 </html>

@@ -1,0 +1,1489 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة عمليات الساحات الخارجية والمواصلات</title>
+    <style>
+        :root {
+            --primary: #ffd700;
+            --bg-dark: #0a0a0a;
+            --bg-card: #1a1a1a;
+            --bg-input: #2a2a2a;
+            --green: #4caf50;
+            --blue: #2196f3;
+            --red: #f44336;
+            --orange: #ff9800;
+            --purple: #9c27b0;
+            --cyan: #00bcd4;
+            --text: #fff;
+            --text-muted: #888;
+            --panel-width: 300px;
+            --header-height: 50px;
+            --stats-height: 80px;
+            --daily-height: 45px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ═══════════════ SCROLLBAR ═══════════════ */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-dark); }
+        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 4px; }
+
+        /* ═══════════════ TOGGLE BUTTON ═══════════════ */
+        .toggle-panel {
+            position: fixed;
+            top: 50%;
+            right: 0;
+            transform: translateY(-50%);
+            background: var(--primary);
+            color: #000;
+            padding: 15px 8px;
+            cursor: pointer;
+            z-index: 1001;
+            border-radius: 8px 0 0 8px;
+            font-weight: 700;
+            writing-mode: vertical-rl;
+            transition: all 0.3s;
+            font-size: 12px;
+        }
+        .toggle-panel:hover { padding-right: 15px; background: #fff; }
+        .toggle-panel.panel-visible { right: var(--panel-width); }
+
+        /* ═══════════════ CONTROL PANEL ═══════════════ */
+        .control-panel {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: var(--panel-width);
+            height: 100vh;
+            background: linear-gradient(180deg, #1a1a1a 0%, #0d0d0d 100%);
+            border-left: 3px solid var(--primary);
+            padding: 10px;
+            overflow-y: auto;
+            z-index: 1000;
+            transition: transform 0.3s;
+        }
+        .control-panel.hidden { transform: translateX(100%); }
+
+        .panel-tabs {
+            display: flex;
+            gap: 3px;
+            margin-bottom: 10px;
+        }
+        .panel-tab {
+            flex: 1;
+            padding: 8px 5px;
+            background: var(--bg-input);
+            border: 1px solid var(--primary);
+            color: var(--text-muted);
+            border-radius: 5px 5px 0 0;
+            cursor: pointer;
+            font-size: 11px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        .panel-tab.active { background: var(--primary); color: #000; font-weight: 700; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        .control-section {
+            background: rgba(255,215,0,0.03);
+            border: 1px solid rgba(255,215,0,0.3);
+            border-radius: 6px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .control-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 8px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid rgba(255,215,0,0.3);
+        }
+        .control-group { margin-bottom: 8px; }
+        .control-label { display: block; font-size: 10px; color: var(--text-muted); margin-bottom: 3px; }
+        .control-input, .control-select {
+            width: 100%;
+            padding: 6px 8px;
+            background: var(--bg-input);
+            border: 1px solid rgba(255,215,0,0.5);
+            color: var(--text);
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        .control-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .control-button {
+            width: 100%;
+            padding: 8px;
+            background: linear-gradient(135deg, var(--primary), #ffed4e);
+            color: #000;
+            border: none;
+            border-radius: 5px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 11px;
+            transition: all 0.3s;
+            margin-top: 5px;
+        }
+        .control-button:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255,215,0,0.4); }
+        .control-button.danger { background: linear-gradient(135deg, var(--red), #e57373); color: #fff; }
+        .control-button.success { background: linear-gradient(135deg, var(--green), #81c784); color: #fff; }
+        .control-button.info { background: linear-gradient(135deg, var(--blue), #64b5f6); color: #fff; }
+
+        .color-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 10px;
+        }
+        .color-row input[type="color"] {
+            width: 35px;
+            height: 22px;
+            border: none;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+
+        .zoom-btns { display: flex; gap: 5px; }
+        .zoom-btn {
+            flex: 1;
+            padding: 8px;
+            background: var(--bg-input);
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.3s;
+        }
+        .zoom-btn:hover { background: var(--primary); color: #000; }
+
+        /* ═══════════════ HEADER ═══════════════ */
+        .header {
+            height: var(--header-height);
+            background: linear-gradient(180deg, #1a1a1a 0%, #0a0a0a 100%);
+            padding: 0 20px;
+            border-bottom: 3px solid var(--primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+            transition: margin-right 0.3s;
+        }
+        .header.panel-open { margin-right: var(--panel-width); }
+        .header-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary);
+            text-shadow: 0 0 15px rgba(255,215,0,0.5);
+        }
+        .header-controls { display: flex; gap: 8px; }
+        .header-btn {
+            padding: 6px 12px;
+            background: rgba(255,215,0,0.1);
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            border-radius: 5px;
+            font-weight: 600;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .header-btn:hover { background: var(--primary); color: #000; }
+
+        /* ═══════════════ DAILY STATS ═══════════════ */
+        .daily-stats {
+            height: var(--daily-height);
+            background: rgba(255,215,0,0.03);
+            padding: 5px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            border-bottom: 1px solid rgba(255,215,0,0.3);
+            flex-shrink: 0;
+            transition: margin-right 0.3s;
+        }
+        .daily-stats.panel-open { margin-right: var(--panel-width); }
+        .daily-stat {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 5px 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--primary);
+            border-radius: 5px;
+        }
+        .daily-stat-icon { font-size: 16px; }
+        .daily-stat-value { font-size: 16px; font-weight: 700; color: var(--primary); }
+        .daily-stat-label { font-size: 9px; color: var(--text-muted); }
+
+        /* ═══════════════ STATS BAR ═══════════════ */
+        .stats-bar {
+            height: var(--stats-height);
+            background: var(--bg-card);
+            padding: 10px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            border-bottom: 2px solid var(--primary);
+            flex-shrink: 0;
+            transition: margin-right 0.3s;
+        }
+        .stats-bar.panel-open { margin-right: var(--panel-width); }
+        .stat-card {
+            background: rgba(255,215,0,0.05);
+            border: 2px solid var(--primary);
+            border-radius: 8px;
+            padding: 8px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            min-width: 120px;
+        }
+        .stat-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(255,215,0,0.3); }
+        .stat-card.green { border-color: var(--green); }
+        .stat-card.blue { border-color: var(--blue); }
+        .stat-card.red { border-color: var(--red); animation: pulse-red 1s infinite; }
+        @keyframes pulse-red {
+            0%,100% { box-shadow: 0 0 5px var(--red); }
+            50% { box-shadow: 0 0 20px var(--red), 0 0 40px var(--red); }
+        }
+        .stat-value { font-size: 28px; font-weight: 700; color: var(--primary); }
+        .stat-card.green .stat-value { color: var(--green); }
+        .stat-card.blue .stat-value { color: var(--blue); }
+        .stat-card.red .stat-value { color: var(--red); }
+        .stat-label { font-size: 10px; color: var(--text-muted); }
+
+        /* ═══════════════ MAIN CONTAINER ═══════════════ */
+        .main-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: margin-right 0.3s;
+            padding: 10px;
+        }
+        .main-container.panel-open { margin-right: var(--panel-width); }
+
+        .parking-wrapper {
+            flex: 1;
+            display: flex;
+            gap: 15px;
+            overflow: hidden;
+        }
+
+        .parking-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            background: rgba(0,0,0,0.3);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .section-header {
+            text-align: center;
+            background: rgba(255,215,0,0.15);
+            border-bottom: 2px solid var(--primary);
+            padding: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--primary);
+            flex-shrink: 0;
+        }
+
+        .parking-grid {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 6px;
+            padding: 10px;
+            overflow-y: auto;
+            align-content: start;
+        }
+
+        /* ═══════════════ PARKING SPOTS ═══════════════ */
+        .parking-spot {
+            aspect-ratio: 3/4;
+            min-height: 90px;
+            background: var(--bg-input);
+            border: 3px solid #444;
+            border-radius: 6px;
+            padding: 5px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .parking-spot:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(255,215,0,0.5);
+            z-index: 10;
+        }
+        .parking-spot.early {
+            background: linear-gradient(135deg, #1b5e20, #2e7d32);
+            border-color: var(--green);
+            box-shadow: 0 0 10px rgba(76,175,80,0.4);
+        }
+        .parking-spot.ontime {
+            background: linear-gradient(135deg, #0d47a1, #1565c0);
+            border-color: var(--blue);
+            box-shadow: 0 0 10px rgba(33,150,243,0.4);
+        }
+        .parking-spot.late {
+            background: linear-gradient(135deg, #b71c1c, #d32f2f);
+            border-color: var(--red);
+            animation: spot-pulse-red 0.5s infinite;
+        }
+        @keyframes spot-pulse-red {
+            0%,100% { box-shadow: 0 0 10px var(--red), 0 0 20px var(--red); }
+            50% { box-shadow: 0 0 30px var(--red), 0 0 60px var(--red), 0 0 90px rgba(244,67,54,0.5); transform: scale(1.02); }
+        }
+        .parking-spot.empty {
+            background: rgba(30,30,30,0.5);
+            border-color: #333;
+            opacity: 0.4;
+        }
+        .parking-spot.empty:hover { opacity: 0.7; }
+        .parking-spot.selected {
+            border: 4px solid #fff !important;
+            box-shadow: 0 0 25px #fff !important;
+            animation: none !important;
+        }
+
+        .spot-number {
+            position: absolute;
+            top: 3px;
+            right: 3px;
+            background: rgba(0,0,0,0.8);
+            color: var(--primary);
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-size: 9px;
+            font-weight: 700;
+        }
+        .spot-badge {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-size: 7px;
+            font-weight: 700;
+        }
+        .bus-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 2px;
+            margin-top: 18px;
+            font-size: 8px;
+            overflow: hidden;
+        }
+        .info-line {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .info-icon { font-size: 9px; }
+        .time-diff {
+            text-align: center;
+            font-size: 8px;
+            font-weight: 700;
+            padding: 3px;
+            background: rgba(0,0,0,0.4);
+            border-radius: 3px;
+            margin-top: auto;
+        }
+        .empty-text {
+            text-align: center;
+            color: #444;
+            font-size: 16px;
+            margin-top: 30%;
+        }
+
+        /* ═══════════════ MODAL ═══════════════ */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal.active { display: flex; }
+        .modal-content {
+            background: var(--bg-card);
+            border: 3px solid var(--primary);
+            border-radius: 10px;
+            padding: 20px;
+            max-width: 450px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+        .modal-header {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--primary);
+        }
+        .form-group { margin-bottom: 10px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .form-label { display: block; font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
+        .form-input {
+            width: 100%;
+            padding: 8px;
+            background: var(--bg-input);
+            border: 2px solid #444;
+            color: var(--text);
+            border-radius: 5px;
+            font-size: 13px;
+        }
+        .form-input:focus { outline: none; border-color: var(--primary); }
+        .modal-buttons { display: flex; gap: 10px; margin-top: 15px; }
+        .modal-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+        .modal-btn.primary { background: linear-gradient(135deg, var(--primary), #ffed4e); color: #000; }
+        .modal-btn.secondary { background: var(--bg-input); color: var(--text); border: 2px solid #444; }
+        .modal-btn.danger { background: linear-gradient(135deg, var(--red), #e57373); color: #fff; }
+        .modal-btn:hover { transform: translateY(-2px); }
+
+        /* ═══════════════ TOOLTIP ═══════════════ */
+        .tooltip {
+            position: fixed;
+            background: rgba(0,0,0,0.95);
+            border: 2px solid var(--primary);
+            padding: 10px;
+            border-radius: 6px;
+            pointer-events: none;
+            z-index: 1500;
+            display: none;
+            min-width: 180px;
+            box-shadow: 0 10px 30px rgba(255,215,0,0.3);
+        }
+        .tooltip-title { font-size: 12px; font-weight: 700; color: var(--primary); margin-bottom: 6px; border-bottom: 1px solid var(--primary); padding-bottom: 4px; }
+        .tooltip-line { font-size: 10px; margin: 3px 0; }
+
+        /* ═══════════════ ALERTS ═══════════════ */
+        .alerts-container {
+            max-height: 200px;
+            overflow-y: auto;
+            background: var(--bg-input);
+            border-radius: 5px;
+            padding: 5px;
+        }
+        .alert-item {
+            padding: 6px 8px;
+            margin-bottom: 4px;
+            border-radius: 4px;
+            font-size: 10px;
+            border-right: 3px solid;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .alert-item.critical { background: rgba(244,67,54,0.2); border-color: var(--red); }
+        .alert-item.warning { background: rgba(255,152,0,0.2); border-color: var(--orange); }
+        .alert-item.info { background: rgba(33,150,243,0.2); border-color: var(--blue); }
+        .alert-time { font-size: 8px; color: var(--text-muted); }
+
+        /* ═══════════════ KPI CARDS ═══════════════ */
+        .kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .kpi-card {
+            background: var(--bg-input);
+            border: 1px solid rgba(255,215,0,0.3);
+            border-radius: 5px;
+            padding: 8px;
+            text-align: center;
+        }
+        .kpi-value { font-size: 18px; font-weight: 700; color: var(--primary); }
+        .kpi-label { font-size: 8px; color: var(--text-muted); }
+
+        /* ═══════════════ FULLSCREEN ═══════════════ */
+        .fullscreen-btn {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: var(--primary);
+            color: #000;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            z-index: 999;
+            transition: all 0.3s;
+        }
+        .fullscreen-btn:hover { transform: scale(1.1); }
+
+        /* ═══════════════ EDIT MODE ═══════════════ */
+        .edit-mode .parking-spot:not(.empty)::after {
+            content: '✏️';
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%,-50%);
+            font-size: 20px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .edit-mode .parking-spot:not(.empty):hover::after { opacity: 0.8; }
+    </style>
+</head>
+<body>
+    <!-- Toggle Button -->
+    <div class="toggle-panel panel-visible" id="toggleBtn" onclick="togglePanel()">⚙️ التحكم</div>
+
+    <!-- Fullscreen Button -->
+    <button class="fullscreen-btn" onclick="toggleFullscreen()">⛶ ملء الشاشة</button>
+
+    <!-- Control Panel -->
+    <div class="control-panel" id="controlPanel">
+        <div class="panel-tabs">
+            <div class="panel-tab active" onclick="switchTab('main')">الرئيسية</div>
+            <div class="panel-tab" onclick="switchTab('settings')">الإعدادات</div>
+            <div class="panel-tab" onclick="switchTab('alerts')">التنبيهات</div>
+            <div class="panel-tab" onclick="switchTab('kpi')">KPIs</div>
+        </div>
+
+        <!-- Main Tab -->
+        <div class="tab-content active" id="tab-main">
+            <div class="control-section">
+                <div class="control-title">🔍 التكبير</div>
+                <div class="zoom-btns">
+                    <button class="zoom-btn" onclick="zoomOut()">➖</button>
+                    <button class="zoom-btn" onclick="zoomReset()"><span id="zoomValue">100</span>%</button>
+                    <button class="zoom-btn" onclick="zoomIn()">➕</button>
+                </div>
+                <input type="range" class="control-input" min="50" max="150" value="100" 
+                       oninput="setZoom(this.value)" style="margin-top:8px;cursor:pointer">
+            </div>
+
+            <div class="control-section">
+                <div class="control-title">✏️ التحرير</div>
+                <button class="control-button" onclick="toggleEditMode()" id="editModeBtn">تفعيل وضع التحرير</button>
+            </div>
+
+            <div class="control-section">
+                <div class="control-title">➕ إضافة حافلة</div>
+                <div class="control-group">
+                    <label class="control-label">رقم الموقف (1-87)</label>
+                    <input type="number" class="control-input" id="newSpotId" min="1" max="87" placeholder="أدخل رقم الموقف">
+                </div>
+                <button class="control-button success" onclick="openAddModal()">إضافة حافلة جديدة</button>
+            </div>
+
+            <div class="control-section" id="selectedActions" style="display:none">
+                <div class="control-title">📍 الموقف #<span id="selectedNum">-</span></div>
+                <button class="control-button" onclick="editSelected()">✏️ تعديل</button>
+                <button class="control-button info" onclick="openMoveModal()">🔄 نقل</button>
+                <button class="control-button danger" onclick="deleteSelected()">🗑️ حذف</button>
+            </div>
+
+            <div class="control-section">
+                <div class="control-title">📊 الإحصائيات</div>
+                <div style="font-size:11px;line-height:1.8;color:var(--text-muted)">
+                    <div>📌 المواقف: 87</div>
+                    <div>✅ مشغول: <span id="statOccupied" style="color:var(--primary)">0</span></div>
+                    <div>⬜ فارغ: <span id="statEmpty">0</span></div>
+                    <div style="color:var(--green)">🟢 مبكر: <span id="statEarly">0</span></div>
+                    <div style="color:var(--blue)">🔵 موعد: <span id="statOntime">0</span></div>
+                    <div style="color:var(--red)">🔴 متأخر: <span id="statLate">0</span></div>
+                </div>
+            </div>
+
+            <div class="control-section">
+                <div class="control-title">💾 البيانات</div>
+                <button class="control-button" onclick="exportJSON()">💾 تصدير JSON</button>
+                <button class="control-button info" onclick="exportCSV()">📊 تصدير CSV</button>
+                <button class="control-button" onclick="document.getElementById('importFile').click()">📥 استيراد</button>
+                <input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(event)">
+                <button class="control-button danger" onclick="resetAll()">🔄 مسح الكل</button>
+            </div>
+        </div>
+
+        <!-- Settings Tab -->
+        <div class="tab-content" id="tab-settings">
+            <div class="control-section">
+                <div class="control-title">🎨 الألوان</div>
+                <div class="color-row"><span>اللون الأساسي</span><input type="color" value="#ffd700" onchange="changeColor('--primary',this.value)"></div>
+                <div class="color-row"><span>لون المبكر</span><input type="color" value="#4caf50" onchange="changeColor('--green',this.value)"></div>
+                <div class="color-row"><span>لون في الموعد</span><input type="color" value="#2196f3" onchange="changeColor('--blue',this.value)"></div>
+                <div class="color-row"><span>لون المتأخر</span><input type="color" value="#f44336" onchange="changeColor('--red',this.value)"></div>
+                <div class="color-row"><span>خلفية داكنة</span><input type="color" value="#0a0a0a" onchange="changeColor('--bg-dark',this.value);document.body.style.background=this.value"></div>
+                <div class="color-row"><span>خلفية البطاقات</span><input type="color" value="#1a1a1a" onchange="changeColor('--bg-card',this.value)"></div>
+            </div>
+
+            <div class="control-section">
+                <div class="control-title">⏱️ حدود التفويج (بالساعات)</div>
+                <div class="control-row">
+                    <div class="control-group">
+                        <label class="control-label">مبكر أكبر من</label>
+                        <input type="number" class="control-input" id="earlyThreshold" value="7" min="1" onchange="updateThresholds()">
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">متأخر أقل من</label>
+                        <input type="number" class="control-input" id="lateThreshold" value="3" min="1" onchange="updateThresholds()">
+                    </div>
+                </div>
+            </div>
+
+            <div class="control-section">
+                <div class="control-title">🔔 التنبيهات</div>
+                <div class="control-group">
+                    <label style="font-size:10px;display:flex;align-items:center;gap:5px">
+                        <input type="checkbox" id="soundAlert" checked> تفعيل الصوت
+                    </label>
+                </div>
+                <div class="control-group">
+                    <label style="font-size:10px;display:flex;align-items:center;gap:5px">
+                        <input type="checkbox" id="autoRefresh" checked> تحديث تلقائي
+                    </label>
+                </div>
+            </div>
+
+            <div class="control-section">
+                <div class="control-title">📐 حجم المواقف</div>
+                <div class="control-group">
+                    <label class="control-label">الحد الأدنى للعرض (px)</label>
+                    <input type="range" class="control-input" min="60" max="120" value="80" 
+                           oninput="changeSpotSize(this.value)" style="cursor:pointer">
+                </div>
+            </div>
+
+            <div class="control-section">
+                <button class="control-button" onclick="saveSettings()">💾 حفظ الإعدادات</button>
+                <button class="control-button info" onclick="loadSettings()">📂 تحميل الإعدادات</button>
+                <button class="control-button danger" onclick="resetSettings()">🔄 إعادة تعيين</button>
+            </div>
+        </div>
+
+        <!-- Alerts Tab -->
+        <div class="tab-content" id="tab-alerts">
+            <div class="control-section">
+                <div class="control-title">🚨 التنبيهات النشطة (<span id="alertCount">0</span>)</div>
+                <div class="alerts-container" id="alertsList">
+                    <div style="text-align:center;color:var(--text-muted);padding:20px">لا توجد تنبيهات</div>
+                </div>
+            </div>
+            <div class="control-section">
+                <button class="control-button" onclick="clearAlerts()">🗑️ مسح التنبيهات</button>
+                <button class="control-button info" onclick="testAlert()">🔔 اختبار التنبيه</button>
+            </div>
+        </div>
+
+        <!-- KPI Tab -->
+        <div class="tab-content" id="tab-kpi">
+            <div class="control-section">
+                <div class="control-title">📈 مؤشرات الأداء</div>
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                        <div class="kpi-value" id="kpiAvgWait">0</div>
+                        <div class="kpi-label">متوسط الانتظار (د)</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-value" id="kpiOnTimeRate">0%</div>
+                        <div class="kpi-label">معدل التفويج بالموعد</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-value" id="kpiAvgPax">0</div>
+                        <div class="kpi-label">متوسط الركاب/حافلة</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-value" id="kpiPeakOccupancy">0%</div>
+                        <div class="kpi-label">ذروة الإشغال</div>
+                    </div>
+                </div>
+            </div>
+            <div class="control-section">
+                <div class="control-title">📊 توزيع الحالات</div>
+                <div id="statusChart" style="height:100px;display:flex;align-items:end;gap:5px;padding:10px 0"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="header panel-open" id="header">
+        <div class="header-title">🚌 إدارة عمليات الساحات الخارجية والمواصلات</div>
+        <div class="header-controls">
+            <div class="header-btn" id="timeDisplay">--:--:--</div>
+            <div class="header-btn" id="shiftDisplay">نوبة -</div>
+            <div class="header-btn" id="dateDisplay">--/--/----</div>
+        </div>
+    </header>
+
+    <!-- Daily Stats -->
+    <div class="daily-stats panel-open" id="dailyStats">
+        <div class="daily-stat">
+            <span class="daily-stat-icon">👥</span>
+            <div>
+                <div class="daily-stat-value" id="dailyPax">0</div>
+                <div class="daily-stat-label">مسافر اليوم</div>
+            </div>
+        </div>
+        <div class="daily-stat">
+            <span class="daily-stat-icon">🚌</span>
+            <div>
+                <div class="daily-stat-value" id="dailyBuses">0</div>
+                <div class="daily-stat-label">حافلة اليوم</div>
+            </div>
+        </div>
+        <div class="daily-stat">
+            <span class="daily-stat-icon">✈️</span>
+            <div>
+                <div class="daily-stat-value" id="dailyFlights">0</div>
+                <div class="daily-stat-label">رحلة اليوم</div>
+            </div>
+        </div>
+        <div class="daily-stat">
+            <span class="daily-stat-icon">📊</span>
+            <div>
+                <div class="daily-stat-value" id="occupancyRate">0%</div>
+                <div class="daily-stat-label">نسبة الإشغال</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Bar -->
+    <div class="stats-bar panel-open" id="statsBar">
+        <div class="stat-card" onclick="filterBuses('all')">
+            <div class="stat-value" id="totalBuses">0</div>
+            <div class="stat-label">إجمالي الحافلات</div>
+        </div>
+        <div class="stat-card green" onclick="filterBuses('early')">
+            <div class="stat-value" id="earlyCount">0</div>
+            <div class="stat-label">🟢 مبكر (>7 ساعات)</div>
+        </div>
+        <div class="stat-card blue" onclick="filterBuses('ontime')">
+            <div class="stat-value" id="ontimeCount">0</div>
+            <div class="stat-label">🔵 في الموعد (3-7)</div>
+        </div>
+        <div class="stat-card red" onclick="filterBuses('late')">
+            <div class="stat-value" id="lateCount">0</div>
+            <div class="stat-label">🔴 متأخر (<3 ساعات)</div>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <main class="main-container panel-open" id="mainContainer">
+        <div class="parking-wrapper" id="parkingWrapper">
+            <!-- Sections will be generated by JS -->
+        </div>
+    </main>
+
+    <!-- Add/Edit Modal -->
+    <div class="modal" id="busModal">
+        <div class="modal-content">
+            <div class="modal-header" id="modalTitle">إضافة حافلة</div>
+            <div class="form-group">
+                <label class="form-label">رقم الموقف</label>
+                <input type="number" class="form-input" id="modalSpot" readonly>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">رقم اللوحة *</label>
+                    <input type="text" class="form-input" id="modalPlate" placeholder="مثال: 4241SRA">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">رقم الرحلة *</label>
+                    <input type="text" class="form-input" id="modalFlight" placeholder="مثال: SV1234">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">عدد الركاب</label>
+                    <input type="number" class="form-input" id="modalPax" placeholder="45">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">البوابة</label>
+                    <input type="text" class="form-input" id="modalGate" placeholder="G23">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">وقت الوصول *</label>
+                    <input type="time" class="form-input" id="modalArrival">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">وقت الإقلاع *</label>
+                    <input type="time" class="form-input" id="modalDeparture">
+                </div>
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-btn primary" onclick="saveBus()">💾 حفظ</button>
+                <button class="modal-btn secondary" onclick="closeModal('busModal')">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Move Modal -->
+    <div class="modal" id="moveModal">
+        <div class="modal-content">
+            <div class="modal-header">🔄 نقل الحافلة</div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">من الموقف</label>
+                    <input type="number" class="form-input" id="moveFrom" readonly>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">إلى الموقف</label>
+                    <input type="number" class="form-input" id="moveTo" min="1" max="87" placeholder="1-87">
+                </div>
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-btn primary" onclick="moveBus()">✅ نقل</button>
+                <button class="modal-btn secondary" onclick="closeModal('moveModal')">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tooltip -->
+    <div class="tooltip" id="tooltip"></div>
+
+    <!-- Audio for alerts -->
+    <audio id="alertSound" preload="auto">
+        <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdH2Onp6WgW9rdX+MmZiNfnJtdoGNmJOJfHRzeIKMlZGGfHZ1eYOMk4+EfHd3eYKLkY2DfHl5eYGKkIuBfHp6eYCJj4p/fHt7eH+Ij4l+fHx8eH6Hjoh9fH18d32Gjod8fX58dn2Fjod7fX98dnyFjoZ6fn98dXyEjYV5fn98dXuEjYR5f398dHuDjIN4f4B8c3qCi4J3gIB8cnqBioF2gIF8cXmAiYB1gYF7cHl/iH90gYJ7b3h+h350goJ6bnh9hn1zgoN6bXd8hXxzg4N5bHZ7hHtyg4R5a3Z6g3pyhIR4anV5gnlxhIV4aXR4gXhwhYZ3aHN3gHdvhod2Z3J2f3ZuhYh1ZnF1fnVthol0ZXB0fXRsh4pzZG9ze3JriijizA==" type="audio/wav">
+    </audio>
+
+    <script>
+        // ═══════════════════════════════════════════════════════════
+        // GLOBAL STATE
+        // ═══════════════════════════════════════════════════════════
+        let busData = [];
+        let selectedSpot = null;
+        let editMode = false;
+        let zoomLevel = 100;
+        let currentFilter = 'all';
+        let panelVisible = true;
+        let alerts = [];
+        let dailyStats = { pax: 0, buses: 0, flights: new Set() };
+        let peakOccupancy = 0;
+        let thresholds = { early: 7, late: 3 };
+
+        // Sample Data
+        function initSampleData() {
+            busData = [
+                { spot: 1, plate: '4241SRA', flight: 'SV1234', pax: 45, arrival: '06:00', departure: '15:30', gate: 'G23' },
+                { spot: 3, plate: '9649RXA', flight: 'SV5678', pax: 52, arrival: '07:15', departure: '16:00', gate: 'G15' },
+                { spot: 5, plate: '1234ABC', flight: 'SV9012', pax: 48, arrival: '08:30', departure: '11:00', gate: 'G10' },
+                { spot: 7, plate: '5678XYZ', flight: 'SV3456', pax: 50, arrival: '09:00', departure: '17:30', gate: 'G18' },
+                { spot: 16, plate: '7890DEF', flight: 'SV7890', pax: 55, arrival: '10:00', departure: '19:00', gate: 'G25' },
+                { spot: 18, plate: '2468GHI', flight: 'SV2468', pax: 42, arrival: '11:30', departure: '13:00', gate: 'G12' },
+                { spot: 20, plate: '1357JKL', flight: 'SV1357', pax: 47, arrival: '12:00', departure: '20:30', gate: 'G20' },
+                { spot: 45, plate: '3691PQR', flight: 'SV3691', pax: 46, arrival: '14:00', departure: '22:30', gate: 'G22' },
+                { spot: 50, plate: '8520STU', flight: 'SV8520', pax: 51, arrival: '15:30', departure: '18:00', gate: 'G14' },
+                { spot: 55, plate: '7412VWX', flight: 'SV7412', pax: 44, arrival: '16:45', departure: '18:30', gate: 'G19' },
+                { spot: 60, plate: '9630YZA', flight: 'SV9630', pax: 53, arrival: '17:00', departure: '20:00', gate: 'G21' },
+                { spot: 72, plate: '1593BCD', flight: 'SV1593', pax: 48, arrival: '18:30', departure: '21:45', gate: 'G17' },
+                { spot: 75, plate: '7536EFG', flight: 'SV7536', pax: 50, arrival: '19:00', departure: '22:00', gate: 'G13' },
+                { spot: 80, plate: '9517HIJ', flight: 'SV9517', pax: 45, arrival: '20:15', departure: '22:30', gate: 'G24' },
+                { spot: 86, plate: '7539MNO', flight: 'SV7539', pax: 49, arrival: '21:00', departure: '09:00', gate: 'G11' }
+            ];
+            dailyStats.buses = busData.length;
+            dailyStats.pax = busData.reduce((s, b) => s + (b.pax || 0), 0);
+            busData.forEach(b => dailyStats.flights.add(b.flight));
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // STATUS CALCULATION
+        // ═══════════════════════════════════════════════════════════
+        function getStatus(arrival, departure) {
+            const arr = new Date(`2024-01-01 ${arrival}`);
+            let dep = new Date(`2024-01-01 ${departure}`);
+            let diff = dep - arr;
+            if (diff < 0) diff += 24 * 60 * 60 * 1000;
+            const hours = diff / (1000 * 60 * 60);
+            if (hours > thresholds.early) return { status: 'early', label: 'مبكر', hours };
+            if (hours < thresholds.late) return { status: 'late', label: 'متأخر', hours };
+            return { status: 'ontime', label: 'في الموعد', hours };
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // RENDER
+        // ═══════════════════════════════════════════════════════════
+        function render() {
+            const wrapper = document.getElementById('parkingWrapper');
+            wrapper.innerHTML = '';
+
+            // Section 1: Entrance (1-42)
+            wrapper.appendChild(createSection('🚪 جهة المدخل (42 موقف)', 1, 42));
+            // Section 2: Exit (43-87)
+            wrapper.appendChild(createSection('🚪 جهة المخرج (45 موقف)', 43, 87));
+
+            updateStats();
+            updateKPIs();
+            checkAlerts();
+        }
+
+        function createSection(title, start, end) {
+            const section = document.createElement('div');
+            section.className = 'parking-section';
+            section.innerHTML = `<div class="section-header">${title}</div>`;
+            
+            const grid = document.createElement('div');
+            grid.className = 'parking-grid';
+            
+            for (let i = start; i <= end; i++) {
+                grid.appendChild(createSpot(i));
+            }
+            
+            section.appendChild(grid);
+            return section;
+        }
+
+        function createSpot(num) {
+            const spot = document.createElement('div');
+            spot.className = 'parking-spot';
+            spot.dataset.spot = num;
+            
+            const bus = busData.find(b => b.spot === num);
+            
+            if (bus) {
+                const info = getStatus(bus.arrival, bus.departure);
+                
+                if (currentFilter !== 'all' && info.status !== currentFilter) {
+                    spot.style.opacity = '0.15';
+                }
+                
+                spot.classList.add(info.status);
+                if (selectedSpot === num) spot.classList.add('selected');
+                
+                const statusColors = { early: 'var(--green)', ontime: 'var(--blue)', late: 'var(--red)' };
+                
+                spot.innerHTML = `
+                    <div class="spot-number">#${num}</div>
+                    <div class="spot-badge" style="background:${statusColors[info.status]}">${info.label}</div>
+                    <div class="bus-info">
+                        <div class="info-line"><span class="info-icon">🚌</span>${bus.plate}</div>
+                        <div class="info-line"><span class="info-icon">✈️</span>${bus.flight}</div>
+                        <div class="info-line"><span class="info-icon">👥</span>${bus.pax || '-'}</div>
+                        <div class="info-line"><span class="info-icon">🚪</span>${bus.gate || '-'}</div>
+                    </div>
+                    <div class="time-diff" style="color:${statusColors[info.status]}">⏱️ ${info.hours.toFixed(1)} ساعة</div>
+                `;
+                
+                spot.onmouseenter = e => showTooltip(e, bus, info, num);
+                spot.onmousemove = moveTooltip;
+                spot.onmouseleave = hideTooltip;
+                spot.onclick = () => selectSpot(num);
+            } else {
+                spot.classList.add('empty');
+                spot.innerHTML = `<div class="spot-number">#${num}</div><div class="empty-text">—</div>`;
+                spot.onclick = () => { document.getElementById('newSpotId').value = num; openAddModal(); };
+            }
+            
+            return spot;
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // STATS & KPIs
+        // ═══════════════════════════════════════════════════════════
+        function updateStats() {
+            let early = 0, ontime = 0, late = 0;
+            busData.forEach(b => {
+                const s = getStatus(b.arrival, b.departure).status;
+                if (s === 'early') early++;
+                else if (s === 'ontime') ontime++;
+                else late++;
+            });
+            
+            const total = busData.length;
+            const occ = Math.round((total / 87) * 100);
+            if (occ > peakOccupancy) peakOccupancy = occ;
+            
+            document.getElementById('totalBuses').textContent = total;
+            document.getElementById('earlyCount').textContent = early;
+            document.getElementById('ontimeCount').textContent = ontime;
+            document.getElementById('lateCount').textContent = late;
+            document.getElementById('occupancyRate').textContent = occ + '%';
+            
+            document.getElementById('statOccupied').textContent = total;
+            document.getElementById('statEmpty').textContent = 87 - total;
+            document.getElementById('statEarly').textContent = early;
+            document.getElementById('statOntime').textContent = ontime;
+            document.getElementById('statLate').textContent = late;
+            
+            document.getElementById('dailyBuses').textContent = dailyStats.buses;
+            document.getElementById('dailyPax').textContent = dailyStats.pax.toLocaleString();
+            document.getElementById('dailyFlights').textContent = dailyStats.flights.size;
+            
+            // Status chart
+            const chart = document.getElementById('statusChart');
+            const max = Math.max(early, ontime, late, 1);
+            chart.innerHTML = `
+                <div style="flex:1;text-align:center">
+                    <div style="height:${(early/max)*80}px;background:var(--green);border-radius:3px 3px 0 0"></div>
+                    <div style="font-size:10px;margin-top:3px">${early}</div>
+                    <div style="font-size:8px;color:var(--text-muted)">مبكر</div>
+                </div>
+                <div style="flex:1;text-align:center">
+                    <div style="height:${(ontime/max)*80}px;background:var(--blue);border-radius:3px 3px 0 0"></div>
+                    <div style="font-size:10px;margin-top:3px">${ontime}</div>
+                    <div style="font-size:8px;color:var(--text-muted)">موعد</div>
+                </div>
+                <div style="flex:1;text-align:center">
+                    <div style="height:${(late/max)*80}px;background:var(--red);border-radius:3px 3px 0 0"></div>
+                    <div style="font-size:10px;margin-top:3px">${late}</div>
+                    <div style="font-size:8px;color:var(--text-muted)">متأخر</div>
+                </div>
+            `;
+        }
+
+        function updateKPIs() {
+            const total = busData.length || 1;
+            let totalPax = 0, ontimeCount = 0;
+            busData.forEach(b => {
+                totalPax += b.pax || 0;
+                if (getStatus(b.arrival, b.departure).status !== 'late') ontimeCount++;
+            });
+            
+            document.getElementById('kpiAvgPax').textContent = Math.round(totalPax / total);
+            document.getElementById('kpiOnTimeRate').textContent = Math.round((ontimeCount / total) * 100) + '%';
+            document.getElementById('kpiAvgWait').textContent = Math.round(Math.random() * 20 + 10); // Simulated
+            document.getElementById('kpiPeakOccupancy').textContent = peakOccupancy + '%';
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // ALERTS
+        // ═══════════════════════════════════════════════════════════
+        function checkAlerts() {
+            busData.forEach(b => {
+                const info = getStatus(b.arrival, b.departure);
+                if (info.status === 'late' && info.hours < 1) {
+                    addAlert('critical', `⚠️ حافلة ${b.plate} متأخرة جداً! (${info.hours.toFixed(1)} ساعة)`);
+                } else if (info.status === 'late') {
+                    addAlert('warning', `تنبيه: حافلة ${b.plate} في حالة تأخر`);
+                }
+            });
+        }
+
+        function addAlert(type, message) {
+            const exists = alerts.find(a => a.message === message);
+            if (exists) return;
+            
+            alerts.unshift({ type, message, time: new Date().toLocaleTimeString('ar-SA') });
+            if (alerts.length > 50) alerts.pop();
+            
+            renderAlerts();
+            
+            if (document.getElementById('soundAlert').checked && type === 'critical') {
+                document.getElementById('alertSound').play().catch(() => {});
+            }
+        }
+
+        function renderAlerts() {
+            const list = document.getElementById('alertsList');
+            document.getElementById('alertCount').textContent = alerts.length;
+            
+            if (alerts.length === 0) {
+                list.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:20px">لا توجد تنبيهات</div>';
+                return;
+            }
+            
+            list.innerHTML = alerts.map(a => `
+                <div class="alert-item ${a.type}">
+                    <span>${a.message}</span>
+                    <span class="alert-time">${a.time}</span>
+                </div>
+            `).join('');
+        }
+
+        function clearAlerts() { alerts = []; renderAlerts(); }
+        function testAlert() { addAlert('info', '🔔 هذا تنبيه تجريبي - ' + new Date().toLocaleTimeString()); }
+
+        // ═══════════════════════════════════════════════════════════
+        // SPOT SELECTION & ACTIONS
+        // ═══════════════════════════════════════════════════════════
+        function selectSpot(num) {
+            selectedSpot = num;
+            document.getElementById('selectedNum').textContent = num;
+            document.getElementById('selectedActions').style.display = 'block';
+            render();
+        }
+
+        function editSelected() {
+            if (!selectedSpot) return;
+            const bus = busData.find(b => b.spot === selectedSpot);
+            if (!bus) return;
+            
+            document.getElementById('modalTitle').textContent = `✏️ تعديل الموقف #${selectedSpot}`;
+            document.getElementById('modalSpot').value = selectedSpot;
+            document.getElementById('modalPlate').value = bus.plate;
+            document.getElementById('modalFlight').value = bus.flight;
+            document.getElementById('modalPax').value = bus.pax || '';
+            document.getElementById('modalGate').value = bus.gate || '';
+            document.getElementById('modalArrival').value = bus.arrival;
+            document.getElementById('modalDeparture').value = bus.departure;
+            
+            document.getElementById('busModal').classList.add('active');
+        }
+
+        function deleteSelected() {
+            if (!selectedSpot || !confirm(`حذف الحافلة من الموقف #${selectedSpot}؟`)) return;
+            busData = busData.filter(b => b.spot !== selectedSpot);
+            selectedSpot = null;
+            document.getElementById('selectedActions').style.display = 'none';
+            render();
+            save();
+        }
+
+        function openMoveModal() {
+            if (!selectedSpot) return;
+            document.getElementById('moveFrom').value = selectedSpot;
+            document.getElementById('moveTo').value = '';
+            document.getElementById('moveModal').classList.add('active');
+        }
+
+        function moveBus() {
+            const from = parseInt(document.getElementById('moveFrom').value);
+            const to = parseInt(document.getElementById('moveTo').value);
+            
+            if (!to || to < 1 || to > 87) return alert('رقم موقف غير صحيح');
+            
+            const bus = busData.find(b => b.spot === from);
+            const target = busData.find(b => b.spot === to);
+            
+            if (target) {
+                if (!confirm(`الموقف #${to} مشغول. تبديل؟`)) return;
+                target.spot = from;
+            }
+            
+            if (bus) bus.spot = to;
+            selectedSpot = to;
+            document.getElementById('selectedNum').textContent = to;
+            
+            closeModal('moveModal');
+            render();
+            save();
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // MODAL FUNCTIONS
+        // ═══════════════════════════════════════════════════════════
+        function openAddModal() {
+            const spot = document.getElementById('newSpotId').value;
+            if (!spot || spot < 1 || spot > 87) return alert('أدخل رقم موقف صحيح (1-87)');
+            if (busData.find(b => b.spot === parseInt(spot))) return alert('الموقف مشغول');
+            
+            document.getElementById('modalTitle').textContent = '➕ إضافة حافلة جديدة';
+            document.getElementById('modalSpot').value = spot;
+            document.getElementById('modalPlate').value = '';
+            document.getElementById('modalFlight').value = '';
+            document.getElementById('modalPax').value = '';
+            document.getElementById('modalGate').value = '';
+            document.getElementById('modalArrival').value = '';
+            document.getElementById('modalDeparture').value = '';
+            
+            document.getElementById('busModal').classList.add('active');
+        }
+
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+        function saveBus() {
+            const spot = parseInt(document.getElementById('modalSpot').value);
+            const plate = document.getElementById('modalPlate').value.trim();
+            const flight = document.getElementById('modalFlight').value.trim();
+            const pax = parseInt(document.getElementById('modalPax').value) || 0;
+            const gate = document.getElementById('modalGate').value.trim();
+            const arrival = document.getElementById('modalArrival').value;
+            const departure = document.getElementById('modalDeparture').value;
+            
+            if (!plate || !flight || !arrival || !departure) return alert('أكمل الحقول المطلوبة');
+            
+            busData = busData.filter(b => b.spot !== spot);
+            busData.push({ spot, plate, flight, pax, gate, arrival, departure });
+            
+            dailyStats.buses++;
+            dailyStats.pax += pax;
+            dailyStats.flights.add(flight);
+            
+            closeModal('busModal');
+            selectedSpot = spot;
+            document.getElementById('selectedNum').textContent = spot;
+            document.getElementById('selectedActions').style.display = 'block';
+            render();
+            save();
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // PANEL & UI
+        // ═══════════════════════════════════════════════════════════
+        function togglePanel() {
+            panelVisible = !panelVisible;
+            const panel = document.getElementById('controlPanel');
+            const btn = document.getElementById('toggleBtn');
+            const els = ['header', 'dailyStats', 'statsBar', 'mainContainer'];
+            
+            if (panelVisible) {
+                panel.classList.remove('hidden');
+                btn.classList.add('panel-visible');
+                els.forEach(id => document.getElementById(id).classList.add('panel-open'));
+            } else {
+                panel.classList.add('hidden');
+                btn.classList.remove('panel-visible');
+                els.forEach(id => document.getElementById(id).classList.remove('panel-open'));
+            }
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.panel-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById('tab-' + tab).classList.add('active');
+        }
+
+        function toggleEditMode() {
+            editMode = !editMode;
+            const btn = document.getElementById('editModeBtn');
+            const main = document.getElementById('mainContainer');
+            btn.textContent = editMode ? '✅ إيقاف التحرير' : 'تفعيل وضع التحرير';
+            btn.className = editMode ? 'control-button success' : 'control-button';
+            main.classList.toggle('edit-mode', editMode);
+        }
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // ZOOM & SETTINGS
+        // ═══════════════════════════════════════════════════════════
+        function setZoom(val) {
+            zoomLevel = parseInt(val);
+            document.getElementById('zoomValue').textContent = zoomLevel;
+            document.getElementById('parkingWrapper').style.transform = `scale(${zoomLevel/100})`;
+            document.getElementById('parkingWrapper').style.transformOrigin = 'top center';
+        }
+        function zoomIn() { setZoom(Math.min(zoomLevel + 10, 150)); document.querySelector('input[type="range"]').value = zoomLevel; }
+        function zoomOut() { setZoom(Math.max(zoomLevel - 10, 50)); document.querySelector('input[type="range"]').value = zoomLevel; }
+        function zoomReset() { setZoom(100); document.querySelector('input[type="range"]').value = 100; }
+
+        function changeColor(prop, val) {
+            document.documentElement.style.setProperty(prop, val);
+            render();
+        }
+
+        function changeSpotSize(val) {
+            document.querySelectorAll('.parking-grid').forEach(g => {
+                g.style.gridTemplateColumns = `repeat(auto-fill, minmax(${val}px, 1fr))`;
+            });
+        }
+
+        function updateThresholds() {
+            thresholds.early = parseInt(document.getElementById('earlyThreshold').value) || 7;
+            thresholds.late = parseInt(document.getElementById('lateThreshold').value) || 3;
+            render();
+        }
+
+        function filterBuses(status) {
+            currentFilter = status;
+            render();
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // DATA EXPORT/IMPORT
+        // ═══════════════════════════════════════════════════════════
+        function exportJSON() {
+            const data = JSON.stringify({ busData, dailyStats: { ...dailyStats, flights: [...dailyStats.flights] } }, null, 2);
+            download(data, 'LOCC_Data.json', 'application/json');
+        }
+
+        function exportCSV() {
+            let csv = 'الموقف,اللوحة,الرحلة,الركاب,البوابة,الوصول,الإقلاع,الحالة\n';
+            busData.forEach(b => {
+                const s = getStatus(b.arrival, b.departure);
+                csv += `${b.spot},${b.plate},${b.flight},${b.pax},${b.gate},${b.arrival},${b.departure},${s.label}\n`;
+            });
+            download(csv, 'LOCC_Data.csv', 'text/csv');
+        }
+
+        function download(data, filename, type) {
+            const blob = new Blob([data], { type });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+        }
+
+        function importJSON(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                try {
+                    const d = JSON.parse(ev.target.result);
+                    busData = d.busData || d;
+                    if (d.dailyStats) {
+                        dailyStats = { ...d.dailyStats, flights: new Set(d.dailyStats.flights || []) };
+                    }
+                    render();
+                    save();
+                    alert('✅ تم الاستيراد');
+                } catch { alert('❌ خطأ في الملف'); }
+            };
+            reader.readAsText(file);
+        }
+
+        function resetAll() {
+            if (!confirm('⚠️ حذف جميع البيانات؟')) return;
+            busData = [];
+            dailyStats = { pax: 0, buses: 0, flights: new Set() };
+            selectedSpot = null;
+            document.getElementById('selectedActions').style.display = 'none';
+            localStorage.removeItem('LOCC');
+            render();
+        }
+
+        function save() { localStorage.setItem('LOCC', JSON.stringify({ busData, dailyStats: { ...dailyStats, flights: [...dailyStats.flights] } })); }
+        function load() {
+            const d = localStorage.getItem('LOCC');
+            if (d) {
+                const p = JSON.parse(d);
+                busData = p.busData || [];
+                if (p.dailyStats) dailyStats = { ...p.dailyStats, flights: new Set(p.dailyStats.flights || []) };
+                return true;
+            }
+            return false;
+        }
+
+        function saveSettings() {
+            const settings = {
+                colors: {
+                    primary: getComputedStyle(document.documentElement).getPropertyValue('--primary'),
+                    green: getComputedStyle(document.documentElement).getPropertyValue('--green'),
+                    blue: getComputedStyle(document.documentElement).getPropertyValue('--blue'),
+                    red: getComputedStyle(document.documentElement).getPropertyValue('--red'),
+                },
+                thresholds
+            };
+            localStorage.setItem('LOCC_Settings', JSON.stringify(settings));
+            alert('✅ تم حفظ الإعدادات');
+        }
+
+        function loadSettings() {
+            const s = localStorage.getItem('LOCC_Settings');
+            if (s) {
+                const p = JSON.parse(s);
+                if (p.colors) {
+                    Object.entries(p.colors).forEach(([k, v]) => changeColor('--' + k, v));
+                }
+                if (p.thresholds) {
+                    thresholds = p.thresholds;
+                    document.getElementById('earlyThreshold').value = thresholds.early;
+                    document.getElementById('lateThreshold').value = thresholds.late;
+                }
+                render();
+            }
+        }
+
+        function resetSettings() {
+            localStorage.removeItem('LOCC_Settings');
+            location.reload();
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // TOOLTIP
+        // ═══════════════════════════════════════════════════════════
+        function showTooltip(e, bus, info, num) {
+            const t = document.getElementById('tooltip');
+            t.style.display = 'block';
+            const color = { early: 'var(--green)', ontime: 'var(--blue)', late: 'var(--red)' }[info.status];
+            t.innerHTML = `
+                <div class="tooltip-title">🚌 موقف #${num}</div>
+                <div class="tooltip-line"><b>اللوحة:</b> ${bus.plate}</div>
+                <div class="tooltip-line"><b>الرحلة:</b> ${bus.flight}</div>
+                <div class="tooltip-line"><b>الركاب:</b> ${bus.pax || '-'}</div>
+                <div class="tooltip-line"><b>البوابة:</b> ${bus.gate || '-'}</div>
+                <div class="tooltip-line"><b>الوصول:</b> ${bus.arrival}</div>
+                <div class="tooltip-line"><b>الإقلاع:</b> ${bus.departure}</div>
+                <div class="tooltip-line"><b>الفرق:</b> ${info.hours.toFixed(1)} ساعة</div>
+                <div class="tooltip-line" style="color:${color}"><b>الحالة:</b> ${info.label}</div>
+            `;
+            moveTooltip(e);
+        }
+        function moveTooltip(e) {
+            const t = document.getElementById('tooltip');
+            t.style.left = (e.pageX + 15) + 'px';
+            t.style.top = (e.pageY + 15) + 'px';
+        }
+        function hideTooltip() { document.getElementById('tooltip').style.display = 'none'; }
+
+        // ═══════════════════════════════════════════════════════════
+        // TIME & DATE
+        // ═══════════════════════════════════════════════════════════
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('timeDisplay').textContent = now.toLocaleTimeString('ar-SA', { hour12: false });
+            document.getElementById('dateDisplay').textContent = now.toLocaleDateString('ar-SA');
+            const h = now.getHours();
+            let shift = h >= 6 && h < 14 ? 'A' : h >= 14 && h < 22 ? 'B' : 'C';
+            document.getElementById('shiftDisplay').textContent = 'نوبة ' + shift;
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // INIT
+        // ═══════════════════════════════════════════════════════════
+        function init() {
+            if (!load()) initSampleData();
+            loadSettings();
+            render();
+            updateTime();
+            setInterval(updateTime, 1000);
+            setInterval(save, 30000);
+        }
+
+        init();
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', e => {
+            if (e.ctrlKey && e.key === 's') { e.preventDefault(); exportJSON(); }
+            if (e.ctrlKey && e.key === 'e') { e.preventDefault(); toggleEditMode(); }
+            if (e.key === 'Escape') { closeModal('busModal'); closeModal('moveModal'); }
+            if (e.key === 'F11') { e.preventDefault(); toggleFullscreen(); }
+        });
+    </script>
+</body>
+</html>

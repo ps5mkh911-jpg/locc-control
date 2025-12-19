@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>إدارة عمليات الساحات الخارجية والمواصلات</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         :root {
             --primary: #ffd700;
             --bg-dark: #0a0a0a;
@@ -14,15 +20,15 @@
             --blue: #2196f3;
             --red: #f44336;
             --orange: #ff9800;
-            --purple: #9c27b0;
-            --cyan: #00bcd4;
             --text: #fff;
             --text-muted: #888;
-            --panel-width: 340px;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        html, body { height: 100%; overflow: hidden; }
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
+
         body {
             font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
             background: var(--bg-dark);
@@ -31,23 +37,25 @@
             flex-direction: column;
         }
 
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: var(--bg-dark); }
-        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 4px; }
 
-        /* ══════════════════ NOTIFICATIONS ══════════════════ */
+        /* ═══════════════ NOTIFICATIONS ═══════════════ */
         .notifications-container {
             position: fixed;
-            top: 60px;
+            top: 80px;
             left: 20px;
             z-index: 3000;
             display: flex;
             flex-direction: column;
             gap: 10px;
-            max-width: 380px;
+            max-width: 400px;
+            max-height: 70vh;
+            overflow-y: auto;
         }
         .notification {
-            padding: 14px 18px;
+            padding: 15px 20px;
             border-radius: 10px;
             display: flex;
             align-items: center;
@@ -63,62 +71,96 @@
         .notification.info { background: linear-gradient(135deg, rgba(13,71,161,0.95), rgba(25,118,210,0.95)); border-right: 4px solid #2196f3; }
         .notification-icon { font-size: 1.5rem; }
         .notification-content { flex: 1; }
-        .notification-title { font-weight: bold; margin-bottom: 2px; }
+        .notification-title { font-weight: bold; margin-bottom: 3px; }
         .notification-message { font-size: 0.85rem; opacity: 0.9; }
-        .notification-close { cursor: pointer; opacity: 0.7; font-size: 1.2rem; }
-        .notification-close:hover { opacity: 1; }
+        .notification-close { cursor: pointer; opacity: 0.7; font-size: 1.3rem; }
         @keyframes slideIn { from { transform: translateX(-100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
-        /* ══════════════════ HEADER ══════════════════ */
+        /* ═══════════════ HEADER ═══════════════ */
         .header {
-            background: linear-gradient(135deg, var(--bg-card), #252525);
-            padding: 10px 20px;
+            background: linear-gradient(180deg, var(--bg-card) 0%, var(--bg-dark) 100%);
+            padding: 15px 30px;
+            border-bottom: 3px solid var(--primary);
+            box-shadow: 0 4px 20px rgba(255, 215, 0, 0.3);
+            flex-shrink: 0;
+        }
+        .header-content {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 2px solid var(--primary);
-            flex-shrink: 0;
+            flex-wrap: wrap;
+            gap: 15px;
         }
-        .header h1 {
-            font-size: 1.3rem;
+        .header-title {
+            font-size: clamp(1.2rem, 3vw, 2rem);
+            font-weight: 700;
             color: var(--primary);
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+        .header-info {
             display: flex;
-            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .info-box {
+            background: rgba(255, 215, 0, 0.1);
+            border: 2px solid var(--primary);
+            padding: 8px 16px;
+            border-radius: 8px;
+            text-align: center;
+            min-width: 120px;
+        }
+        .info-label { font-size: 0.7rem; color: var(--primary); margin-bottom: 3px; }
+        .info-value { font-size: 1.1rem; font-weight: 600; }
+        .header-controls {
+            display: flex;
             gap: 10px;
         }
-        .clock {
-            font-size: 1.5rem;
-            font-weight: bold;
+        .header-btn {
+            background: rgba(255, 215, 0, 0.1);
+            border: 2px solid var(--primary);
             color: var(--primary);
-            font-family: 'Courier New', monospace;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.3s;
         }
+        .header-btn:hover { background: var(--primary); color: #000; }
+        .header-btn.active { background: var(--primary); color: #000; }
 
-        /* ══════════════════ LAYOUT ══════════════════ */
+        /* ═══════════════ MAIN LAYOUT ═══════════════ */
         .main-container {
             display: flex;
             flex: 1;
             overflow: hidden;
         }
 
-        /* ══════════════════ SIDEBAR ══════════════════ */
+        /* ═══════════════ SIDEBAR ═══════════════ */
         .sidebar {
-            width: var(--panel-width);
+            width: 360px;
             background: var(--bg-card);
             display: flex;
             flex-direction: column;
-            border-left: 2px solid var(--primary);
+            border-left: 3px solid var(--primary);
             flex-shrink: 0;
+            transition: all 0.3s;
+        }
+        .sidebar.hidden {
+            width: 0;
+            border: none;
+            overflow: hidden;
         }
         .sidebar-tabs {
             display: flex;
             flex-wrap: wrap;
             background: var(--bg-dark);
-            border-bottom: 1px solid #333;
+            border-bottom: 2px solid var(--primary);
         }
         .sidebar-tab {
             flex: 1;
-            min-width: 50%;
-            padding: 10px 5px;
+            min-width: 33.33%;
+            padding: 12px 8px;
             background: transparent;
             border: none;
             color: var(--text-muted);
@@ -128,12 +170,11 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 3px;
+            gap: 4px;
         }
         .sidebar-tab:hover { background: var(--bg-input); color: var(--text); }
-        .sidebar-tab.active { background: var(--bg-card); color: var(--primary); border-bottom: 2px solid var(--primary); }
-        .sidebar-tab span { font-size: 1.2rem; }
-
+        .sidebar-tab.active { background: var(--bg-card); color: var(--primary); border-bottom: 3px solid var(--primary); }
+        .sidebar-tab span { font-size: 1.3rem; }
         .sidebar-content {
             flex: 1;
             overflow-y: auto;
@@ -142,113 +183,256 @@
         .tab-panel { display: none; }
         .tab-panel.active { display: block; }
 
-        /* ══════════════════ PARKING AREA ══════════════════ */
+        /* ═══════════════ STATISTICS BAR ═══════════════ */
+        .stats-bar {
+            background: var(--bg-card);
+            padding: 15px 20px;
+            border-bottom: 2px solid var(--primary);
+            display: flex;
+            justify-content: space-around;
+            gap: 15px;
+            flex-wrap: wrap;
+            flex-shrink: 0;
+        }
+        .stat-card {
+            background: rgba(255, 215, 0, 0.05);
+            border: 2px solid var(--primary);
+            border-radius: 10px;
+            padding: 12px 20px;
+            flex: 1;
+            min-width: 120px;
+            max-width: 180px;
+            text-align: center;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 215, 0, 0.1), transparent);
+            transform: rotate(45deg);
+            animation: shimmer 3s infinite;
+        }
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.3);
+        }
+        .stat-icon { font-size: 1.5rem; margin-bottom: 5px; }
+        .stat-value {
+            font-size: clamp(1.5rem, 3vw, 2.2rem);
+            font-weight: 700;
+            color: var(--primary);
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+        .stat-label { font-size: 0.75rem; color: #ccc; margin-top: 3px; }
+
+        /* ═══════════════ LEGEND ═══════════════ */
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            padding: 12px 20px;
+            background: rgba(255, 215, 0, 0.05);
+            border-bottom: 2px solid var(--primary);
+            flex-wrap: wrap;
+            flex-shrink: 0;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .legend-color {
+            width: 30px;
+            height: 30px;
+            border-radius: 6px;
+            border: 2px solid var(--primary);
+        }
+        .legend-color.early { background: linear-gradient(135deg, #1b5e20, #2e7d32); }
+        .legend-color.ontime { background: linear-gradient(135deg, #0d47a1, #1565c0); }
+        .legend-color.late { background: linear-gradient(135deg, #b71c1c, #c62828); }
+        .legend-color.empty { background: #1a1a1a; }
+        .legend-text { font-size: 0.9rem; font-weight: 600; }
+
+        /* ═══════════════ PARKING AREA ═══════════════ */
         .parking-area {
             flex: 1;
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            padding: 15px;
-            gap: 15px;
         }
-
-        .parking-sections {
-            display: flex;
-            gap: 20px;
+        .parking-container {
             flex: 1;
-            overflow: hidden;
-        }
-
-        .parking-section {
-            flex: 1;
-            background: var(--bg-card);
-            border-radius: 12px;
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #333;
+            padding: 20px;
+            overflow-y: auto;
         }
         .section-title {
-            font-size: 1rem;
+            text-align: center;
+            font-size: clamp(1rem, 2vw, 1.5rem);
             color: var(--primary);
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
         }
-        .section-count {
-            background: var(--bg-input);
-            padding: 4px 12px;
-            border-radius: 15px;
-            font-size: 0.85rem;
-        }
-
         .parking-grid {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            gap: 8px;
+            display: flex;
+            gap: 40px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .parking-section {
             flex: 1;
-            overflow-y: auto;
-            padding: 5px;
+            min-width: 300px;
+            max-width: 800px;
+        }
+        .section-label {
+            text-align: center;
+            font-size: 1.1rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-weight: 700;
+            padding: 10px;
+            background: rgba(255, 215, 0, 0.1);
+            border: 2px solid var(--primary);
+            border-radius: 8px;
+        }
+        .parking-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
         }
 
+        /* ═══════════════ PARKING SPOTS ═══════════════ */
         .parking-spot {
-            aspect-ratio: 1;
-            background: var(--bg-input);
-            border: 2px solid #444;
+            width: clamp(80px, 10vw, 140px);
+            height: clamp(120px, 15vw, 200px);
+            background: #2a2a2a;
+            border: 3px solid var(--primary);
             border-radius: 8px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+            padding: 8px;
+            position: relative;
             cursor: pointer;
             transition: all 0.3s;
-            font-size: 0.7rem;
-            position: relative;
-            min-height: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
         .parking-spot:hover {
-            transform: scale(1.05);
-            border-color: var(--primary);
+            transform: scale(1.08);
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
             z-index: 10;
         }
-        .parking-spot.occupied {
-            border-width: 3px;
+        .parking-spot.early {
+            background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 100%);
+            border-color: #4caf50;
+            box-shadow: 0 0 20px rgba(76, 175, 80, 0.4);
         }
-        .parking-spot .spot-number {
-            font-weight: bold;
-            color: var(--text-muted);
-            font-size: 0.65rem;
+        .parking-spot.ontime {
+            background: linear-gradient(135deg, #0d47a1 0%, #1565c0 100%);
+            border-color: #2196f3;
+            box-shadow: 0 0 20px rgba(33, 150, 243, 0.4);
+        }
+        .parking-spot.late {
+            background: linear-gradient(135deg, #b71c1c 0%, #c62828 100%);
+            border-color: #f44336;
+            box-shadow: 0 0 20px rgba(244, 67, 54, 0.4);
+            animation: pulse-red 0.8s infinite;
+        }
+        @keyframes pulse-red {
+            0%, 100% { 
+                box-shadow: 0 0 20px rgba(244, 67, 54, 0.4);
+                transform: scale(1);
+            }
+            50% { 
+                box-shadow: 0 0 50px rgba(244, 67, 54, 1);
+                transform: scale(1.02);
+            }
+        }
+        .parking-spot.empty {
+            background: #1a1a1a;
+            border-color: #555;
+            opacity: 0.6;
+        }
+        .parking-spot.empty:hover { opacity: 0.9; }
+        .spot-number {
             position: absolute;
-            top: 2px;
-            right: 4px;
+            top: 3px;
+            right: 5px;
+            background: rgba(0, 0, 0, 0.7);
+            color: var(--primary);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: clamp(0.6rem, 1vw, 0.8rem);
+            font-weight: 700;
         }
-        .parking-spot .bus-plate {
+        .spot-status-badge {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: clamp(0.5rem, 0.8vw, 0.65rem);
+            font-weight: 700;
+        }
+        .spot-status-badge.early { background: #4caf50; }
+        .spot-status-badge.ontime { background: #2196f3; }
+        .spot-status-badge.late { background: #f44336; }
+        .bus-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 4px;
+            margin-top: 20px;
+        }
+        .info-line {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: clamp(0.55rem, 0.9vw, 0.75rem);
+            color: #fff;
+        }
+        .info-icon { font-size: clamp(0.7rem, 1vw, 0.9rem); min-width: 14px; }
+        .info-text {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-weight: 600;
+        }
+        .time-diff {
+            text-align: center;
+            font-size: clamp(0.6rem, 1vw, 0.85rem);
+            font-weight: 700;
+            padding: 4px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 4px;
+        }
+        .countdown {
+            font-size: clamp(0.7rem, 1.2vw, 1rem);
             font-weight: bold;
-            font-size: 0.7rem;
-            margin-top: 8px;
+            color: var(--primary);
         }
-        .parking-spot .countdown {
-            font-size: 0.65rem;
-            margin-top: 2px;
-        }
-        .parking-spot.status-green { border-color: var(--green); background: rgba(76,175,80,0.15); }
-        .parking-spot.status-blue { border-color: var(--blue); background: rgba(33,150,243,0.15); }
-        .parking-spot.status-red { border-color: var(--red); background: rgba(244,67,54,0.15); }
-        .parking-spot.status-red.late-blink { animation: lateBlink 1s infinite; }
-        @keyframes lateBlink {
-            0%, 100% { background: rgba(244,67,54,0.15); }
-            50% { background: rgba(244,67,54,0.4); }
+        .empty-text {
+            text-align: center;
+            color: #666;
+            font-size: 2rem;
+            margin-top: 40%;
         }
 
-        /* ══════════════════ FORM SELECTION MENU ══════════════════ */
+        /* ═══════════════ FORM MENU ═══════════════ */
         .form-menu {
             position: fixed;
             background: var(--bg-card);
@@ -256,20 +440,20 @@
             border-radius: 10px;
             padding: 10px 0;
             z-index: 2000;
-            min-width: 200px;
+            min-width: 220px;
             box-shadow: 0 10px 40px rgba(0,0,0,0.7);
             display: none;
         }
         .form-menu.show { display: block; }
         .form-menu-title {
-            padding: 8px 15px;
+            padding: 10px 15px;
             color: var(--primary);
             font-weight: bold;
             border-bottom: 1px solid #333;
             margin-bottom: 5px;
         }
         .form-menu-item {
-            padding: 10px 15px;
+            padding: 12px 15px;
             cursor: pointer;
             transition: all 0.2s;
             display: flex;
@@ -277,17 +461,17 @@
             gap: 10px;
         }
         .form-menu-item:hover { background: var(--bg-input); color: var(--primary); }
-        .form-menu-item span { font-size: 1.2rem; }
+        .form-menu-item span { font-size: 1.3rem; }
 
-        /* ══════════════════ MODAL ══════════════════ */
+        /* ═══════════════ MODAL ═══════════════ */
         .modal-overlay {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0,0,0,0.85);
-            z-index: 1000;
+            background: rgba(0,0,0,0.9);
+            z-index: 2500;
             display: none;
             align-items: center;
             justify-content: center;
@@ -297,116 +481,120 @@
         .modal {
             background: var(--bg-card);
             border-radius: 15px;
-            width: 90%;
-            max-width: 600px;
-            max-height: 85vh;
+            width: 95%;
+            max-width: 650px;
+            max-height: 90vh;
             overflow: hidden;
-            border: 2px solid var(--primary);
-            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            border: 3px solid var(--primary);
+            box-shadow: 0 20px 60px rgba(255,215,0,0.3);
         }
         .modal-header {
             background: linear-gradient(135deg, var(--bg-input), #333);
-            padding: 15px 20px;
+            padding: 18px 25px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid var(--primary);
+            border-bottom: 2px solid var(--primary);
         }
-        .modal-title { font-size: 1.1rem; color: var(--primary); }
+        .modal-title { font-size: 1.2rem; color: var(--primary); font-weight: bold; }
         .modal-close {
             background: none;
             border: none;
             color: var(--text);
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             cursor: pointer;
+            transition: color 0.3s;
         }
+        .modal-close:hover { color: var(--red); }
         .modal-body {
-            padding: 20px;
+            padding: 25px;
             overflow-y: auto;
-            max-height: calc(85vh - 130px);
+            max-height: calc(90vh - 150px);
         }
         .modal-footer {
-            padding: 15px 20px;
+            padding: 18px 25px;
             border-top: 1px solid #333;
             display: flex;
-            gap: 10px;
+            gap: 12px;
             justify-content: flex-end;
         }
 
-        /* ══════════════════ FORM STYLES ══════════════════ */
+        /* ═══════════════ FORM STYLES ═══════════════ */
         .form-section {
             margin-bottom: 20px;
-            padding: 15px;
+            padding: 18px;
             background: var(--bg-input);
-            border-radius: 10px;
+            border-radius: 12px;
+            border: 1px solid #444;
         }
         .form-section-title {
             color: var(--primary);
-            font-size: 0.95rem;
+            font-size: 1rem;
             margin-bottom: 15px;
-            padding-bottom: 8px;
+            padding-bottom: 10px;
             border-bottom: 1px solid #444;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
         }
         .form-row {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-bottom: 12px;
+            gap: 15px;
+            margin-bottom: 15px;
         }
-        .form-group { display: flex; flex-direction: column; gap: 5px; }
+        .form-group { display: flex; flex-direction: column; gap: 6px; }
         .form-group.full-width { grid-column: span 2; }
         .form-group label {
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             color: var(--text-muted);
         }
         .form-group input, .form-group select, .form-group textarea {
-            padding: 10px;
+            padding: 12px;
             background: var(--bg-dark);
-            border: 1px solid #444;
-            border-radius: 6px;
+            border: 2px solid #444;
+            border-radius: 8px;
             color: var(--text);
-            font-size: 0.9rem;
+            font-size: 1rem;
+            transition: border-color 0.3s;
         }
-        .form-group input:focus, .form-group select:focus {
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
             outline: none;
             border-color: var(--primary);
         }
 
-        /* ══════════════════ BUTTONS ══════════════════ */
+        /* ═══════════════ BUTTONS ═══════════════ */
         .btn {
-            padding: 10px 20px;
+            padding: 12px 25px;
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 0.9rem;
+            font-size: 1rem;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
             transition: all 0.3s;
+            font-weight: 600;
         }
         .btn-primary { background: var(--primary); color: #000; }
-        .btn-primary:hover { background: #ffed4a; }
-        .btn-secondary { background: var(--bg-input); color: var(--text); }
+        .btn-primary:hover { background: #ffed4a; transform: translateY(-2px); }
+        .btn-secondary { background: var(--bg-input); color: var(--text); border: 2px solid #555; }
         .btn-secondary:hover { background: #444; }
         .btn-danger { background: var(--red); color: #fff; }
         .btn-danger:hover { background: #d32f2f; }
-        .btn-success { background: var(--green); color: #fff; }
-        .btn-success:hover { background: #388e3c; }
 
-        /* ══════════════════ SETTINGS TAB ══════════════════ */
+        /* ═══════════════ SETTINGS TAB ═══════════════ */
         .settings-section {
             background: var(--bg-input);
             border-radius: 10px;
             padding: 15px;
             margin-bottom: 15px;
+            border: 1px solid #333;
         }
         .settings-section h3 {
             color: var(--primary);
             font-size: 0.95rem;
-            margin-bottom: 12px;
+            margin-bottom: 15px;
             display: flex;
             align-items: center;
             gap: 8px;
@@ -415,21 +603,16 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px 0;
+            padding: 12px 0;
             border-bottom: 1px solid #333;
         }
         .setting-item:last-child { border-bottom: none; }
-        .setting-label { font-size: 0.85rem; }
-        .setting-value {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+        .setting-label { font-size: 0.9rem; }
         .toggle {
-            width: 44px;
-            height: 24px;
+            width: 50px;
+            height: 26px;
             background: #444;
-            border-radius: 12px;
+            border-radius: 13px;
             position: relative;
             cursor: pointer;
             transition: all 0.3s;
@@ -438,157 +621,222 @@
         .toggle::after {
             content: '';
             position: absolute;
-            width: 18px;
-            height: 18px;
+            width: 20px;
+            height: 20px;
             background: #fff;
             border-radius: 50%;
             top: 3px;
             right: 3px;
             transition: all 0.3s;
         }
-        .toggle.active::after { right: 23px; }
+        .toggle.active::after { right: 27px; }
+        .color-picker {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .color-picker input[type="color"] {
+            width: 40px;
+            height: 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
 
-        /* ══════════════════ ALERTS TAB ══════════════════ */
+        /* ═══════════════ ALERTS TAB ═══════════════ */
         .alerts-list {
-            max-height: 500px;
+            max-height: 600px;
             overflow-y: auto;
         }
         .alert-item {
             padding: 12px;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             background: var(--bg-input);
             border-radius: 8px;
-            border-right: 3px solid;
+            border-right: 4px solid;
             display: flex;
-            gap: 10px;
+            gap: 12px;
         }
         .alert-item.alert-danger { border-color: var(--red); }
         .alert-item.alert-warning { border-color: var(--orange); }
         .alert-item.alert-info { border-color: var(--blue); }
         .alert-item.alert-success { border-color: var(--green); }
-        .alert-icon { font-size: 1.3rem; }
+        .alert-icon { font-size: 1.4rem; }
         .alert-content { flex: 1; }
-        .alert-title { font-weight: bold; font-size: 0.9rem; margin-bottom: 3px; }
-        .alert-message { font-size: 0.8rem; color: var(--text-muted); }
-        .alert-time { font-size: 0.7rem; color: var(--text-muted); margin-top: 5px; }
+        .alert-title { font-weight: bold; font-size: 0.95rem; margin-bottom: 4px; }
+        .alert-message { font-size: 0.85rem; color: var(--text-muted); }
+        .alert-time { font-size: 0.75rem; color: var(--text-muted); margin-top: 5px; }
 
-        /* ══════════════════ KPIs TAB ══════════════════ */
+        /* ═══════════════ KPIs TAB ═══════════════ */
         .kpi-card {
             background: var(--bg-input);
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 12px;
-            border-right: 3px solid var(--primary);
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 15px;
+            border-right: 4px solid var(--primary);
         }
-        .kpi-title { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px; }
-        .kpi-value { font-size: 1.8rem; font-weight: bold; color: var(--primary); }
-        .kpi-subtitle { font-size: 0.75rem; color: var(--text-muted); margin-top: 5px; }
-        .kpi-chart {
-            height: 60px;
-            background: linear-gradient(90deg, var(--green) 30%, var(--blue) 30% 60%, var(--red) 60%);
-            border-radius: 5px;
-            margin-top: 10px;
-        }
-
-        /* ══════════════════ REGISTERED BUSES TAB ══════════════════ */
-        .bus-record {
-            background: var(--bg-input);
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 10px;
-            border-right: 3px solid var(--primary);
-        }
-        .bus-record-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-        .bus-record-plate {
-            font-weight: bold;
-            font-size: 1.1rem;
-            color: var(--primary);
-        }
-        .bus-record-spot {
-            background: var(--bg-dark);
-            padding: 4px 10px;
-            border-radius: 5px;
-            font-size: 0.8rem;
-        }
+        .kpi-title { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px; }
+        .kpi-value { font-size: 2rem; font-weight: bold; color: var(--primary); }
+        .kpi-subtitle { font-size: 0.8rem; color: var(--text-muted); margin-top: 8px; }
         .progress-bar {
-            height: 8px;
+            height: 10px;
             background: var(--bg-dark);
-            border-radius: 4px;
+            border-radius: 5px;
             overflow: hidden;
-            margin-bottom: 8px;
+            margin-top: 10px;
         }
         .progress-fill {
             height: 100%;
-            transition: width 0.3s;
+            transition: width 0.5s;
         }
         .progress-fill.green { background: var(--green); }
         .progress-fill.blue { background: var(--blue); }
         .progress-fill.red { background: var(--red); }
+        .kpi-chart {
+            height: 25px;
+            border-radius: 5px;
+            margin-top: 12px;
+        }
+
+        /* ═══════════════ FORMS TAB ═══════════════ */
+        .form-card {
+            background: var(--bg-input);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        .form-card:hover { border-color: var(--primary); transform: translateX(-5px); }
+        .form-card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+        .form-card-icon { font-size: 1.8rem; }
+        .form-card-title { font-weight: bold; font-size: 1rem; }
+        .form-card-desc { font-size: 0.85rem; color: var(--text-muted); }
+
+        /* ═══════════════ REGISTERED BUSES TAB ═══════════════ */
+        .bus-record {
+            background: var(--bg-input);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 12px;
+            border-right: 4px solid var(--primary);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .bus-record:hover { transform: translateX(-5px); border-color: #fff; }
+        .bus-record-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .bus-record-plate {
+            font-weight: bold;
+            font-size: 1.15rem;
+            color: var(--primary);
+        }
+        .bus-record-spot {
+            background: var(--bg-dark);
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+        }
+        .bus-record-info {
+            display: flex;
+            gap: 15px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+        }
+        .form-progress {
+            height: 8px;
+            background: var(--bg-dark);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+        .form-progress-fill {
+            height: 100%;
+            background: var(--green);
+            transition: width 0.3s;
+        }
         .bus-record-forms {
             display: flex;
             flex-wrap: wrap;
-            gap: 5px;
+            gap: 6px;
         }
         .form-badge {
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-size: 0.7rem;
+            padding: 4px 10px;
+            border-radius: 5px;
+            font-size: 0.75rem;
             background: var(--bg-dark);
             color: var(--text-muted);
         }
         .form-badge.completed { background: var(--green); color: #fff; }
         .form-badge.in-progress { background: var(--orange); color: #fff; }
 
-        /* ══════════════════ FORMS TAB ══════════════════ */
-        .form-card {
-            background: var(--bg-input);
-            border-radius: 10px;
+        /* ═══════════════ TOOLTIP ═══════════════ */
+        .tooltip {
+            position: fixed;
+            background: rgba(0, 0, 0, 0.95);
+            border: 2px solid var(--primary);
             padding: 15px;
+            border-radius: 10px;
+            pointer-events: none;
+            z-index: 1000;
+            display: none;
+            min-width: 280px;
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3);
+        }
+        .tooltip-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--primary);
             margin-bottom: 10px;
-            cursor: pointer;
-            transition: all 0.3s;
-            border: 1px solid transparent;
+            border-bottom: 1px solid var(--primary);
+            padding-bottom: 8px;
         }
-        .form-card:hover { border-color: var(--primary); }
-        .form-card-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 8px;
+        .tooltip-line {
+            font-size: 0.9rem;
+            margin: 6px 0;
+            color: #fff;
         }
-        .form-card-icon { font-size: 1.5rem; }
-        .form-card-title { font-weight: bold; font-size: 0.95rem; }
-        .form-card-desc { font-size: 0.8rem; color: var(--text-muted); }
 
-        /* ══════════════════ LEGEND ══════════════════ */
-        .legend {
-            display: flex;
-            gap: 20px;
-            padding: 10px 15px;
+        /* ═══════════════ FOOTER ═══════════════ */
+        .footer {
             background: var(--bg-card);
-            border-radius: 8px;
-            justify-content: center;
-            flex-wrap: wrap;
+            padding: 12px 20px;
+            text-align: center;
+            border-top: 3px solid var(--primary);
+            flex-shrink: 0;
         }
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 0.8rem;
+        .footer-text {
+            color: var(--primary);
+            font-size: 0.85rem;
+            letter-spacing: 1px;
         }
-        .legend-color {
-            width: 16px;
-            height: 16px;
-            border-radius: 4px;
+
+        /* ═══════════════ RESPONSIVE ═══════════════ */
+        @media (max-width: 1200px) {
+            .sidebar { width: 320px; }
+            .parking-grid { gap: 20px; }
         }
-        .legend-color.green { background: var(--green); }
-        .legend-color.blue { background: var(--blue); }
-        .legend-color.red { background: var(--red); }
+        @media (max-width: 900px) {
+            .sidebar { width: 280px; }
+            .stats-bar { padding: 10px; }
+            .stat-card { padding: 10px 15px; min-width: 100px; }
+        }
+        @media (max-width: 768px) {
+            .main-container { flex-direction: column; }
+            .sidebar { width: 100%; height: 50%; border-left: none; border-top: 3px solid var(--primary); }
+            .parking-grid { flex-direction: column; }
+        }
     </style>
 </head>
 <body>
@@ -599,59 +847,127 @@
     <div class="form-menu" id="formMenu">
         <div class="form-menu-title">📋 اختر النموذج</div>
         <div class="form-menu-item" onclick="selectForm('ScrLogIn')">
-            <span>🚌</span> تسجيل الدخول
+            <span>🚌</span> ScrLogIn - تسجيل الدخول
         </div>
         <div class="form-menu-item" onclick="selectForm('ScrSegregationIn')">
-            <span>📥</span> دخول الفرز
+            <span>📥</span> ScrSegregationIn - دخول الفرز
         </div>
         <div class="form-menu-item" onclick="selectForm('ScrWelcomeLounge')">
-            <span>☕</span> صالة الترحيب
+            <span>☕</span> ScrWelcomeLounge - صالة الترحيب
         </div>
         <div class="form-menu-item" onclick="selectForm('ScrSegregationExit')">
-            <span>📤</span> خروج الفرز
+            <span>📤</span> ScrSegregationExit - خروج الفرز
         </div>
         <div class="form-menu-item" onclick="selectForm('ScrCurbside')">
-            <span>🛑</span> نقطة الإنزال
+            <span>🛑</span> ScrCurbside - نقطة الإنزال
         </div>
     </div>
 
     <!-- Header -->
     <header class="header">
-        <h1>🚌 إدارة عمليات الساحات الخارجية والمواصلات</h1>
-        <div class="clock" id="clock">00:00:00</div>
+        <div class="header-content">
+            <div class="header-title">📺 إدارة عمليات الساحات الخارجية والمواصلات</div>
+            <div class="header-info">
+                <div class="info-box">
+                    <div class="info-label">الوقت الحالي</div>
+                    <div class="info-value" id="currentTime">--:--:--</div>
+                </div>
+                <div class="info-box">
+                    <div class="info-label">النوبة</div>
+                    <div class="info-value" id="currentShift">-</div>
+                </div>
+                <div class="info-box">
+                    <div class="info-label">التاريخ</div>
+                    <div class="info-value" id="currentDate">----/--/--</div>
+                </div>
+            </div>
+            <div class="header-controls">
+                <button class="header-btn" onclick="toggleSidebar()" id="sidebarToggle">📋 القائمة</button>
+                <button class="header-btn" onclick="toggleEditMode()" id="editToggle">✏️ تحرير</button>
+            </div>
+        </div>
     </header>
+
+    <!-- Statistics Bar -->
+    <div class="stats-bar">
+        <div class="stat-card">
+            <div class="stat-icon">🚌</div>
+            <div class="stat-value" id="totalBuses">0</div>
+            <div class="stat-label">إجمالي الحافلات</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">🟢</div>
+            <div class="stat-value" id="earlyCount">0</div>
+            <div class="stat-label">مبكر (&gt;7 ساعات)</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">🔵</div>
+            <div class="stat-value" id="ontimeCount">0</div>
+            <div class="stat-label">في الموعد (3-7 ساعات)</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">🔴</div>
+            <div class="stat-value" id="lateCount">0</div>
+            <div class="stat-label">متأخر (&lt;3 ساعات)</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">👥</div>
+            <div class="stat-value" id="totalPassengers">0</div>
+            <div class="stat-label">المسافرين اليوم</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">✈️</div>
+            <div class="stat-value" id="totalFlights">0</div>
+            <div class="stat-label">الرحلات اليوم</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">📊</div>
+            <div class="stat-value" id="occupancyRate">0%</div>
+            <div class="stat-label">نسبة الإشغال</div>
+        </div>
+    </div>
+
+    <!-- Legend -->
+    <div class="legend">
+        <div class="legend-item">
+            <div class="legend-color early"></div>
+            <div class="legend-text">🟢 مبكر (&gt; 7 ساعات)</div>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color ontime"></div>
+            <div class="legend-text">🔵 في الموعد (3-7 ساعات)</div>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color late"></div>
+            <div class="legend-text">🔴 متأخر (&lt; 3 ساعات)</div>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color empty"></div>
+            <div class="legend-text">⬜ فارغ</div>
+        </div>
+    </div>
 
     <!-- Main Container -->
     <div class="main-container">
         <!-- Parking Area -->
         <div class="parking-area">
-            <div class="legend">
-                <div class="legend-item"><div class="legend-color green"></div> مبكر (أكثر من 7 ساعات)</div>
-                <div class="legend-item"><div class="legend-color blue"></div> في الموعد (3-7 ساعات)</div>
-                <div class="legend-item"><div class="legend-color red"></div> متأخر (أقل من 3 ساعات)</div>
-            </div>
-            <div class="parking-sections">
-                <!-- Section 1: Spots 1-42 -->
-                <div class="parking-section">
-                    <div class="section-header">
-                        <div class="section-title">📥 منطقة الدخول (1-42)</div>
-                        <div class="section-count" id="section1Count">0/42</div>
+            <div class="parking-container">
+                <div class="section-title">⬇️ مواقف صالة الفرز - 87 موقف ⬇️</div>
+                <div class="parking-grid">
+                    <div class="parking-section">
+                        <div class="section-label">🚪 جهة المدخل (42 موقف)</div>
+                        <div id="entranceSection"></div>
                     </div>
-                    <div class="parking-grid" id="section1Grid"></div>
-                </div>
-                <!-- Section 2: Spots 43-87 -->
-                <div class="parking-section">
-                    <div class="section-header">
-                        <div class="section-title">📤 منطقة الخروج (43-87)</div>
-                        <div class="section-count" id="section2Count">0/45</div>
+                    <div class="parking-section">
+                        <div class="section-label">🚪 جهة المخرج (45 موقف)</div>
+                        <div id="exitSection"></div>
                     </div>
-                    <div class="parking-grid" id="section2Grid"></div>
                 </div>
             </div>
         </div>
 
         <!-- Sidebar -->
-        <aside class="sidebar">
+        <aside class="sidebar" id="sidebar">
             <div class="sidebar-tabs">
                 <button class="sidebar-tab active" onclick="switchTab('main')">
                     <span>🏠</span> رئيسية
@@ -677,20 +993,24 @@
                 <!-- Main Tab -->
                 <div class="tab-panel active" id="mainTab">
                     <div class="kpi-card">
-                        <div class="kpi-title">إجمالي الحافلات</div>
-                        <div class="kpi-value" id="totalBuses">0</div>
+                        <div class="kpi-title">إجمالي الحافلات الآن</div>
+                        <div class="kpi-value" id="mainTotalBuses">0</div>
                     </div>
                     <div class="kpi-card" style="border-color: var(--green);">
-                        <div class="kpi-title">مبكر</div>
-                        <div class="kpi-value" style="color: var(--green);" id="earlyBuses">0</div>
+                        <div class="kpi-title">🟢 حافلات مبكرة</div>
+                        <div class="kpi-value" style="color: var(--green);" id="mainEarlyBuses">0</div>
                     </div>
                     <div class="kpi-card" style="border-color: var(--blue);">
-                        <div class="kpi-title">في الموعد</div>
-                        <div class="kpi-value" style="color: var(--blue);" id="onTimeBuses">0</div>
+                        <div class="kpi-title">🔵 في الموعد</div>
+                        <div class="kpi-value" style="color: var(--blue);" id="mainOnTimeBuses">0</div>
                     </div>
                     <div class="kpi-card" style="border-color: var(--red);">
-                        <div class="kpi-title">متأخر</div>
-                        <div class="kpi-value" style="color: var(--red);" id="lateBuses">0</div>
+                        <div class="kpi-title">🔴 متأخرة</div>
+                        <div class="kpi-value" style="color: var(--red);" id="mainLateBuses">0</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-title">👥 إجمالي المسافرين اليوم</div>
+                        <div class="kpi-value" id="mainTotalPax">0</div>
                     </div>
                 </div>
 
@@ -700,14 +1020,31 @@
                         <h3>⏰ إعدادات الوقت</h3>
                         <div class="setting-item">
                             <span class="setting-label">حد المبكر (ساعات)</span>
-                            <div class="setting-value">
-                                <input type="number" id="earlyThreshold" value="7" style="width: 60px; padding: 5px; text-align: center;">
-                            </div>
+                            <input type="number" id="earlyThreshold" value="7" style="width: 70px; padding: 8px; text-align: center; background: var(--bg-dark); border: 2px solid #444; border-radius: 5px; color: #fff;">
                         </div>
                         <div class="setting-item">
                             <span class="setting-label">حد المتأخر (ساعات)</span>
-                            <div class="setting-value">
-                                <input type="number" id="lateThreshold" value="3" style="width: 60px; padding: 5px; text-align: center;">
+                            <input type="number" id="lateThreshold" value="3" style="width: 70px; padding: 8px; text-align: center; background: var(--bg-dark); border: 2px solid #444; border-radius: 5px; color: #fff;">
+                        </div>
+                    </div>
+                    <div class="settings-section">
+                        <h3>🎨 الألوان</h3>
+                        <div class="setting-item">
+                            <span class="setting-label">لون المبكر</span>
+                            <div class="color-picker">
+                                <input type="color" id="colorEarly" value="#4caf50" onchange="updateColors()">
+                            </div>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">لون في الموعد</span>
+                            <div class="color-picker">
+                                <input type="color" id="colorOntime" value="#2196f3" onchange="updateColors()">
+                            </div>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">لون المتأخر</span>
+                            <div class="color-picker">
+                                <input type="color" id="colorLate" value="#f44336" onchange="updateColors()">
                             </div>
                         </div>
                     </div>
@@ -724,7 +1061,7 @@
                     </div>
                     <div class="settings-section">
                         <h3>📊 تصدير البيانات</h3>
-                        <button class="btn btn-primary" onclick="exportToJSON()" style="width: 100%; margin-bottom: 8px;">
+                        <button class="btn btn-primary" onclick="exportToJSON()" style="width: 100%; margin-bottom: 10px;">
                             📥 تصدير JSON
                         </button>
                         <button class="btn btn-secondary" onclick="exportToCSV()" style="width: 100%;">
@@ -736,11 +1073,11 @@
                 <!-- Alerts Tab -->
                 <div class="tab-panel" id="alertsTab">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                        <h3 style="color: var(--primary);">سجل التنبيهات</h3>
-                        <button class="btn btn-secondary" onclick="clearAlerts()" style="padding: 5px 10px; font-size: 0.75rem;">مسح</button>
+                        <h3 style="color: var(--primary);">📋 سجل التنبيهات</h3>
+                        <button class="btn btn-secondary" onclick="clearAlerts()" style="padding: 6px 12px; font-size: 0.8rem;">مسح الكل</button>
                     </div>
                     <div class="alerts-list" id="alertsList">
-                        <div style="text-align: center; color: var(--text-muted); padding: 20px;">
+                        <div style="text-align: center; color: var(--text-muted); padding: 30px;">
                             لا توجد تنبيهات
                         </div>
                     </div>
@@ -749,66 +1086,71 @@
                 <!-- KPIs Tab -->
                 <div class="tab-panel" id="kpisTab">
                     <div class="kpi-card">
-                        <div class="kpi-title">نسبة الإشغال</div>
-                        <div class="kpi-value" id="occupancyRate">0%</div>
-                        <div class="progress-bar" style="margin-top: 10px;">
+                        <div class="kpi-title">📊 نسبة الإشغال</div>
+                        <div class="kpi-value" id="kpiOccupancy">0%</div>
+                        <div class="progress-bar">
                             <div class="progress-fill blue" id="occupancyBar" style="width: 0%;"></div>
                         </div>
                     </div>
                     <div class="kpi-card">
-                        <div class="kpi-title">متوسط وقت الانتظار</div>
-                        <div class="kpi-value" id="avgWaitTime">0 د</div>
+                        <div class="kpi-title">⏱️ متوسط وقت الانتظار</div>
+                        <div class="kpi-value" id="kpiAvgWait">0 د</div>
                     </div>
                     <div class="kpi-card">
-                        <div class="kpi-title">توزيع الحالات</div>
-                        <div class="kpi-chart" id="statusChart"></div>
-                        <div style="display: flex; justify-content: space-between; margin-top: 8px; font-size: 0.75rem;">
-                            <span style="color: var(--green);" id="earlyPct">0%</span>
-                            <span style="color: var(--blue);" id="onTimePct">0%</span>
-                            <span style="color: var(--red);" id="latePct">0%</span>
+                        <div class="kpi-title">📈 توزيع الحالات</div>
+                        <div class="kpi-chart" id="statusChart" style="background: linear-gradient(90deg, var(--green) 33%, var(--blue) 33% 66%, var(--red) 66%);"></div>
+                        <div style="display: flex; justify-content: space-between; margin-top: 10px; font-size: 0.85rem;">
+                            <span style="color: var(--green);" id="kpiEarlyPct">0%</span>
+                            <span style="color: var(--blue);" id="kpiOntimePct">0%</span>
+                            <span style="color: var(--red);" id="kpiLatePct">0%</span>
                         </div>
                     </div>
                     <div class="kpi-card">
-                        <div class="kpi-title">إجمالي اليوم</div>
-                        <div class="kpi-value" id="dailyTotal">0</div>
+                        <div class="kpi-title">🚌 حافلات اليوم</div>
+                        <div class="kpi-value" id="kpiDailyBuses">0</div>
                         <div class="kpi-subtitle">حافلة تمت معالجتها</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-title">👥 مسافرين اليوم</div>
+                        <div class="kpi-value" id="kpiDailyPax">0</div>
+                        <div class="kpi-subtitle">مسافر</div>
                     </div>
                 </div>
 
                 <!-- Forms Tab -->
                 <div class="tab-panel" id="formsTab">
-                    <div class="form-card" onclick="showFormInfo('ScrLogIn')">
+                    <div class="form-card" onclick="openFormFromTab('ScrLogIn')">
                         <div class="form-card-header">
                             <span class="form-card-icon">🚌</span>
-                            <span class="form-card-title">ScrLogIn - تسجيل الدخول</span>
+                            <span class="form-card-title">ScrLogIn</span>
                         </div>
                         <div class="form-card-desc">تسجيل دخول الحافلة للموقف</div>
                     </div>
-                    <div class="form-card" onclick="showFormInfo('ScrSegregationIn')">
+                    <div class="form-card" onclick="openFormFromTab('ScrSegregationIn')">
                         <div class="form-card-header">
                             <span class="form-card-icon">📥</span>
-                            <span class="form-card-title">ScrSegregationIn - دخول الفرز</span>
+                            <span class="form-card-title">ScrSegregationIn</span>
                         </div>
                         <div class="form-card-desc">تسجيل دخول منطقة الفرز</div>
                     </div>
-                    <div class="form-card" onclick="showFormInfo('ScrWelcomeLounge')">
+                    <div class="form-card" onclick="openFormFromTab('ScrWelcomeLounge')">
                         <div class="form-card-header">
                             <span class="form-card-icon">☕</span>
-                            <span class="form-card-title">ScrWelcomeLounge - صالة الترحيب</span>
+                            <span class="form-card-title">ScrWelcomeLounge</span>
                         </div>
-                        <div class="form-card-desc">تسجيل بيانات صالة الترحيب</div>
+                        <div class="form-card-desc">تسجيل بيانات صالة الترحيب (يظهر في الموقف)</div>
                     </div>
-                    <div class="form-card" onclick="showFormInfo('ScrSegregationExit')">
+                    <div class="form-card" onclick="openFormFromTab('ScrSegregationExit')">
                         <div class="form-card-header">
                             <span class="form-card-icon">📤</span>
-                            <span class="form-card-title">ScrSegregationExit - خروج الفرز</span>
+                            <span class="form-card-title">ScrSegregationExit</span>
                         </div>
-                        <div class="form-card-desc">تسجيل خروج من منطقة الفرز</div>
+                        <div class="form-card-desc">تسجيل خروج من منطقة الفرز (يخلي الموقف)</div>
                     </div>
-                    <div class="form-card" onclick="showFormInfo('ScrCurbside')">
+                    <div class="form-card" onclick="openFormFromTab('ScrCurbside')">
                         <div class="form-card-header">
                             <span class="form-card-icon">🛑</span>
-                            <span class="form-card-title">ScrCurbside - نقطة الإنزال</span>
+                            <span class="form-card-title">ScrCurbside</span>
                         </div>
                         <div class="form-card-desc">تسجيل عند نقطة الإنزال</div>
                     </div>
@@ -817,13 +1159,20 @@
                 <!-- Registered Buses Tab -->
                 <div class="tab-panel" id="busesTab">
                     <div id="busRecordsList">
-                        <div style="text-align: center; color: var(--text-muted); padding: 20px;">
+                        <div style="text-align: center; color: var(--text-muted); padding: 30px;">
                             لا توجد حافلات مسجلة
                         </div>
                     </div>
                 </div>
             </div>
         </aside>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <div class="footer-text">
+            إدارة عمليات الساحات الخارجية والمواصلات v3.0 | متوافق مع Power BI | آخر تحديث: <span id="lastUpdate">--:--:--</span>
+        </div>
     </div>
 
     <!-- Modal -->
@@ -841,12 +1190,21 @@
         </div>
     </div>
 
+    <!-- Tooltip -->
+    <div class="tooltip" id="tooltip"></div>
+
     <script>
-        // ══════════════════ DATA STORE ══════════════════
+        // ═══════════════════════════════════════════════════════════
+        // DATA STORE - متوافق مع Power BI
+        // ═══════════════════════════════════════════════════════════
+        
         let busRecords = [];
         let alerts = [];
+        let dailyStats = { buses: 0, passengers: 0, flights: new Set() };
         let currentSpot = null;
         let currentForm = null;
+        let currentBusPlate = null;
+        let editMode = false;
         let settings = {
             sound: false,
             popup: true,
@@ -854,13 +1212,23 @@
             lateThreshold: 3
         };
 
-        // ══════════════════ INITIALIZE ══════════════════
+        // ═══════════════════════════════════════════════════════════
+        // INITIALIZE
+        // ═══════════════════════════════════════════════════════════
+        
         document.addEventListener('DOMContentLoaded', () => {
-            initializeParkingGrid();
-            startClock();
-            initializeSampleBuses(); // Add 30 sample buses
-            updateStats();
-            startCountdownUpdater();
+            renderParkingSections();
+            initializeSampleBuses(); // 30 حافلة تجريبية
+            updateStatistics();
+            updateTimeAndShift();
+            updateBusRecordsList();
+            
+            setInterval(updateTimeAndShift, 1000);
+            setInterval(updateCountdowns, 1000);
+            setInterval(() => {
+                renderParkingSections();
+                updateStatistics();
+            }, 30000);
             
             // Close form menu on outside click
             document.addEventListener('click', (e) => {
@@ -871,42 +1239,236 @@
             });
         });
 
-        // ══════════════════ PARKING GRID ══════════════════
-        function initializeParkingGrid() {
-            const section1 = document.getElementById('section1Grid');
-            const section2 = document.getElementById('section2Grid');
+        // ═══════════════════════════════════════════════════════════
+        // 30 SAMPLE BUSES
+        // ═══════════════════════════════════════════════════════════
+        
+        function initializeSampleBuses() {
+            const now = new Date();
+            const samples = [
+                // مبكر (10 حافلات)
+                { plate: 'ABC 1001', spot: 1, flight: 'SV1001', pax: 45, gate: 'G10', hoursOffset: 10 },
+                { plate: 'ABC 1002', spot: 3, flight: 'SV1002', pax: 52, gate: 'G12', hoursOffset: 12 },
+                { plate: 'ABC 1003', spot: 5, flight: 'SV1003', pax: 48, gate: 'G15', hoursOffset: 9 },
+                { plate: 'ABC 1004', spot: 7, flight: 'SV1004', pax: 50, gate: 'G18', hoursOffset: 11 },
+                { plate: 'ABC 1005', spot: 9, flight: 'SV1005', pax: 47, gate: 'G20', hoursOffset: 8 },
+                { plate: 'ABC 1006', spot: 11, flight: 'SV1006', pax: 55, gate: 'G22', hoursOffset: 14 },
+                { plate: 'ABC 1007', spot: 13, flight: 'SV1007', pax: 43, gate: 'G25', hoursOffset: 10 },
+                { plate: 'ABC 1008', spot: 15, flight: 'SV1008', pax: 51, gate: 'G28', hoursOffset: 9 },
+                { plate: 'ABC 1009', spot: 43, flight: 'SV1009', pax: 49, gate: 'G30', hoursOffset: 12 },
+                { plate: 'ABC 1010', spot: 45, flight: 'SV1010', pax: 46, gate: 'G32', hoursOffset: 8 },
+                
+                // في الموعد (10 حافلات)
+                { plate: 'DEF 2001', spot: 17, flight: 'SV2001', pax: 44, gate: 'G11', hoursOffset: 5 },
+                { plate: 'DEF 2002', spot: 19, flight: 'SV2002', pax: 53, gate: 'G13', hoursOffset: 6 },
+                { plate: 'DEF 2003', spot: 21, flight: 'SV2003', pax: 47, gate: 'G16', hoursOffset: 4 },
+                { plate: 'DEF 2004', spot: 23, flight: 'SV2004', pax: 50, gate: 'G19', hoursOffset: 5.5 },
+                { plate: 'DEF 2005', spot: 25, flight: 'SV2005', pax: 48, gate: 'G21', hoursOffset: 6.5 },
+                { plate: 'DEF 2006', spot: 27, flight: 'SV2006', pax: 52, gate: 'G23', hoursOffset: 4.5 },
+                { plate: 'DEF 2007', spot: 47, flight: 'SV2007', pax: 45, gate: 'G26', hoursOffset: 5 },
+                { plate: 'DEF 2008', spot: 49, flight: 'SV2008', pax: 54, gate: 'G29', hoursOffset: 6 },
+                { plate: 'DEF 2009', spot: 51, flight: 'SV2009', pax: 46, gate: 'G31', hoursOffset: 4 },
+                { plate: 'DEF 2010', spot: 53, flight: 'SV2010', pax: 49, gate: 'G33', hoursOffset: 5.5 },
+                
+                // متأخر (10 حافلات)
+                { plate: 'GHI 3001', spot: 29, flight: 'SV3001', pax: 51, gate: 'G14', hoursOffset: 2 },
+                { plate: 'GHI 3002', spot: 31, flight: 'SV3002', pax: 47, gate: 'G17', hoursOffset: 1.5 },
+                { plate: 'GHI 3003', spot: 33, flight: 'SV3003', pax: 53, gate: 'G24', hoursOffset: 0.5 },
+                { plate: 'GHI 3004', spot: 35, flight: 'SV3004', pax: 48, gate: 'G27', hoursOffset: 2.5 },
+                { plate: 'GHI 3005', spot: 37, flight: 'SV3005', pax: 50, gate: 'G34', hoursOffset: 1 },
+                { plate: 'GHI 3006', spot: 39, flight: 'SV3006', pax: 44, gate: 'G35', hoursOffset: 0.25 },
+                { plate: 'GHI 3007', spot: 55, flight: 'SV3007', pax: 52, gate: 'G36', hoursOffset: 2 },
+                { plate: 'GHI 3008', spot: 57, flight: 'SV3008', pax: 46, gate: 'G37', hoursOffset: 1.5 },
+                { plate: 'GHI 3009', spot: 59, flight: 'SV3009', pax: 55, gate: 'G38', hoursOffset: 0.5 },
+                { plate: 'GHI 3010', spot: 61, flight: 'SV3010', pax: 49, gate: 'G39', hoursOffset: -0.25 }
+            ];
             
-            // Section 1: 1-42
-            for (let i = 1; i <= 42; i++) {
-                section1.appendChild(createParkingSpot(i));
+            samples.forEach(s => {
+                const arrTime = new Date(now.getTime() - 2*60*60*1000);
+                const depTime = new Date(now.getTime() + s.hoursOffset*60*60*1000);
+                
+                const bus = {
+                    BusPlate: s.plate,
+                    spotNumber: s.spot,
+                    forms: {
+                        ScrLogIn: { timestamp: arrTime.toISOString(), FlightNO: s.flight, PaxAdlt: s.pax },
+                        ScrWelcomeLounge: { 
+                            timestamp: arrTime.toISOString(), 
+                            ParkNO: s.spot,
+                            ArrTime: arrTime.toTimeString().slice(0,5),
+                            DepTime: depTime.toTimeString().slice(0,5),
+                            FlightNO: s.flight,
+                            PaxAdlt: s.pax,
+                            GateNO: s.gate
+                        }
+                    },
+                    displayData: {
+                        plate: s.plate,
+                        flight: s.flight,
+                        pax: s.pax,
+                        gate: s.gate,
+                        arrival: arrTime.toTimeString().slice(0,5),
+                        departure: depTime.toTimeString().slice(0,5),
+                        depTime: depTime
+                    },
+                    createdAt: arrTime.toISOString(),
+                    lastUpdated: now.toISOString()
+                };
+                
+                busRecords.push(bus);
+                dailyStats.buses++;
+                dailyStats.passengers += s.pax;
+                dailyStats.flights.add(s.flight);
+            });
+            
+            renderParkingSections();
+            showNotification('info', 'بيانات تجريبية', 'تم تحميل 30 حافلة للمعاينة');
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // PARKING SECTIONS
+        // ═══════════════════════════════════════════════════════════
+        
+        function renderParkingSections() {
+            const entranceSection = document.getElementById('entranceSection');
+            const exitSection = document.getElementById('exitSection');
+            
+            entranceSection.innerHTML = '';
+            exitSection.innerHTML = '';
+            
+            // جهة المدخل: 3 صفوف × 14 = 42
+            let spotNumber = 1;
+            for (let row = 0; row < 3; row++) {
+                const rowDiv = document.createElement('div');
+                rowDiv.className = 'parking-row';
+                for (let i = 0; i < 14; i++) {
+                    const bus = busRecords.find(b => b.spotNumber === spotNumber && b.forms.ScrWelcomeLounge);
+                    rowDiv.appendChild(createParkingSpot(spotNumber, bus));
+                    spotNumber++;
+                }
+                entranceSection.appendChild(rowDiv);
             }
             
-            // Section 2: 43-87
-            for (let i = 43; i <= 87; i++) {
-                section2.appendChild(createParkingSpot(i));
+            // جهة المخرج: 3 صفوف × 15 = 45
+            for (let row = 0; row < 3; row++) {
+                const rowDiv = document.createElement('div');
+                rowDiv.className = 'parking-row';
+                for (let i = 0; i < 15; i++) {
+                    const bus = busRecords.find(b => b.spotNumber === spotNumber && b.forms.ScrWelcomeLounge);
+                    rowDiv.appendChild(createParkingSpot(spotNumber, bus));
+                    spotNumber++;
+                }
+                exitSection.appendChild(rowDiv);
             }
         }
 
-        function createParkingSpot(number) {
+        function createParkingSpot(spotNumber, bus) {
             const spot = document.createElement('div');
-            spot.className = 'parking-spot';
-            spot.id = `spot-${number}`;
-            spot.innerHTML = `<span class="spot-number">${number}</span>`;
-            spot.onclick = (e) => handleSpotClick(number, e);
+            spot.id = `spot-${spotNumber}`;
+            
+            if (bus && bus.displayData) {
+                const statusInfo = calculateStatus(bus.displayData.arrival, bus.displayData.departure);
+                spot.className = `parking-spot ${statusInfo.status}`;
+                
+                const countdown = getCountdownString(bus.displayData.depTime);
+                
+                spot.innerHTML = `
+                    <div class="spot-number">#${spotNumber}</div>
+                    <div class="spot-status-badge ${statusInfo.status}">${statusInfo.label}</div>
+                    <div class="bus-info">
+                        <div class="info-line">
+                            <span class="info-icon">🚌</span>
+                            <span class="info-text">${bus.displayData.plate}</span>
+                        </div>
+                        <div class="info-line">
+                            <span class="info-icon">✈️</span>
+                            <span class="info-text">${bus.displayData.flight}</span>
+                        </div>
+                        <div class="info-line">
+                            <span class="info-icon">👥</span>
+                            <span class="info-text">${bus.displayData.pax} راكب</span>
+                        </div>
+                        <div class="info-line">
+                            <span class="info-icon">🚪</span>
+                            <span class="info-text">${bus.displayData.gate}</span>
+                        </div>
+                        <div class="info-line">
+                            <span class="info-icon">📤</span>
+                            <span class="info-text">${bus.displayData.departure}</span>
+                        </div>
+                    </div>
+                    <div class="time-diff">
+                        <span class="countdown" data-dep="${bus.displayData.depTime}">${countdown}</span>
+                    </div>
+                `;
+                
+                spot.addEventListener('mouseenter', (e) => showTooltip(e, bus.displayData, statusInfo));
+                spot.addEventListener('mouseleave', hideTooltip);
+                spot.addEventListener('mousemove', moveTooltip);
+            } else {
+                spot.className = 'parking-spot empty';
+                spot.innerHTML = `
+                    <div class="spot-number">#${spotNumber}</div>
+                    <div class="empty-text">⬜</div>
+                `;
+            }
+            
+            spot.onclick = (e) => handleSpotClick(spotNumber, e);
             return spot;
         }
 
+        function calculateStatus(arrival, departure) {
+            const now = new Date();
+            const today = now.toISOString().slice(0,10);
+            
+            let depTime = new Date(`${today}T${departure}`);
+            if (depTime < now) depTime.setDate(depTime.getDate() + 1);
+            
+            const diffHours = (depTime - now) / (1000 * 60 * 60);
+            
+            if (diffHours > settings.earlyThreshold) return { status: 'early', label: 'مبكر', hours: diffHours };
+            if (diffHours < settings.lateThreshold) return { status: 'late', label: 'متأخر', hours: diffHours };
+            return { status: 'ontime', label: 'في الموعد', hours: diffHours };
+        }
+
+        function getCountdownString(depTime) {
+            if (!depTime) return '--:--';
+            const now = new Date();
+            const dep = new Date(depTime);
+            const diff = dep - now;
+            
+            if (diff <= 0) return '⚠️ متأخر!';
+            
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const secs = Math.floor((diff % (1000 * 60)) / 1000);
+            
+            return `${hours.toString().padStart(2,'0')}:${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
+        }
+
+        function updateCountdowns() {
+            document.querySelectorAll('.countdown[data-dep]').forEach(el => {
+                const depTime = new Date(el.dataset.dep);
+                el.textContent = getCountdownString(depTime);
+            });
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // SPOT CLICK HANDLER
+        // ═══════════════════════════════════════════════════════════
+        
         function handleSpotClick(spotNumber, event) {
             event.stopPropagation();
-            const bus = busRecords.find(b => b.spotNumber === spotNumber);
+            const bus = busRecords.find(b => b.spotNumber === spotNumber && b.forms.ScrWelcomeLounge);
             
             if (bus) {
-                // Occupied spot - open ScrWelcomeLounge
+                // موقف مشغول - فتح ScrWelcomeLounge للتعديل
                 currentSpot = spotNumber;
                 currentForm = 'ScrWelcomeLounge';
+                currentBusPlate = bus.BusPlate;
                 openFormModal('ScrWelcomeLounge', bus);
             } else {
-                // Empty spot - show form menu
+                // موقف فارغ - إظهار قائمة النماذج
                 currentSpot = spotNumber;
                 showFormMenu(event);
             }
@@ -915,7 +1477,7 @@
         function showFormMenu(event) {
             const menu = document.getElementById('formMenu');
             menu.style.top = event.clientY + 'px';
-            menu.style.left = event.clientX + 'px';
+            menu.style.left = (event.clientX - 220) + 'px';
             menu.classList.add('show');
         }
 
@@ -925,70 +1487,62 @@
             openFormModal(formName, null);
         }
 
-        // ══════════════════ FORM MODAL ══════════════════
+        function openFormFromTab(formName) {
+            currentSpot = null;
+            currentForm = formName;
+            openFormModal(formName, null);
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // FORM MODAL
+        // ═══════════════════════════════════════════════════════════
+        
         function openFormModal(formName, existingBus) {
             const modal = document.getElementById('modalOverlay');
             const title = document.getElementById('modalTitle');
             const body = document.getElementById('modalBody');
             
-            const formTitles = {
-                'ScrLogIn': '🚌 تسجيل الدخول - موقف ' + currentSpot,
-                'ScrSegregationIn': '📥 دخول الفرز - موقف ' + currentSpot,
-                'ScrWelcomeLounge': '☕ صالة الترحيب - موقف ' + currentSpot,
-                'ScrSegregationExit': '📤 خروج الفرز - موقف ' + currentSpot,
-                'ScrCurbside': '🛑 نقطة الإنزال - موقف ' + currentSpot
+            const titles = {
+                'ScrLogIn': '🚌 ScrLogIn - تسجيل الدخول',
+                'ScrSegregationIn': '📥 ScrSegregationIn - دخول الفرز',
+                'ScrWelcomeLounge': '☕ ScrWelcomeLounge - صالة الترحيب',
+                'ScrSegregationExit': '📤 ScrSegregationExit - خروج الفرز',
+                'ScrCurbside': '🛑 ScrCurbside - نقطة الإنزال'
             };
             
-            title.textContent = formTitles[formName] || 'نموذج جديد';
+            title.textContent = titles[formName] + (currentSpot ? ` - موقف ${currentSpot}` : '');
             body.innerHTML = getFormHTML(formName, existingBus);
             modal.classList.add('show');
         }
 
         function getFormHTML(formName, bus) {
-            const plate = bus ? bus.BusPlate : '';
+            const plate = bus ? bus.BusPlate : (currentBusPlate || '');
             const now = new Date();
             const timeStr = now.toTimeString().slice(0,5);
-            const dateStr = now.toISOString().slice(0,10);
             
             switch(formName) {
                 case 'ScrLogIn':
                     return `
                         <div class="form-section">
-                            <div class="form-section-title">🚌 بيانات الحافلة</div>
+                            <div class="form-section-title">🚌 بيانات تسجيل الدخول</div>
                             <div class="form-row">
                                 <div class="form-group">
-                                    <label>لوحة الحافلة *</label>
-                                    <input type="text" id="busPlate" value="${plate}" placeholder="ABC 123" required>
+                                    <label>لوحة الحافلة (BusPlate)</label>
+                                    <input type="text" id="BusPlate" value="${plate}" placeholder="ABC 1234">
                                 </div>
                                 <div class="form-group">
-                                    <label>رقم الرحلة</label>
-                                    <input type="text" id="flightNumber" placeholder="SV 1234">
+                                    <label>رقم الرحلة (FlightNO)</label>
+                                    <input type="text" id="FlightNO" placeholder="SV 1234">
                                 </div>
                             </div>
                             <div class="form-row">
                                 <div class="form-group">
-                                    <label>وقت الوصول</label>
-                                    <input type="time" id="arrivalTime" value="${timeStr}">
+                                    <label>عدد الركاب (PaxAdlt)</label>
+                                    <input type="number" id="PaxAdlt" placeholder="45">
                                 </div>
                                 <div class="form-group">
-                                    <label>موعد التفويج المتوقع</label>
-                                    <input type="time" id="dispatchTime">
-                                </div>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label>عدد الركاب</label>
-                                    <input type="number" id="passengerCount" placeholder="45">
-                                </div>
-                                <div class="form-group">
-                                    <label>الناقل</label>
-                                    <select id="carrier">
-                                        <option value="">اختر...</option>
-                                        <option value="مصر للطيران">مصر للطيران</option>
-                                        <option value="السعودية">الخطوط السعودية</option>
-                                        <option value="طيران الإمارات">طيران الإمارات</option>
-                                        <option value="أخرى">أخرى</option>
-                                    </select>
+                                    <label>وقت التسجيل (LogTime)</label>
+                                    <input type="time" id="LogTime" value="${timeStr}">
                                 </div>
                             </div>
                         </div>
@@ -997,29 +1551,30 @@
                 case 'ScrSegregationIn':
                     return `
                         <div class="form-section">
-                            <div class="form-section-title">📥 دخول منطقة الفرز</div>
+                            <div class="form-section-title">📥 بيانات دخول الفرز</div>
                             <div class="form-row">
                                 <div class="form-group">
-                                    <label>لوحة الحافلة</label>
-                                    <input type="text" id="busPlate" value="${plate}" ${plate ? 'readonly' : ''}>
+                                    <label>لوحة الحافلة (BusPlate)</label>
+                                    <input type="text" id="BusPlate" value="${plate}">
                                 </div>
                                 <div class="form-group">
-                                    <label>وقت الدخول</label>
-                                    <input type="time" id="entryTime" value="${timeStr}">
+                                    <label>وقت الدخول (EntryTime)</label>
+                                    <input type="time" id="EntryTime" value="${timeStr}">
                                 </div>
                             </div>
                             <div class="form-row">
                                 <div class="form-group">
-                                    <label>بوابة الدخول</label>
-                                    <select id="entryGate">
+                                    <label>بوابة الدخول (EntryGate)</label>
+                                    <select id="EntryGate">
+                                        <option value="">اختر...</option>
                                         <option value="G1">بوابة 1</option>
                                         <option value="G2">بوابة 2</option>
                                         <option value="G3">بوابة 3</option>
                                     </select>
                                 </div>
                                 <div class="form-group">
-                                    <label>حالة الفحص</label>
-                                    <select id="inspectionStatus">
+                                    <label>حالة الفحص (InspectionStatus)</label>
+                                    <select id="InspectionStatus">
                                         <option value="passed">ناجح</option>
                                         <option value="pending">قيد المراجعة</option>
                                         <option value="failed">فشل</option>
@@ -1030,42 +1585,54 @@
                     `;
                 
                 case 'ScrWelcomeLounge':
+                    const existingData = bus?.forms?.ScrWelcomeLounge || {};
                     return `
                         <div class="form-section">
-                            <div class="form-section-title">☕ صالة الترحيب</div>
+                            <div class="form-section-title">☕ بيانات صالة الترحيب (تظهر في المواقف)</div>
                             <div class="form-row">
                                 <div class="form-group">
-                                    <label>لوحة الحافلة</label>
-                                    <input type="text" id="busPlate" value="${plate}" readonly>
+                                    <label>لوحة الحافلة (BusPlate)</label>
+                                    <input type="text" id="BusPlate" value="${plate}">
                                 </div>
                                 <div class="form-group">
-                                    <label>وقت الدخول للصالة</label>
-                                    <input type="time" id="loungeEntryTime" value="${timeStr}">
+                                    <label>رقم الموقف (ParkNO) - 1 إلى 87</label>
+                                    <input type="number" id="ParkNO" value="${existingData.ParkNO || currentSpot || ''}" min="1" max="87">
                                 </div>
                             </div>
                             <div class="form-row">
                                 <div class="form-group">
-                                    <label>رقم الصالة</label>
-                                    <select id="loungeNumber">
+                                    <label>رقم الرحلة (FlightNO)</label>
+                                    <input type="text" id="FlightNO" value="${existingData.FlightNO || ''}" placeholder="SV 1234">
+                                </div>
+                                <div class="form-group">
+                                    <label>عدد الركاب (PaxAdlt)</label>
+                                    <input type="number" id="PaxAdlt" value="${existingData.PaxAdlt || ''}" placeholder="45">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>وقت الوصول (ArrTime)</label>
+                                    <input type="time" id="ArrTime" value="${existingData.ArrTime || timeStr}">
+                                </div>
+                                <div class="form-group">
+                                    <label>وقت الإقلاع (DepTime)</label>
+                                    <input type="time" id="DepTime" value="${existingData.DepTime || ''}">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>رقم البوابة (GateNO)</label>
+                                    <input type="text" id="GateNO" value="${existingData.GateNO || ''}" placeholder="G10">
+                                </div>
+                                <div class="form-group">
+                                    <label>رقم الصالة (LoungeNO)</label>
+                                    <select id="LoungeNO">
+                                        <option value="">اختر...</option>
                                         <option value="L1">صالة 1</option>
                                         <option value="L2">صالة 2</option>
                                         <option value="L3">صالة 3</option>
                                         <option value="VIP">VIP</option>
                                     </select>
-                                </div>
-                                <div class="form-group">
-                                    <label>نوع الخدمة</label>
-                                    <select id="serviceType">
-                                        <option value="standard">عادي</option>
-                                        <option value="premium">مميز</option>
-                                        <option value="vip">VIP</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group full-width">
-                                    <label>ملاحظات</label>
-                                    <textarea id="loungeNotes" rows="2" placeholder="أي ملاحظات إضافية..."></textarea>
                                 </div>
                             </div>
                         </div>
@@ -1074,37 +1641,38 @@
                 case 'ScrSegregationExit':
                     return `
                         <div class="form-section">
-                            <div class="form-section-title">📤 خروج من منطقة الفرز</div>
+                            <div class="form-section-title">📤 بيانات خروج الفرز</div>
                             <div class="form-row">
                                 <div class="form-group">
-                                    <label>لوحة الحافلة</label>
-                                    <input type="text" id="busPlate" value="${plate}" ${plate ? 'readonly' : ''}>
+                                    <label>لوحة الحافلة (BusPlate)</label>
+                                    <input type="text" id="BusPlate" value="${plate}">
                                 </div>
                                 <div class="form-group">
-                                    <label>وقت الخروج</label>
-                                    <input type="time" id="exitTime" value="${timeStr}">
+                                    <label>وقت الخروج (ExitTime)</label>
+                                    <input type="time" id="ExitTime" value="${timeStr}">
                                 </div>
                             </div>
                             <div class="form-row">
                                 <div class="form-group">
-                                    <label>بوابة الخروج</label>
-                                    <select id="exitGate">
+                                    <label>بوابة الخروج (ExitGate)</label>
+                                    <select id="ExitGate">
+                                        <option value="">اختر...</option>
                                         <option value="G1">بوابة 1</option>
                                         <option value="G2">بوابة 2</option>
                                         <option value="G3">بوابة 3</option>
                                     </select>
                                 </div>
                                 <div class="form-group">
-                                    <label>حالة الخروج</label>
-                                    <select id="exitStatus">
+                                    <label>حالة الخروج (ExitStatus)</label>
+                                    <select id="ExitStatus">
                                         <option value="completed">مكتمل</option>
                                         <option value="partial">جزئي</option>
                                         <option value="cancelled">ملغي</option>
                                     </select>
                                 </div>
                             </div>
-                            <div style="background: rgba(244,67,54,0.1); padding: 10px; border-radius: 8px; margin-top: 10px; border: 1px solid var(--red);">
-                                <span style="color: var(--red);">⚠️ تنبيه: عند إكمال هذا النموذج سيتم إخلاء الموقف تلقائياً</span>
+                            <div style="background: rgba(244,67,54,0.15); padding: 15px; border-radius: 10px; margin-top: 15px; border: 2px solid var(--red);">
+                                <span style="color: var(--red); font-weight: bold;">⚠️ تنبيه: عند إكمال هذا النموذج بحالة "مكتمل" سيتم إخلاء الموقف تلقائياً</span>
                             </div>
                         </div>
                     `;
@@ -1112,21 +1680,22 @@
                 case 'ScrCurbside':
                     return `
                         <div class="form-section">
-                            <div class="form-section-title">🛑 نقطة الإنزال</div>
+                            <div class="form-section-title">🛑 بيانات نقطة الإنزال</div>
                             <div class="form-row">
                                 <div class="form-group">
-                                    <label>لوحة الحافلة</label>
-                                    <input type="text" id="busPlate" value="${plate}" ${plate ? 'readonly' : ''}>
+                                    <label>لوحة الحافلة (BusPlate)</label>
+                                    <input type="text" id="BusPlate" value="${plate}">
                                 </div>
                                 <div class="form-group">
-                                    <label>وقت الوصول</label>
-                                    <input type="time" id="curbsideTime" value="${timeStr}">
+                                    <label>وقت الوصول (CurbTime)</label>
+                                    <input type="time" id="CurbTime" value="${timeStr}">
                                 </div>
                             </div>
                             <div class="form-row">
                                 <div class="form-group">
-                                    <label>رقم نقطة الإنزال</label>
-                                    <select id="curbsidePoint">
+                                    <label>نقطة الإنزال (CurbPoint)</label>
+                                    <select id="CurbPoint">
+                                        <option value="">اختر...</option>
                                         <option value="C1">نقطة 1</option>
                                         <option value="C2">نقطة 2</option>
                                         <option value="C3">نقطة 3</option>
@@ -1135,7 +1704,7 @@
                                 </div>
                                 <div class="form-group">
                                     <label>عدد الركاب النازلين</label>
-                                    <input type="number" id="droppedCount" placeholder="45">
+                                    <input type="number" id="DroppedPax" placeholder="45">
                                 </div>
                             </div>
                         </div>
@@ -1150,285 +1719,220 @@
             document.getElementById('modalOverlay').classList.remove('show');
             currentSpot = null;
             currentForm = null;
+            currentBusPlate = null;
         }
 
         function saveForm() {
-            const plateInput = document.getElementById('busPlate');
-            if (!plateInput || !plateInput.value.trim()) {
+            const plateInput = document.getElementById('BusPlate');
+            const plate = plateInput ? plateInput.value.trim().toUpperCase() : '';
+            
+            if (!plate) {
                 showNotification('error', 'خطأ', 'يرجى إدخال لوحة الحافلة');
                 return;
             }
             
-            const plate = plateInput.value.trim().toUpperCase();
             let bus = busRecords.find(b => b.BusPlate === plate);
             
             if (!bus) {
-                // New bus
                 bus = {
                     BusPlate: plate,
-                    spotNumber: currentSpot,
+                    spotNumber: null,
                     forms: {},
+                    displayData: null,
                     createdAt: new Date().toISOString(),
-                    lastUpdated: new Date().toISOString(),
-                    dispatchTime: null
+                    lastUpdated: new Date().toISOString()
                 };
                 busRecords.push(bus);
+                dailyStats.buses++;
             }
             
-            // Save form data
-            bus.forms[currentForm] = collectFormData(currentForm);
+            // جمع بيانات النموذج
+            const formData = { timestamp: new Date().toISOString() };
+            document.querySelectorAll('#modalBody input, #modalBody select').forEach(el => {
+                if (el.id && el.id !== 'BusPlate') {
+                    formData[el.id] = el.value;
+                }
+            });
+            
+            bus.forms[currentForm] = formData;
             bus.lastUpdated = new Date().toISOString();
             
-            // Update dispatch time if available
-            const dispatchInput = document.getElementById('dispatchTime');
-            if (dispatchInput && dispatchInput.value) {
-                const today = new Date().toISOString().slice(0,10);
-                bus.dispatchTime = new Date(today + 'T' + dispatchInput.value);
-            }
-            
-            // Check if ScrSegregationExit is completed - remove bus
-            if (currentForm === 'ScrSegregationExit') {
-                const exitStatus = document.getElementById('exitStatus');
-                if (exitStatus && exitStatus.value === 'completed') {
-                    removeBus(plate);
-                    showNotification('success', 'تم الإخلاء', `تم إخلاء الحافلة ${plate} من الموقف ${currentSpot}`);
-                    closeModal();
-                    return;
+            // معالجة ScrWelcomeLounge - تحديث بيانات العرض
+            if (currentForm === 'ScrWelcomeLounge') {
+                const parkNO = parseInt(formData.ParkNO);
+                if (parkNO >= 1 && parkNO <= 87) {
+                    bus.spotNumber = parkNO;
+                    
+                    const now = new Date();
+                    const today = now.toISOString().slice(0,10);
+                    let depTime = formData.DepTime ? new Date(`${today}T${formData.DepTime}`) : null;
+                    if (depTime && depTime < now) depTime.setDate(depTime.getDate() + 1);
+                    
+                    bus.displayData = {
+                        plate: plate,
+                        flight: formData.FlightNO || '-',
+                        pax: parseInt(formData.PaxAdlt) || 0,
+                        gate: formData.GateNO || '-',
+                        arrival: formData.ArrTime || '-',
+                        departure: formData.DepTime || '-',
+                        depTime: depTime
+                    };
+                    
+                    if (formData.PaxAdlt) dailyStats.passengers += parseInt(formData.PaxAdlt);
+                    if (formData.FlightNO) dailyStats.flights.add(formData.FlightNO);
                 }
             }
             
-            updateSpotDisplay(currentSpot, bus);
-            updateStats();
+            // معالجة ScrSegregationExit - إخلاء الموقف
+            if (currentForm === 'ScrSegregationExit' && formData.ExitStatus === 'completed') {
+                const spotNum = bus.spotNumber;
+                busRecords = busRecords.filter(b => b.BusPlate !== plate);
+                showNotification('success', 'تم الإخلاء', `تم إخلاء الحافلة ${plate} من الموقف ${spotNum}`);
+                addAlert('success', 'خروج حافلة', `الحافلة ${plate} غادرت الموقف ${spotNum}`);
+                closeModal();
+                renderParkingSections();
+                updateStatistics();
+                updateBusRecordsList();
+                return;
+            }
+            
+            renderParkingSections();
+            updateStatistics();
             updateBusRecordsList();
-            showNotification('success', 'تم الحفظ', `تم حفظ بيانات الحافلة ${plate}`);
+            showNotification('success', 'تم الحفظ', `تم حفظ ${currentForm} للحافلة ${plate}`);
+            addAlert('info', 'تسجيل جديد', `${currentForm} - ${plate}`);
             closeModal();
         }
 
-        function collectFormData(formName) {
-            const data = { timestamp: new Date().toISOString() };
-            const inputs = document.querySelectorAll('#modalBody input, #modalBody select, #modalBody textarea');
-            inputs.forEach(input => {
-                if (input.id && input.id !== 'busPlate') {
-                    data[input.id] = input.value;
-                }
-            });
-            return data;
-        }
-
-        function removeBus(plate) {
-            const bus = busRecords.find(b => b.BusPlate === plate);
-            if (bus) {
-                const spot = document.getElementById(`spot-${bus.spotNumber}`);
-                if (spot) {
-                    spot.className = 'parking-spot';
-                    spot.innerHTML = `<span class="spot-number">${bus.spotNumber}</span>`;
-                }
-                busRecords = busRecords.filter(b => b.BusPlate !== plate);
-                addAlert('success', 'خروج حافلة', `الحافلة ${plate} غادرت الموقف`);
-            }
-        }
-
-        // ══════════════════ SPOT DISPLAY ══════════════════
-        function updateSpotDisplay(spotNumber, bus) {
-            const spot = document.getElementById(`spot-${spotNumber}`);
-            if (!spot || !bus) return;
-            
-            const status = getTimeStatus(bus);
-            const countdown = getCountdown(bus);
-            
-            spot.className = `parking-spot occupied status-${status}`;
-            if (status === 'red') spot.classList.add('late-blink');
-            
-            spot.innerHTML = `
-                <span class="spot-number">${spotNumber}</span>
-                <div class="bus-plate">${bus.BusPlate}</div>
-                <div class="countdown">${countdown}</div>
-            `;
-        }
-
-        function getTimeStatus(bus) {
-            if (!bus.dispatchTime) return 'blue';
-            
-            const now = new Date();
-            const dispatch = new Date(bus.dispatchTime);
-            const hoursLeft = (dispatch - now) / (1000 * 60 * 60);
-            
-            if (hoursLeft > settings.earlyThreshold) return 'green';
-            if (hoursLeft > settings.lateThreshold) return 'blue';
-            return 'red';
-        }
-
-        function getCountdown(bus) {
-            if (!bus.dispatchTime) return '--:--';
-            
-            const now = new Date();
-            const dispatch = new Date(bus.dispatchTime);
-            const diff = dispatch - now;
-            
-            if (diff <= 0) return 'متأخر!';
-            
-            const hours = Math.floor(diff / (1000 * 60 * 60));
-            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-            
-            return `${hours.toString().padStart(2,'0')}:${minutes.toString().padStart(2,'0')}`;
-        }
-
-        // ══════════════════ SAMPLE BUSES (30 buses) ══════════════════
-        function initializeSampleBuses() {
-            const now = new Date();
-            const sampleBuses = [
-                // مبكر (أكثر من 7 ساعات) - 10 حافلات
-                { plate: 'ABC 1001', spot: 1, hoursOffset: 10 },
-                { plate: 'ABC 1002', spot: 3, hoursOffset: 12 },
-                { plate: 'ABC 1003', spot: 5, hoursOffset: 9 },
-                { plate: 'ABC 1004', spot: 7, hoursOffset: 11 },
-                { plate: 'ABC 1005', spot: 9, hoursOffset: 8 },
-                { plate: 'ABC 1006', spot: 11, hoursOffset: 14 },
-                { plate: 'ABC 1007', spot: 13, hoursOffset: 10 },
-                { plate: 'ABC 1008', spot: 15, hoursOffset: 9 },
-                { plate: 'ABC 1009', spot: 43, hoursOffset: 12 },
-                { plate: 'ABC 1010', spot: 45, hoursOffset: 8 },
-                
-                // في الموعد (3-7 ساعات) - 10 حافلات
-                { plate: 'DEF 2001', spot: 17, hoursOffset: 5 },
-                { plate: 'DEF 2002', spot: 19, hoursOffset: 6 },
-                { plate: 'DEF 2003', spot: 21, hoursOffset: 4 },
-                { plate: 'DEF 2004', spot: 23, hoursOffset: 5.5 },
-                { plate: 'DEF 2005', spot: 25, hoursOffset: 6.5 },
-                { plate: 'DEF 2006', spot: 27, hoursOffset: 4.5 },
-                { plate: 'DEF 2007', spot: 47, hoursOffset: 5 },
-                { plate: 'DEF 2008', spot: 49, hoursOffset: 6 },
-                { plate: 'DEF 2009', spot: 51, hoursOffset: 4 },
-                { plate: 'DEF 2010', spot: 53, hoursOffset: 5.5 },
-                
-                // متأخر (أقل من 3 ساعات) - 10 حافلات
-                { plate: 'GHI 3001', spot: 29, hoursOffset: 2 },
-                { plate: 'GHI 3002', spot: 31, hoursOffset: 1.5 },
-                { plate: 'GHI 3003', spot: 33, hoursOffset: 0.5 },
-                { plate: 'GHI 3004', spot: 35, hoursOffset: 2.5 },
-                { plate: 'GHI 3005', spot: 37, hoursOffset: 1 },
-                { plate: 'GHI 3006', spot: 39, hoursOffset: 0.25 },
-                { plate: 'GHI 3007', spot: 55, hoursOffset: 2 },
-                { plate: 'GHI 3008', spot: 57, hoursOffset: 1.5 },
-                { plate: 'GHI 3009', spot: 59, hoursOffset: 0.5 },
-                { plate: 'GHI 3010', spot: 61, hoursOffset: -0.5 } // Already late!
-            ];
-            
-            sampleBuses.forEach(sample => {
-                const dispatchTime = new Date(now.getTime() + (sample.hoursOffset * 60 * 60 * 1000));
-                
-                const bus = {
-                    BusPlate: sample.plate,
-                    spotNumber: sample.spot,
-                    forms: {
-                        ScrLogIn: {
-                            timestamp: new Date(now.getTime() - 2*60*60*1000).toISOString(),
-                            arrivalTime: new Date(now.getTime() - 2*60*60*1000).toTimeString().slice(0,5),
-                            dispatchTime: dispatchTime.toTimeString().slice(0,5),
-                            passengerCount: Math.floor(Math.random() * 30) + 20,
-                            carrier: ['مصر للطيران', 'السعودية', 'طيران الإمارات'][Math.floor(Math.random() * 3)]
-                        }
-                    },
-                    createdAt: new Date(now.getTime() - 2*60*60*1000).toISOString(),
-                    lastUpdated: new Date().toISOString(),
-                    dispatchTime: dispatchTime
-                };
-                
-                busRecords.push(bus);
-                updateSpotDisplay(sample.spot, bus);
-            });
-            
-            updateBusRecordsList();
-            showNotification('info', 'بيانات تجريبية', 'تم تحميل 30 حافلة للمعاينة');
-        }
-
-        // ══════════════════ STATS ══════════════════
-        function updateStats() {
-            let early = 0, onTime = 0, late = 0;
+        // ═══════════════════════════════════════════════════════════
+        // STATISTICS
+        // ═══════════════════════════════════════════════════════════
+        
+        function updateStatistics() {
+            let early = 0, ontime = 0, late = 0, totalPax = 0;
             
             busRecords.forEach(bus => {
-                const status = getTimeStatus(bus);
-                if (status === 'green') early++;
-                else if (status === 'blue') onTime++;
-                else late++;
+                if (bus.displayData) {
+                    const status = calculateStatus(bus.displayData.arrival, bus.displayData.departure).status;
+                    if (status === 'early') early++;
+                    else if (status === 'ontime') ontime++;
+                    else late++;
+                    totalPax += bus.displayData.pax || 0;
+                }
             });
             
-            const total = busRecords.length;
+            const total = busRecords.filter(b => b.displayData).length;
+            const occupancy = Math.round((total / 87) * 100);
             
+            // Stats Bar
             document.getElementById('totalBuses').textContent = total;
-            document.getElementById('earlyBuses').textContent = early;
-            document.getElementById('onTimeBuses').textContent = onTime;
-            document.getElementById('lateBuses').textContent = late;
+            document.getElementById('earlyCount').textContent = early;
+            document.getElementById('ontimeCount').textContent = ontime;
+            document.getElementById('lateCount').textContent = late;
+            document.getElementById('totalPassengers').textContent = dailyStats.passengers;
+            document.getElementById('totalFlights').textContent = dailyStats.flights.size;
+            document.getElementById('occupancyRate').textContent = occupancy + '%';
             
-            // Section counts
-            const section1 = busRecords.filter(b => b.spotNumber <= 42).length;
-            const section2 = busRecords.filter(b => b.spotNumber > 42).length;
-            document.getElementById('section1Count').textContent = `${section1}/42`;
-            document.getElementById('section2Count').textContent = `${section2}/45`;
+            // Main Tab
+            document.getElementById('mainTotalBuses').textContent = total;
+            document.getElementById('mainEarlyBuses').textContent = early;
+            document.getElementById('mainOnTimeBuses').textContent = ontime;
+            document.getElementById('mainLateBuses').textContent = late;
+            document.getElementById('mainTotalPax').textContent = dailyStats.passengers;
             
-            // KPIs
-            const occupancy = total / 87 * 100;
-            document.getElementById('occupancyRate').textContent = occupancy.toFixed(1) + '%';
+            // KPIs Tab
+            document.getElementById('kpiOccupancy').textContent = occupancy + '%';
             document.getElementById('occupancyBar').style.width = occupancy + '%';
-            document.getElementById('dailyTotal').textContent = total;
+            document.getElementById('kpiDailyBuses').textContent = dailyStats.buses;
+            document.getElementById('kpiDailyPax').textContent = dailyStats.passengers;
             
             if (total > 0) {
-                const earlyPct = (early / total * 100).toFixed(0);
-                const onTimePct = (onTime / total * 100).toFixed(0);
-                const latePct = (late / total * 100).toFixed(0);
+                const earlyPct = Math.round((early / total) * 100);
+                const ontimePct = Math.round((ontime / total) * 100);
+                const latePct = Math.round((late / total) * 100);
                 
-                document.getElementById('earlyPct').textContent = earlyPct + '%';
-                document.getElementById('onTimePct').textContent = onTimePct + '%';
-                document.getElementById('latePct').textContent = latePct + '%';
+                document.getElementById('kpiEarlyPct').textContent = earlyPct + '%';
+                document.getElementById('kpiOntimePct').textContent = ontimePct + '%';
+                document.getElementById('kpiLatePct').textContent = latePct + '%';
                 
                 document.getElementById('statusChart').style.background = 
-                    `linear-gradient(90deg, var(--green) ${earlyPct}%, var(--blue) ${earlyPct}% ${parseFloat(earlyPct)+parseFloat(onTimePct)}%, var(--red) ${parseFloat(earlyPct)+parseFloat(onTimePct)}%)`;
+                    `linear-gradient(90deg, var(--green) ${earlyPct}%, var(--blue) ${earlyPct}% ${earlyPct+ontimePct}%, var(--red) ${earlyPct+ontimePct}%)`;
             }
         }
 
         function updateBusRecordsList() {
             const container = document.getElementById('busRecordsList');
+            const registeredBuses = busRecords.filter(b => Object.keys(b.forms).length > 0);
             
-            if (busRecords.length === 0) {
-                container.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 20px;">لا توجد حافلات مسجلة</div>';
+            if (registeredBuses.length === 0) {
+                container.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 30px;">لا توجد حافلات مسجلة</div>';
                 return;
             }
             
-            container.innerHTML = busRecords.map(bus => {
+            container.innerHTML = registeredBuses.map(bus => {
                 const completedForms = Object.keys(bus.forms).length;
                 const progress = (completedForms / 5) * 100;
-                const status = getTimeStatus(bus);
+                const formsList = ['ScrLogIn', 'ScrSegregationIn', 'ScrWelcomeLounge', 'ScrSegregationExit', 'ScrCurbside'];
                 
                 return `
-                    <div class="bus-record">
+                    <div class="bus-record" onclick="openBusRecord('${bus.BusPlate}')">
                         <div class="bus-record-header">
                             <span class="bus-record-plate">${bus.BusPlate}</span>
-                            <span class="bus-record-spot">موقف ${bus.spotNumber}</span>
+                            <span class="bus-record-spot">${bus.spotNumber ? 'موقف ' + bus.spotNumber : 'غير محدد'}</span>
                         </div>
-                        <div class="progress-bar">
-                            <div class="progress-fill ${status}" style="width: ${progress}%;"></div>
+                        <div class="bus-record-info">
+                            <span>✈️ ${bus.displayData?.flight || '-'}</span>
+                            <span>👥 ${bus.displayData?.pax || 0}</span>
+                        </div>
+                        <div class="form-progress">
+                            <div class="form-progress-fill" style="width: ${progress}%;"></div>
                         </div>
                         <div class="bus-record-forms">
-                            ${['ScrLogIn', 'ScrSegregationIn', 'ScrWelcomeLounge', 'ScrSegregationExit', 'ScrCurbside'].map(form => 
-                                `<span class="form-badge ${bus.forms[form] ? 'completed' : ''}">${form.replace('Scr','')}</span>`
-                            ).join('')}
+                            ${formsList.map(f => `<span class="form-badge ${bus.forms[f] ? 'completed' : ''}">${f.replace('Scr','')}</span>`).join('')}
                         </div>
                     </div>
                 `;
             }).join('');
         }
 
-        // ══════════════════ COUNTDOWN UPDATER ══════════════════
-        function startCountdownUpdater() {
-            setInterval(() => {
-                busRecords.forEach(bus => {
-                    updateSpotDisplay(bus.spotNumber, bus);
-                });
-                updateStats();
-            }, 60000); // Update every minute
+        function openBusRecord(plate) {
+            const bus = busRecords.find(b => b.BusPlate === plate);
+            if (bus) {
+                currentBusPlate = plate;
+                currentSpot = bus.spotNumber;
+                // فتح النموذج التالي غير المكتمل
+                const formsList = ['ScrLogIn', 'ScrSegregationIn', 'ScrWelcomeLounge', 'ScrSegregationExit', 'ScrCurbside'];
+                const nextForm = formsList.find(f => !bus.forms[f]) || 'ScrWelcomeLounge';
+                currentForm = nextForm;
+                openFormModal(nextForm, bus);
+            }
         }
 
-        // ══════════════════ TABS ══════════════════
+        // ═══════════════════════════════════════════════════════════
+        // TIME & SHIFT
+        // ═══════════════════════════════════════════════════════════
+        
+        function updateTimeAndShift() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('ar-SA', { hour12: false });
+            const dateString = now.toLocaleDateString('ar-SA');
+            const hour = now.getHours();
+            
+            let shift = 'A';
+            if (hour >= 6 && hour < 14) shift = 'A';
+            else if (hour >= 14 && hour < 22) shift = 'B';
+            else shift = 'C';
+            
+            document.getElementById('currentTime').textContent = timeString;
+            document.getElementById('currentDate').textContent = dateString;
+            document.getElementById('currentShift').textContent = shift;
+            document.getElementById('lastUpdate').textContent = timeString;
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // TABS & UI
+        // ═══════════════════════════════════════════════════════════
+        
         function switchTab(tabName) {
             document.querySelectorAll('.sidebar-tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
@@ -1437,17 +1941,35 @@
             document.getElementById(tabName + 'Tab').classList.add('active');
         }
 
-        // ══════════════════ CLOCK ══════════════════
-        function startClock() {
-            function updateClock() {
-                const now = new Date();
-                document.getElementById('clock').textContent = now.toLocaleTimeString('ar-SA', { hour12: false });
-            }
-            updateClock();
-            setInterval(updateClock, 1000);
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const btn = document.getElementById('sidebarToggle');
+            sidebar.classList.toggle('hidden');
+            btn.classList.toggle('active');
         }
 
-        // ══════════════════ NOTIFICATIONS ══════════════════
+        function toggleEditMode() {
+            editMode = !editMode;
+            const btn = document.getElementById('editToggle');
+            btn.classList.toggle('active', editMode);
+            showNotification(editMode ? 'info' : 'warning', 'وضع التحرير', editMode ? 'تم تفعيل وضع التحرير' : 'تم إلغاء وضع التحرير');
+        }
+
+        function toggleSetting(setting) {
+            settings[setting] = !settings[setting];
+            const toggle = document.getElementById(setting + 'Toggle');
+            toggle.classList.toggle('active', settings[setting]);
+        }
+
+        function updateColors() {
+            // يمكن توسيع هذه الوظيفة لتحديث الألوان
+            showNotification('info', 'تحديث الألوان', 'سيتم تطبيق الألوان الجديدة');
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // NOTIFICATIONS & ALERTS
+        // ═══════════════════════════════════════════════════════════
+        
         function showNotification(type, title, message) {
             if (!settings.popup) return;
             
@@ -1466,16 +1988,13 @@
             `;
             
             container.appendChild(notification);
-            addAlert(type === 'success' ? 'success' : type === 'warning' ? 'warning' : type === 'error' ? 'danger' : 'info', title, message);
-            
             setTimeout(() => notification.remove(), 5000);
         }
 
-        // ══════════════════ ALERTS ══════════════════
         function addAlert(type, title, message) {
             const now = new Date();
             alerts.unshift({
-                type: type,
+                type: type === 'success' ? 'success' : type === 'warning' ? 'warning' : type === 'error' ? 'danger' : 'info',
                 title: title,
                 message: message,
                 time: now.toLocaleTimeString('ar-SA', { hour12: false })
@@ -1490,7 +2009,7 @@
             const icons = { danger: '🔴', warning: '🟠', info: '🔵', success: '🟢' };
             
             if (alerts.length === 0) {
-                container.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 20px;">لا توجد تنبيهات</div>';
+                container.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 30px;">لا توجد تنبيهات</div>';
                 return;
             }
             
@@ -1511,26 +2030,68 @@
             updateAlertsList();
         }
 
-        // ══════════════════ SETTINGS ══════════════════
-        function toggleSetting(setting) {
-            settings[setting] = !settings[setting];
-            const toggle = document.getElementById(setting + 'Toggle');
-            toggle.classList.toggle('active', settings[setting]);
+        // ═══════════════════════════════════════════════════════════
+        // TOOLTIP
+        // ═══════════════════════════════════════════════════════════
+        
+        function showTooltip(event, data, statusInfo) {
+            const tooltip = document.getElementById('tooltip');
+            tooltip.style.display = 'block';
+            
+            tooltip.innerHTML = `
+                <div class="tooltip-title">🚌 تفاصيل الحافلة</div>
+                <div class="tooltip-line"><strong>رقم اللوحة:</strong> ${data.plate}</div>
+                <div class="tooltip-line"><strong>رقم الرحلة:</strong> ${data.flight}</div>
+                <div class="tooltip-line"><strong>عدد الركاب:</strong> ${data.pax}</div>
+                <div class="tooltip-line"><strong>البوابة:</strong> ${data.gate}</div>
+                <div class="tooltip-line"><strong>وقت الوصول:</strong> ${data.arrival}</div>
+                <div class="tooltip-line"><strong>وقت الإقلاع:</strong> ${data.departure}</div>
+                <div class="tooltip-line"><strong>الوقت المتبقي:</strong> ${statusInfo.hours.toFixed(2)} ساعة</div>
+                <div class="tooltip-line" style="color: ${statusInfo.status === 'early' ? '#4caf50' : statusInfo.status === 'late' ? '#f44336' : '#2196f3'}">
+                    <strong>الحالة:</strong> ${statusInfo.label}
+                </div>
+            `;
+            
+            moveTooltip(event);
         }
 
-        // ══════════════════ EXPORT ══════════════════
+        function moveTooltip(event) {
+            const tooltip = document.getElementById('tooltip');
+            tooltip.style.left = (event.pageX + 15) + 'px';
+            tooltip.style.top = (event.pageY + 15) + 'px';
+        }
+
+        function hideTooltip() {
+            document.getElementById('tooltip').style.display = 'none';
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // EXPORT - متوافق مع Power BI
+        // ═══════════════════════════════════════════════════════════
+        
         function exportToJSON() {
-            const data = JSON.stringify(busRecords, null, 2);
-            downloadFile(data, 'bus_records.json', 'application/json');
+            const data = {
+                exportDate: new Date().toISOString(),
+                busRecords: busRecords,
+                dailyStats: {
+                    buses: dailyStats.buses,
+                    passengers: dailyStats.passengers,
+                    flights: Array.from(dailyStats.flights)
+                }
+            };
+            downloadFile(JSON.stringify(data, null, 2), 'locc_data.json', 'application/json');
             showNotification('success', 'تصدير', 'تم تصدير البيانات بصيغة JSON');
         }
 
         function exportToCSV() {
-            let csv = 'BusPlate,SpotNumber,DispatchTime,Status,FormsCompleted\n';
+            let csv = 'BusPlate,SpotNumber,FlightNO,PaxAdlt,GateNO,ArrTime,DepTime,Status,FormsCompleted\n';
             busRecords.forEach(bus => {
-                csv += `${bus.BusPlate},${bus.spotNumber},${bus.dispatchTime || ''},${getTimeStatus(bus)},${Object.keys(bus.forms).length}\n`;
+                if (bus.displayData) {
+                    const status = calculateStatus(bus.displayData.arrival, bus.displayData.departure).status;
+                    csv += `${bus.BusPlate},${bus.spotNumber},${bus.displayData.flight},${bus.displayData.pax},${bus.displayData.gate},${bus.displayData.arrival},${bus.displayData.departure},${status},${Object.keys(bus.forms).length}\n`;
+                }
             });
-            downloadFile(csv, 'bus_records.csv', 'text/csv');
+            downloadFile(csv, 'locc_data.csv', 'text/csv');
             showNotification('success', 'تصدير', 'تم تصدير البيانات بصيغة CSV');
         }
 
@@ -1542,19 +2103,6 @@
             a.download = filename;
             a.click();
             URL.revokeObjectURL(url);
-        }
-
-        // ══════════════════ FORM INFO ══════════════════
-        function showFormInfo(formName) {
-            const descriptions = {
-                'ScrLogIn': 'نموذج تسجيل دخول الحافلة للموقف. يتضمن بيانات الحافلة الأساسية ووقت الوصول ووقت التفويج المتوقع.',
-                'ScrSegregationIn': 'نموذج دخول منطقة الفرز. يسجل وقت الدخول وبوابة الدخول وحالة الفحص.',
-                'ScrWelcomeLounge': 'نموذج صالة الترحيب. يسجل دخول الركاب للصالة ونوع الخدمة المقدمة.',
-                'ScrSegregationExit': 'نموذج خروج من الفرز. عند إكماله تلقائياً يتم إخلاء الموقف.',
-                'ScrCurbside': 'نموذج نقطة الإنزال. يسجل وصول الحافلة لنقطة الإنزال وعدد الركاب.'
-            };
-            
-            showNotification('info', formName, descriptions[formName] || 'معلومات غير متوفرة');
         }
     </script>
 </body>

@@ -1217,26 +1217,55 @@
         // ═══════════════════════════════════════════════════════════
         
         document.addEventListener('DOMContentLoaded', () => {
-            renderParkingSections();
-            initializeSampleBuses(); // 30 حافلة تجريبية
-            updateStatistics();
-            updateTimeAndShift();
-            updateBusRecordsList();
-            
-            setInterval(updateTimeAndShift, 1000);
-            setInterval(updateCountdowns, 1000);
-            setInterval(() => {
+            try {
                 renderParkingSections();
+                initializeSampleBuses(); // 30 حافلة تجريبية
                 updateStatistics();
-            }, 30000);
-            
-            // Close form menu on outside click
-            document.addEventListener('click', (e) => {
-                const menu = document.getElementById('formMenu');
-                if (!menu.contains(e.target) && !e.target.closest('.parking-spot')) {
-                    menu.classList.remove('show');
-                }
-            });
+                updateTimeAndShift();
+                updateBusRecordsList();
+
+                setInterval(() => {
+                    try {
+                        updateTimeAndShift();
+                    } catch (e) {
+                        console.warn('خطأ في تحديث الوقت:', e);
+                    }
+                }, 1000);
+
+                setInterval(() => {
+                    try {
+                        updateCountdowns();
+                    } catch (e) {
+                        console.warn('خطأ في تحديث العد التنازلي:', e);
+                    }
+                }, 1000);
+
+                setInterval(() => {
+                    try {
+                        renderParkingSections();
+                        updateStatistics();
+                    } catch (e) {
+                        console.warn('خطأ في التحديث الدوري:', e);
+                    }
+                }, 30000);
+
+                // Close form menu on outside click
+                document.addEventListener('click', (e) => {
+                    try {
+                        const menu = document.getElementById('formMenu');
+                        if (menu && !menu.contains(e.target) && !e.target.closest('.parking-spot')) {
+                            menu.classList.remove('show');
+                        }
+                    } catch (clickError) {
+                        console.warn('خطأ في معالجة النقر:', clickError);
+                    }
+                });
+
+                console.log('✅ تم تحميل التطبيق بنجاح');
+            } catch (error) {
+                console.error('❌ خطأ في تهيئة التطبيق:', error);
+                alert('حدث خطأ أثناء تحميل التطبيق. يرجى تحديث الصفحة.');
+            }
         });
 
         // ═══════════════════════════════════════════════════════════
@@ -1244,85 +1273,106 @@
         // ═══════════════════════════════════════════════════════════
         
         function initializeSampleBuses() {
-            const now = new Date();
-            const samples = [
-                // مبكر (10 حافلات)
-                { plate: 'ABC 1001', spot: 1, flight: 'SV1001', pax: 45, gate: 'G10', hoursOffset: 10 },
-                { plate: 'ABC 1002', spot: 3, flight: 'SV1002', pax: 52, gate: 'G12', hoursOffset: 12 },
-                { plate: 'ABC 1003', spot: 5, flight: 'SV1003', pax: 48, gate: 'G15', hoursOffset: 9 },
-                { plate: 'ABC 1004', spot: 7, flight: 'SV1004', pax: 50, gate: 'G18', hoursOffset: 11 },
-                { plate: 'ABC 1005', spot: 9, flight: 'SV1005', pax: 47, gate: 'G20', hoursOffset: 8 },
-                { plate: 'ABC 1006', spot: 11, flight: 'SV1006', pax: 55, gate: 'G22', hoursOffset: 14 },
-                { plate: 'ABC 1007', spot: 13, flight: 'SV1007', pax: 43, gate: 'G25', hoursOffset: 10 },
-                { plate: 'ABC 1008', spot: 15, flight: 'SV1008', pax: 51, gate: 'G28', hoursOffset: 9 },
-                { plate: 'ABC 1009', spot: 43, flight: 'SV1009', pax: 49, gate: 'G30', hoursOffset: 12 },
-                { plate: 'ABC 1010', spot: 45, flight: 'SV1010', pax: 46, gate: 'G32', hoursOffset: 8 },
-                
-                // في الموعد (10 حافلات)
-                { plate: 'DEF 2001', spot: 17, flight: 'SV2001', pax: 44, gate: 'G11', hoursOffset: 5 },
-                { plate: 'DEF 2002', spot: 19, flight: 'SV2002', pax: 53, gate: 'G13', hoursOffset: 6 },
-                { plate: 'DEF 2003', spot: 21, flight: 'SV2003', pax: 47, gate: 'G16', hoursOffset: 4 },
-                { plate: 'DEF 2004', spot: 23, flight: 'SV2004', pax: 50, gate: 'G19', hoursOffset: 5.5 },
-                { plate: 'DEF 2005', spot: 25, flight: 'SV2005', pax: 48, gate: 'G21', hoursOffset: 6.5 },
-                { plate: 'DEF 2006', spot: 27, flight: 'SV2006', pax: 52, gate: 'G23', hoursOffset: 4.5 },
-                { plate: 'DEF 2007', spot: 47, flight: 'SV2007', pax: 45, gate: 'G26', hoursOffset: 5 },
-                { plate: 'DEF 2008', spot: 49, flight: 'SV2008', pax: 54, gate: 'G29', hoursOffset: 6 },
-                { plate: 'DEF 2009', spot: 51, flight: 'SV2009', pax: 46, gate: 'G31', hoursOffset: 4 },
-                { plate: 'DEF 2010', spot: 53, flight: 'SV2010', pax: 49, gate: 'G33', hoursOffset: 5.5 },
-                
-                // متأخر (10 حافلات)
-                { plate: 'GHI 3001', spot: 29, flight: 'SV3001', pax: 51, gate: 'G14', hoursOffset: 2 },
-                { plate: 'GHI 3002', spot: 31, flight: 'SV3002', pax: 47, gate: 'G17', hoursOffset: 1.5 },
-                { plate: 'GHI 3003', spot: 33, flight: 'SV3003', pax: 53, gate: 'G24', hoursOffset: 0.5 },
-                { plate: 'GHI 3004', spot: 35, flight: 'SV3004', pax: 48, gate: 'G27', hoursOffset: 2.5 },
-                { plate: 'GHI 3005', spot: 37, flight: 'SV3005', pax: 50, gate: 'G34', hoursOffset: 1 },
-                { plate: 'GHI 3006', spot: 39, flight: 'SV3006', pax: 44, gate: 'G35', hoursOffset: 0.25 },
-                { plate: 'GHI 3007', spot: 55, flight: 'SV3007', pax: 52, gate: 'G36', hoursOffset: 2 },
-                { plate: 'GHI 3008', spot: 57, flight: 'SV3008', pax: 46, gate: 'G37', hoursOffset: 1.5 },
-                { plate: 'GHI 3009', spot: 59, flight: 'SV3009', pax: 55, gate: 'G38', hoursOffset: 0.5 },
-                { plate: 'GHI 3010', spot: 61, flight: 'SV3010', pax: 49, gate: 'G39', hoursOffset: -0.25 }
-            ];
-            
-            samples.forEach(s => {
-                const arrTime = new Date(now.getTime() - 2*60*60*1000);
-                const depTime = new Date(now.getTime() + s.hoursOffset*60*60*1000);
-                
-                const bus = {
-                    BusPlate: s.plate,
-                    spotNumber: s.spot,
-                    forms: {
-                        ScrLogIn: { timestamp: arrTime.toISOString(), FlightNO: s.flight, PaxAdlt: s.pax },
-                        ScrWelcomeLounge: { 
-                            timestamp: arrTime.toISOString(), 
-                            ParkNO: s.spot,
-                            ArrTime: arrTime.toTimeString().slice(0,5),
-                            DepTime: depTime.toTimeString().slice(0,5),
-                            FlightNO: s.flight,
-                            PaxAdlt: s.pax,
-                            GateNO: s.gate
+            try {
+                const now = new Date();
+                const samples = [
+                    // مبكر (10 حافلات)
+                    { plate: 'ABC 1001', spot: 1, flight: 'SV1001', pax: 45, gate: 'G10', hoursOffset: 10 },
+                    { plate: 'ABC 1002', spot: 3, flight: 'SV1002', pax: 52, gate: 'G12', hoursOffset: 12 },
+                    { plate: 'ABC 1003', spot: 5, flight: 'SV1003', pax: 48, gate: 'G15', hoursOffset: 9 },
+                    { plate: 'ABC 1004', spot: 7, flight: 'SV1004', pax: 50, gate: 'G18', hoursOffset: 11 },
+                    { plate: 'ABC 1005', spot: 9, flight: 'SV1005', pax: 47, gate: 'G20', hoursOffset: 8 },
+                    { plate: 'ABC 1006', spot: 11, flight: 'SV1006', pax: 55, gate: 'G22', hoursOffset: 14 },
+                    { plate: 'ABC 1007', spot: 13, flight: 'SV1007', pax: 43, gate: 'G25', hoursOffset: 10 },
+                    { plate: 'ABC 1008', spot: 15, flight: 'SV1008', pax: 51, gate: 'G28', hoursOffset: 9 },
+                    { plate: 'ABC 1009', spot: 43, flight: 'SV1009', pax: 49, gate: 'G30', hoursOffset: 12 },
+                    { plate: 'ABC 1010', spot: 45, flight: 'SV1010', pax: 46, gate: 'G32', hoursOffset: 8 },
+
+                    // في الموعد (10 حافلات)
+                    { plate: 'DEF 2001', spot: 17, flight: 'SV2001', pax: 44, gate: 'G11', hoursOffset: 5 },
+                    { plate: 'DEF 2002', spot: 19, flight: 'SV2002', pax: 53, gate: 'G13', hoursOffset: 6 },
+                    { plate: 'DEF 2003', spot: 21, flight: 'SV2003', pax: 47, gate: 'G16', hoursOffset: 4 },
+                    { plate: 'DEF 2004', spot: 23, flight: 'SV2004', pax: 50, gate: 'G19', hoursOffset: 5.5 },
+                    { plate: 'DEF 2005', spot: 25, flight: 'SV2005', pax: 48, gate: 'G21', hoursOffset: 6.5 },
+                    { plate: 'DEF 2006', spot: 27, flight: 'SV2006', pax: 52, gate: 'G23', hoursOffset: 4.5 },
+                    { plate: 'DEF 2007', spot: 47, flight: 'SV2007', pax: 45, gate: 'G26', hoursOffset: 5 },
+                    { plate: 'DEF 2008', spot: 49, flight: 'SV2008', pax: 54, gate: 'G29', hoursOffset: 6 },
+                    { plate: 'DEF 2009', spot: 51, flight: 'SV2009', pax: 46, gate: 'G31', hoursOffset: 4 },
+                    { plate: 'DEF 2010', spot: 53, flight: 'SV2010', pax: 49, gate: 'G33', hoursOffset: 5.5 },
+
+                    // متأخر (10 حافلات)
+                    { plate: 'GHI 3001', spot: 29, flight: 'SV3001', pax: 51, gate: 'G14', hoursOffset: 2 },
+                    { plate: 'GHI 3002', spot: 31, flight: 'SV3002', pax: 47, gate: 'G17', hoursOffset: 1.5 },
+                    { plate: 'GHI 3003', spot: 33, flight: 'SV3003', pax: 53, gate: 'G24', hoursOffset: 0.5 },
+                    { plate: 'GHI 3004', spot: 35, flight: 'SV3004', pax: 48, gate: 'G27', hoursOffset: 2.5 },
+                    { plate: 'GHI 3005', spot: 37, flight: 'SV3005', pax: 50, gate: 'G34', hoursOffset: 1 },
+                    { plate: 'GHI 3006', spot: 39, flight: 'SV3006', pax: 44, gate: 'G35', hoursOffset: 0.25 },
+                    { plate: 'GHI 3007', spot: 55, flight: 'SV3007', pax: 52, gate: 'G36', hoursOffset: 2 },
+                    { plate: 'GHI 3008', spot: 57, flight: 'SV3008', pax: 46, gate: 'G37', hoursOffset: 1.5 },
+                    { plate: 'GHI 3009', spot: 59, flight: 'SV3009', pax: 55, gate: 'G38', hoursOffset: 0.5 },
+                    { plate: 'GHI 3010', spot: 61, flight: 'SV3010', pax: 49, gate: 'G39', hoursOffset: -0.25 }
+                ];
+
+                let successCount = 0;
+                samples.forEach(s => {
+                    try {
+                        if (!s.plate || !s.spot || s.spot < 1 || s.spot > 87) {
+                            console.warn('بيانات حافلة تجريبية غير صالحة:', s);
+                            return;
                         }
-                    },
-                    displayData: {
-                        plate: s.plate,
-                        flight: s.flight,
-                        pax: s.pax,
-                        gate: s.gate,
-                        arrival: arrTime.toTimeString().slice(0,5),
-                        departure: depTime.toTimeString().slice(0,5),
-                        depTime: depTime
-                    },
-                    createdAt: arrTime.toISOString(),
-                    lastUpdated: now.toISOString()
-                };
-                
-                busRecords.push(bus);
-                dailyStats.buses++;
-                dailyStats.passengers += s.pax;
-                dailyStats.flights.add(s.flight);
-            });
-            
-            renderParkingSections();
-            showNotification('info', 'بيانات تجريبية', 'تم تحميل 30 حافلة للمعاينة');
+
+                        const arrTime = new Date(now.getTime() - 2*60*60*1000);
+                        const depTime = new Date(now.getTime() + s.hoursOffset*60*60*1000);
+
+                        if (isNaN(arrTime.getTime()) || isNaN(depTime.getTime())) {
+                            console.warn('وقت غير صالح للحافلة:', s.plate);
+                            return;
+                        }
+
+                        const bus = {
+                            BusPlate: s.plate,
+                            spotNumber: s.spot,
+                            forms: {
+                                ScrLogIn: { timestamp: arrTime.toISOString(), FlightNO: s.flight, PaxAdlt: s.pax },
+                                ScrWelcomeLounge: {
+                                    timestamp: arrTime.toISOString(),
+                                    ParkNO: s.spot,
+                                    ArrTime: arrTime.toTimeString().slice(0,5),
+                                    DepTime: depTime.toTimeString().slice(0,5),
+                                    FlightNO: s.flight,
+                                    PaxAdlt: s.pax,
+                                    GateNO: s.gate
+                                }
+                            },
+                            displayData: {
+                                plate: s.plate,
+                                flight: s.flight,
+                                pax: s.pax,
+                                gate: s.gate,
+                                arrival: arrTime.toTimeString().slice(0,5),
+                                departure: depTime.toTimeString().slice(0,5),
+                                depTime: depTime
+                            },
+                            createdAt: arrTime.toISOString(),
+                            lastUpdated: now.toISOString()
+                        };
+
+                        busRecords.push(bus);
+                        dailyStats.buses++;
+                        dailyStats.passengers += (parseInt(s.pax) || 0);
+                        if (s.flight) dailyStats.flights.add(s.flight);
+                        successCount++;
+                    } catch (busError) {
+                        console.warn('خطأ في إنشاء حافلة تجريبية:', busError, s);
+                    }
+                });
+
+                renderParkingSections();
+                showNotification('info', 'بيانات تجريبية', `تم تحميل ${successCount} حافلة للمعاينة`);
+            } catch (error) {
+                console.error('خطأ في تهيئة البيانات التجريبية:', error);
+                showNotification('warning', 'تنبيه', 'فشل في تحميل بعض البيانات التجريبية');
+            }
         }
 
         // ═══════════════════════════════════════════════════════════
@@ -1330,35 +1380,61 @@
         // ═══════════════════════════════════════════════════════════
         
         function renderParkingSections() {
-            const entranceSection = document.getElementById('entranceSection');
-            const exitSection = document.getElementById('exitSection');
-            
-            entranceSection.innerHTML = '';
-            exitSection.innerHTML = '';
-            
-            // جهة المدخل: 3 صفوف × 14 = 42
-            let spotNumber = 1;
-            for (let row = 0; row < 3; row++) {
-                const rowDiv = document.createElement('div');
-                rowDiv.className = 'parking-row';
-                for (let i = 0; i < 14; i++) {
-                    const bus = busRecords.find(b => b.spotNumber === spotNumber && b.forms.ScrWelcomeLounge);
-                    rowDiv.appendChild(createParkingSpot(spotNumber, bus));
-                    spotNumber++;
+            try {
+                const entranceSection = document.getElementById('entranceSection');
+                const exitSection = document.getElementById('exitSection');
+
+                if (!entranceSection || !exitSection) {
+                    console.error('لم يتم العثور على أقسام المواقف');
+                    return;
                 }
-                entranceSection.appendChild(rowDiv);
-            }
-            
-            // جهة المخرج: 3 صفوف × 15 = 45
-            for (let row = 0; row < 3; row++) {
-                const rowDiv = document.createElement('div');
-                rowDiv.className = 'parking-row';
-                for (let i = 0; i < 15; i++) {
-                    const bus = busRecords.find(b => b.spotNumber === spotNumber && b.forms.ScrWelcomeLounge);
-                    rowDiv.appendChild(createParkingSpot(spotNumber, bus));
-                    spotNumber++;
+
+                entranceSection.innerHTML = '';
+                exitSection.innerHTML = '';
+
+                // جهة المدخل: 3 صفوف × 14 = 42
+                let spotNumber = 1;
+                for (let row = 0; row < 3; row++) {
+                    const rowDiv = document.createElement('div');
+                    rowDiv.className = 'parking-row';
+                    for (let i = 0; i < 14; i++) {
+                        try {
+                            const bus = busRecords.find(b => b && b.spotNumber === spotNumber && b.forms && b.forms.ScrWelcomeLounge);
+                            rowDiv.appendChild(createParkingSpot(spotNumber, bus));
+                        } catch (spotError) {
+                            console.warn(`خطأ في إنشاء الموقف ${spotNumber}:`, spotError);
+                            const emptySpot = document.createElement('div');
+                            emptySpot.className = 'parking-spot empty';
+                            emptySpot.innerHTML = `<div class="spot-number">#${spotNumber}</div><div class="empty-text">⚠️</div>`;
+                            rowDiv.appendChild(emptySpot);
+                        }
+                        spotNumber++;
+                    }
+                    entranceSection.appendChild(rowDiv);
                 }
-                exitSection.appendChild(rowDiv);
+
+                // جهة المخرج: 3 صفوف × 15 = 45
+                for (let row = 0; row < 3; row++) {
+                    const rowDiv = document.createElement('div');
+                    rowDiv.className = 'parking-row';
+                    for (let i = 0; i < 15; i++) {
+                        try {
+                            const bus = busRecords.find(b => b && b.spotNumber === spotNumber && b.forms && b.forms.ScrWelcomeLounge);
+                            rowDiv.appendChild(createParkingSpot(spotNumber, bus));
+                        } catch (spotError) {
+                            console.warn(`خطأ في إنشاء الموقف ${spotNumber}:`, spotError);
+                            const emptySpot = document.createElement('div');
+                            emptySpot.className = 'parking-spot empty';
+                            emptySpot.innerHTML = `<div class="spot-number">#${spotNumber}</div><div class="empty-text">⚠️</div>`;
+                            rowDiv.appendChild(emptySpot);
+                        }
+                        spotNumber++;
+                    }
+                    exitSection.appendChild(rowDiv);
+                }
+            } catch (error) {
+                console.error('خطأ في عرض أقسام المواقف:', error);
+                showNotification('error', 'خطأ', 'فشل في تحميل المواقف');
             }
         }
 
@@ -1418,32 +1494,61 @@
         }
 
         function calculateStatus(arrival, departure) {
-            const now = new Date();
-            const today = now.toISOString().slice(0,10);
-            
-            let depTime = new Date(`${today}T${departure}`);
-            if (depTime < now) depTime.setDate(depTime.getDate() + 1);
-            
-            const diffHours = (depTime - now) / (1000 * 60 * 60);
-            
-            if (diffHours > settings.earlyThreshold) return { status: 'early', label: 'مبكر', hours: diffHours };
-            if (diffHours < settings.lateThreshold) return { status: 'late', label: 'متأخر', hours: diffHours };
-            return { status: 'ontime', label: 'في الموعد', hours: diffHours };
+            try {
+                if (!departure || departure === '-') {
+                    return { status: 'ontime', label: 'غير محدد', hours: 0 };
+                }
+
+                const now = new Date();
+                const today = now.toISOString().slice(0,10);
+
+                let depTime = new Date(`${today}T${departure}`);
+                if (isNaN(depTime.getTime())) {
+                    console.warn('وقت الإقلاع غير صالح:', departure);
+                    return { status: 'ontime', label: 'غير محدد', hours: 0 };
+                }
+
+                if (depTime < now) depTime.setDate(depTime.getDate() + 1);
+
+                const diffHours = (depTime - now) / (1000 * 60 * 60);
+
+                const earlyThreshold = settings?.earlyThreshold || 7;
+                const lateThreshold = settings?.lateThreshold || 3;
+
+                if (diffHours > earlyThreshold) return { status: 'early', label: 'مبكر', hours: diffHours };
+                if (diffHours < lateThreshold) return { status: 'late', label: 'متأخر', hours: diffHours };
+                return { status: 'ontime', label: 'في الموعد', hours: diffHours };
+            } catch (error) {
+                console.error('خطأ في حساب الحالة:', error);
+                return { status: 'ontime', label: 'خطأ', hours: 0 };
+            }
         }
 
         function getCountdownString(depTime) {
-            if (!depTime) return '--:--';
-            const now = new Date();
-            const dep = new Date(depTime);
-            const diff = dep - now;
-            
-            if (diff <= 0) return '⚠️ متأخر!';
-            
-            const hours = Math.floor(diff / (1000 * 60 * 60));
-            const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-            const secs = Math.floor((diff % (1000 * 60)) / 1000);
-            
-            return `${hours.toString().padStart(2,'0')}:${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
+            try {
+                if (!depTime) return '--:--';
+
+                const now = new Date();
+                const dep = new Date(depTime);
+
+                if (isNaN(dep.getTime())) {
+                    console.warn('وقت الإقلاع غير صالح:', depTime);
+                    return '--:--';
+                }
+
+                const diff = dep - now;
+
+                if (diff <= 0) return '⚠️ متأخر!';
+
+                const hours = Math.floor(diff / (1000 * 60 * 60));
+                const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const secs = Math.floor((diff % (1000 * 60)) / 1000);
+
+                return `${hours.toString().padStart(2,'0')}:${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
+            } catch (error) {
+                console.warn('خطأ في حساب العد التنازلي:', error);
+                return '--:--';
+            }
         }
 
         function updateCountdowns() {
@@ -1723,85 +1828,140 @@
         }
 
         function saveForm() {
-            const plateInput = document.getElementById('BusPlate');
-            const plate = plateInput ? plateInput.value.trim().toUpperCase() : '';
-            
-            if (!plate) {
-                showNotification('error', 'خطأ', 'يرجى إدخال لوحة الحافلة');
-                return;
-            }
-            
-            let bus = busRecords.find(b => b.BusPlate === plate);
-            
-            if (!bus) {
-                bus = {
-                    BusPlate: plate,
-                    spotNumber: null,
-                    forms: {},
-                    displayData: null,
-                    createdAt: new Date().toISOString(),
-                    lastUpdated: new Date().toISOString()
-                };
-                busRecords.push(bus);
-                dailyStats.buses++;
-            }
-            
-            // جمع بيانات النموذج
-            const formData = { timestamp: new Date().toISOString() };
-            document.querySelectorAll('#modalBody input, #modalBody select').forEach(el => {
-                if (el.id && el.id !== 'BusPlate') {
-                    formData[el.id] = el.value;
+            try {
+                const plateInput = document.getElementById('BusPlate');
+                if (!plateInput) {
+                    showNotification('error', 'خطأ', 'لم يتم العثور على حقل لوحة الحافلة');
+                    return;
                 }
-            });
-            
-            bus.forms[currentForm] = formData;
-            bus.lastUpdated = new Date().toISOString();
-            
-            // معالجة ScrWelcomeLounge - تحديث بيانات العرض
-            if (currentForm === 'ScrWelcomeLounge') {
-                const parkNO = parseInt(formData.ParkNO);
-                if (parkNO >= 1 && parkNO <= 87) {
+
+                const plate = plateInput.value.trim().toUpperCase();
+
+                if (!plate) {
+                    showNotification('error', 'خطأ', 'يرجى إدخال لوحة الحافلة');
+                    return;
+                }
+
+                if (plate.length < 3) {
+                    showNotification('error', 'خطأ', 'لوحة الحافلة قصيرة جداً (يجب أن تكون 3 أحرف على الأقل)');
+                    return;
+                }
+
+                if (!currentForm) {
+                    showNotification('error', 'خطأ', 'لم يتم تحديد نوع النموذج');
+                    return;
+                }
+
+                let bus = busRecords.find(b => b.BusPlate === plate);
+
+                if (!bus) {
+                    bus = {
+                        BusPlate: plate,
+                        spotNumber: null,
+                        forms: {},
+                        displayData: null,
+                        createdAt: new Date().toISOString(),
+                        lastUpdated: new Date().toISOString()
+                    };
+                    busRecords.push(bus);
+                    dailyStats.buses++;
+                }
+
+                // جمع بيانات النموذج
+                const formData = { timestamp: new Date().toISOString() };
+                const modalBody = document.getElementById('modalBody');
+                if (!modalBody) {
+                    showNotification('error', 'خطأ', 'لم يتم العثور على محتوى النموذج');
+                    return;
+                }
+
+                modalBody.querySelectorAll('input, select').forEach(el => {
+                    if (el.id && el.id !== 'BusPlate') {
+                        formData[el.id] = el.value;
+                    }
+                });
+
+                bus.forms[currentForm] = formData;
+                bus.lastUpdated = new Date().toISOString();
+
+                // معالجة ScrWelcomeLounge - تحديث بيانات العرض
+                if (currentForm === 'ScrWelcomeLounge') {
+                    const parkNO = parseInt(formData.ParkNO);
+                    if (isNaN(parkNO) || parkNO < 1 || parkNO > 87) {
+                        showNotification('error', 'خطأ', 'رقم الموقف يجب أن يكون بين 1 و 87');
+                        return;
+                    }
+
+                    // التحقق من أن الموقف غير مشغول بحافلة أخرى
+                    const existingBus = busRecords.find(b => b.spotNumber === parkNO && b.BusPlate !== plate && b.forms.ScrWelcomeLounge);
+                    if (existingBus) {
+                        showNotification('error', 'خطأ', `الموقف ${parkNO} مشغول بالفعل بالحافلة ${existingBus.BusPlate}`);
+                        return;
+                    }
+
                     bus.spotNumber = parkNO;
-                    
+
                     const now = new Date();
                     const today = now.toISOString().slice(0,10);
-                    let depTime = formData.DepTime ? new Date(`${today}T${formData.DepTime}`) : null;
-                    if (depTime && depTime < now) depTime.setDate(depTime.getDate() + 1);
-                    
+                    let depTime = null;
+
+                    if (formData.DepTime) {
+                        try {
+                            depTime = new Date(`${today}T${formData.DepTime}`);
+                            if (isNaN(depTime.getTime())) {
+                                throw new Error('وقت الإقلاع غير صالح');
+                            }
+                            if (depTime < now) depTime.setDate(depTime.getDate() + 1);
+                        } catch (dateError) {
+                            console.warn('خطأ في تحليل وقت الإقلاع:', dateError);
+                            depTime = null;
+                        }
+                    }
+
+                    const paxCount = parseInt(formData.PaxAdlt);
+                    if (formData.PaxAdlt && (isNaN(paxCount) || paxCount < 0)) {
+                        showNotification('warning', 'تنبيه', 'عدد الركاب غير صالح، تم تعيينه إلى 0');
+                    }
+
                     bus.displayData = {
                         plate: plate,
                         flight: formData.FlightNO || '-',
-                        pax: parseInt(formData.PaxAdlt) || 0,
+                        pax: isNaN(paxCount) ? 0 : Math.max(0, paxCount),
                         gate: formData.GateNO || '-',
                         arrival: formData.ArrTime || '-',
                         departure: formData.DepTime || '-',
                         depTime: depTime
                     };
-                    
-                    if (formData.PaxAdlt) dailyStats.passengers += parseInt(formData.PaxAdlt);
+
+                    if (formData.PaxAdlt && !isNaN(paxCount) && paxCount > 0) {
+                        dailyStats.passengers += paxCount;
+                    }
                     if (formData.FlightNO) dailyStats.flights.add(formData.FlightNO);
                 }
-            }
-            
-            // معالجة ScrSegregationExit - إخلاء الموقف
-            if (currentForm === 'ScrSegregationExit' && formData.ExitStatus === 'completed') {
-                const spotNum = bus.spotNumber;
-                busRecords = busRecords.filter(b => b.BusPlate !== plate);
-                showNotification('success', 'تم الإخلاء', `تم إخلاء الحافلة ${plate} من الموقف ${spotNum}`);
-                addAlert('success', 'خروج حافلة', `الحافلة ${plate} غادرت الموقف ${spotNum}`);
-                closeModal();
+
+                // معالجة ScrSegregationExit - إخلاء الموقف
+                if (currentForm === 'ScrSegregationExit' && formData.ExitStatus === 'completed') {
+                    const spotNum = bus.spotNumber;
+                    busRecords = busRecords.filter(b => b.BusPlate !== plate);
+                    showNotification('success', 'تم الإخلاء', `تم إخلاء الحافلة ${plate} من الموقف ${spotNum || 'غير محدد'}`);
+                    addAlert('success', 'خروج حافلة', `الحافلة ${plate} غادرت الموقف ${spotNum || 'غير محدد'}`);
+                    closeModal();
+                    renderParkingSections();
+                    updateStatistics();
+                    updateBusRecordsList();
+                    return;
+                }
+
                 renderParkingSections();
                 updateStatistics();
                 updateBusRecordsList();
-                return;
+                showNotification('success', 'تم الحفظ', `تم حفظ ${currentForm} للحافلة ${plate}`);
+                addAlert('info', 'تسجيل جديد', `${currentForm} - ${plate}`);
+                closeModal();
+            } catch (error) {
+                console.error('خطأ في حفظ النموذج:', error);
+                showNotification('error', 'خطأ', 'حدث خطأ أثناء حفظ النموذج: ' + error.message);
             }
-            
-            renderParkingSections();
-            updateStatistics();
-            updateBusRecordsList();
-            showNotification('success', 'تم الحفظ', `تم حفظ ${currentForm} للحافلة ${plate}`);
-            addAlert('info', 'تسجيل جديد', `${currentForm} - ${plate}`);
-            closeModal();
         }
 
         // ═══════════════════════════════════════════════════════════
@@ -1809,90 +1969,126 @@
         // ═══════════════════════════════════════════════════════════
         
         function updateStatistics() {
-            let early = 0, ontime = 0, late = 0, totalPax = 0;
-            
-            busRecords.forEach(bus => {
-                if (bus.displayData) {
-                    const status = calculateStatus(bus.displayData.arrival, bus.displayData.departure).status;
-                    if (status === 'early') early++;
-                    else if (status === 'ontime') ontime++;
-                    else late++;
-                    totalPax += bus.displayData.pax || 0;
+            try {
+                let early = 0, ontime = 0, late = 0, totalPax = 0;
+
+                if (busRecords && Array.isArray(busRecords)) {
+                    busRecords.forEach(bus => {
+                        try {
+                            if (bus && bus.displayData) {
+                                const status = calculateStatus(bus.displayData.arrival, bus.displayData.departure).status;
+                                if (status === 'early') early++;
+                                else if (status === 'ontime') ontime++;
+                                else late++;
+                                totalPax += parseInt(bus.displayData.pax) || 0;
+                            }
+                        } catch (busError) {
+                            console.warn('خطأ في معالجة بيانات حافلة:', busError);
+                        }
+                    });
                 }
-            });
-            
-            const total = busRecords.filter(b => b.displayData).length;
-            const occupancy = Math.round((total / 87) * 100);
-            
-            // Stats Bar
-            document.getElementById('totalBuses').textContent = total;
-            document.getElementById('earlyCount').textContent = early;
-            document.getElementById('ontimeCount').textContent = ontime;
-            document.getElementById('lateCount').textContent = late;
-            document.getElementById('totalPassengers').textContent = dailyStats.passengers;
-            document.getElementById('totalFlights').textContent = dailyStats.flights.size;
-            document.getElementById('occupancyRate').textContent = occupancy + '%';
-            
-            // Main Tab
-            document.getElementById('mainTotalBuses').textContent = total;
-            document.getElementById('mainEarlyBuses').textContent = early;
-            document.getElementById('mainOnTimeBuses').textContent = ontime;
-            document.getElementById('mainLateBuses').textContent = late;
-            document.getElementById('mainTotalPax').textContent = dailyStats.passengers;
-            
-            // KPIs Tab
-            document.getElementById('kpiOccupancy').textContent = occupancy + '%';
-            document.getElementById('occupancyBar').style.width = occupancy + '%';
-            document.getElementById('kpiDailyBuses').textContent = dailyStats.buses;
-            document.getElementById('kpiDailyPax').textContent = dailyStats.passengers;
-            
-            if (total > 0) {
-                const earlyPct = Math.round((early / total) * 100);
-                const ontimePct = Math.round((ontime / total) * 100);
-                const latePct = Math.round((late / total) * 100);
-                
-                document.getElementById('kpiEarlyPct').textContent = earlyPct + '%';
-                document.getElementById('kpiOntimePct').textContent = ontimePct + '%';
-                document.getElementById('kpiLatePct').textContent = latePct + '%';
-                
-                document.getElementById('statusChart').style.background = 
-                    `linear-gradient(90deg, var(--green) ${earlyPct}%, var(--blue) ${earlyPct}% ${earlyPct+ontimePct}%, var(--red) ${earlyPct+ontimePct}%)`;
+
+                const total = busRecords ? busRecords.filter(b => b && b.displayData).length : 0;
+                const occupancy = Math.round((total / 87) * 100);
+
+                // Helper function for safe element update
+                const safeSetText = (id, value) => {
+                    const el = document.getElementById(id);
+                    if (el) el.textContent = value;
+                };
+
+                const safeSetStyle = (id, property, value) => {
+                    const el = document.getElementById(id);
+                    if (el) el.style[property] = value;
+                };
+
+                // Stats Bar
+                safeSetText('totalBuses', total);
+                safeSetText('earlyCount', early);
+                safeSetText('ontimeCount', ontime);
+                safeSetText('lateCount', late);
+                safeSetText('totalPassengers', dailyStats?.passengers || 0);
+                safeSetText('totalFlights', dailyStats?.flights?.size || 0);
+                safeSetText('occupancyRate', occupancy + '%');
+
+                // Main Tab
+                safeSetText('mainTotalBuses', total);
+                safeSetText('mainEarlyBuses', early);
+                safeSetText('mainOnTimeBuses', ontime);
+                safeSetText('mainLateBuses', late);
+                safeSetText('mainTotalPax', dailyStats?.passengers || 0);
+
+                // KPIs Tab
+                safeSetText('kpiOccupancy', occupancy + '%');
+                safeSetStyle('occupancyBar', 'width', occupancy + '%');
+                safeSetText('kpiDailyBuses', dailyStats?.buses || 0);
+                safeSetText('kpiDailyPax', dailyStats?.passengers || 0);
+
+                if (total > 0) {
+                    const earlyPct = Math.round((early / total) * 100);
+                    const ontimePct = Math.round((ontime / total) * 100);
+                    const latePct = Math.round((late / total) * 100);
+
+                    safeSetText('kpiEarlyPct', earlyPct + '%');
+                    safeSetText('kpiOntimePct', ontimePct + '%');
+                    safeSetText('kpiLatePct', latePct + '%');
+
+                    safeSetStyle('statusChart', 'background',
+                        `linear-gradient(90deg, var(--green) ${earlyPct}%, var(--blue) ${earlyPct}% ${earlyPct+ontimePct}%, var(--red) ${earlyPct+ontimePct}%)`);
+                }
+            } catch (error) {
+                console.error('خطأ في تحديث الإحصائيات:', error);
             }
         }
 
         function updateBusRecordsList() {
-            const container = document.getElementById('busRecordsList');
-            const registeredBuses = busRecords.filter(b => Object.keys(b.forms).length > 0);
-            
-            if (registeredBuses.length === 0) {
-                container.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 30px;">لا توجد حافلات مسجلة</div>';
-                return;
+            try {
+                const container = document.getElementById('busRecordsList');
+                if (!container) {
+                    console.error('لم يتم العثور على حاوية قائمة الحافلات');
+                    return;
+                }
+
+                const registeredBuses = (busRecords || []).filter(b => b && b.forms && Object.keys(b.forms).length > 0);
+
+                if (registeredBuses.length === 0) {
+                    container.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 30px;">لا توجد حافلات مسجلة</div>';
+                    return;
+                }
+
+                container.innerHTML = registeredBuses.map(bus => {
+                    try {
+                        const completedForms = Object.keys(bus.forms || {}).length;
+                        const progress = (completedForms / 5) * 100;
+                        const formsList = ['ScrLogIn', 'ScrSegregationIn', 'ScrWelcomeLounge', 'ScrSegregationExit', 'ScrCurbside'];
+                        const safePlate = (bus.BusPlate || '').replace(/'/g, "\\'");
+
+                        return `
+                            <div class="bus-record" onclick="openBusRecord('${safePlate}')">
+                                <div class="bus-record-header">
+                                    <span class="bus-record-plate">${bus.BusPlate || 'غير محدد'}</span>
+                                    <span class="bus-record-spot">${bus.spotNumber ? 'موقف ' + bus.spotNumber : 'غير محدد'}</span>
+                                </div>
+                                <div class="bus-record-info">
+                                    <span>✈️ ${bus.displayData?.flight || '-'}</span>
+                                    <span>👥 ${bus.displayData?.pax || 0}</span>
+                                </div>
+                                <div class="form-progress">
+                                    <div class="form-progress-fill" style="width: ${progress}%;"></div>
+                                </div>
+                                <div class="bus-record-forms">
+                                    ${formsList.map(f => `<span class="form-badge ${bus.forms && bus.forms[f] ? 'completed' : ''}">${f.replace('Scr','')}</span>`).join('')}
+                                </div>
+                            </div>
+                        `;
+                    } catch (busError) {
+                        console.warn('خطأ في عرض سجل حافلة:', busError);
+                        return '';
+                    }
+                }).join('');
+            } catch (error) {
+                console.error('خطأ في تحديث قائمة الحافلات:', error);
             }
-            
-            container.innerHTML = registeredBuses.map(bus => {
-                const completedForms = Object.keys(bus.forms).length;
-                const progress = (completedForms / 5) * 100;
-                const formsList = ['ScrLogIn', 'ScrSegregationIn', 'ScrWelcomeLounge', 'ScrSegregationExit', 'ScrCurbside'];
-                
-                return `
-                    <div class="bus-record" onclick="openBusRecord('${bus.BusPlate}')">
-                        <div class="bus-record-header">
-                            <span class="bus-record-plate">${bus.BusPlate}</span>
-                            <span class="bus-record-spot">${bus.spotNumber ? 'موقف ' + bus.spotNumber : 'غير محدد'}</span>
-                        </div>
-                        <div class="bus-record-info">
-                            <span>✈️ ${bus.displayData?.flight || '-'}</span>
-                            <span>👥 ${bus.displayData?.pax || 0}</span>
-                        </div>
-                        <div class="form-progress">
-                            <div class="form-progress-fill" style="width: ${progress}%;"></div>
-                        </div>
-                        <div class="bus-record-forms">
-                            ${formsList.map(f => `<span class="form-badge ${bus.forms[f] ? 'completed' : ''}">${f.replace('Scr','')}</span>`).join('')}
-                        </div>
-                    </div>
-                `;
-            }).join('');
         }
 
         function openBusRecord(plate) {
@@ -2070,39 +2266,100 @@
         // ═══════════════════════════════════════════════════════════
         
         function exportToJSON() {
-            const data = {
-                exportDate: new Date().toISOString(),
-                busRecords: busRecords,
-                dailyStats: {
-                    buses: dailyStats.buses,
-                    passengers: dailyStats.passengers,
-                    flights: Array.from(dailyStats.flights)
+            try {
+                if (!busRecords || busRecords.length === 0) {
+                    showNotification('warning', 'تنبيه', 'لا توجد بيانات للتصدير');
+                    return;
                 }
-            };
-            downloadFile(JSON.stringify(data, null, 2), 'locc_data.json', 'application/json');
-            showNotification('success', 'تصدير', 'تم تصدير البيانات بصيغة JSON');
+
+                const data = {
+                    exportDate: new Date().toISOString(),
+                    busRecords: busRecords,
+                    dailyStats: {
+                        buses: dailyStats.buses,
+                        passengers: dailyStats.passengers,
+                        flights: Array.from(dailyStats.flights)
+                    }
+                };
+
+                const jsonString = JSON.stringify(data, null, 2);
+                if (!jsonString) {
+                    throw new Error('فشل في تحويل البيانات إلى JSON');
+                }
+
+                downloadFile(jsonString, 'locc_data.json', 'application/json');
+                showNotification('success', 'تصدير', 'تم تصدير البيانات بصيغة JSON');
+            } catch (error) {
+                console.error('خطأ في تصدير JSON:', error);
+                showNotification('error', 'خطأ في التصدير', 'فشل في تصدير البيانات: ' + error.message);
+            }
         }
 
         function exportToCSV() {
-            let csv = 'BusPlate,SpotNumber,FlightNO,PaxAdlt,GateNO,ArrTime,DepTime,Status,FormsCompleted\n';
-            busRecords.forEach(bus => {
-                if (bus.displayData) {
-                    const status = calculateStatus(bus.displayData.arrival, bus.displayData.departure).status;
-                    csv += `${bus.BusPlate},${bus.spotNumber},${bus.displayData.flight},${bus.displayData.pax},${bus.displayData.gate},${bus.displayData.arrival},${bus.displayData.departure},${status},${Object.keys(bus.forms).length}\n`;
+            try {
+                if (!busRecords || busRecords.length === 0) {
+                    showNotification('warning', 'تنبيه', 'لا توجد بيانات للتصدير');
+                    return;
                 }
-            });
-            downloadFile(csv, 'locc_data.csv', 'text/csv');
-            showNotification('success', 'تصدير', 'تم تصدير البيانات بصيغة CSV');
+
+                const busesWithData = busRecords.filter(bus => bus && bus.displayData);
+                if (busesWithData.length === 0) {
+                    showNotification('warning', 'تنبيه', 'لا توجد حافلات مع بيانات عرض للتصدير');
+                    return;
+                }
+
+                let csv = 'BusPlate,SpotNumber,FlightNO,PaxAdlt,GateNO,ArrTime,DepTime,Status,FormsCompleted\n';
+                busesWithData.forEach(bus => {
+                    try {
+                        const status = calculateStatus(bus.displayData.arrival, bus.displayData.departure).status;
+                        const plate = (bus.BusPlate || '').replace(/,/g, ';');
+                        const flight = (bus.displayData.flight || '').replace(/,/g, ';');
+                        const gate = (bus.displayData.gate || '').replace(/,/g, ';');
+                        csv += `${plate},${bus.spotNumber || ''},${flight},${bus.displayData.pax || 0},${gate},${bus.displayData.arrival || ''},${bus.displayData.departure || ''},${status},${Object.keys(bus.forms || {}).length}\n`;
+                    } catch (rowError) {
+                        console.warn('تخطي صف بسبب خطأ:', rowError, bus);
+                    }
+                });
+
+                downloadFile(csv, 'locc_data.csv', 'text/csv');
+                showNotification('success', 'تصدير', 'تم تصدير البيانات بصيغة CSV');
+            } catch (error) {
+                console.error('خطأ في تصدير CSV:', error);
+                showNotification('error', 'خطأ في التصدير', 'فشل في تصدير البيانات: ' + error.message);
+            }
         }
 
         function downloadFile(content, filename, type) {
-            const blob = new Blob([content], { type: type });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = filename;
-            a.click();
-            URL.revokeObjectURL(url);
+            let url = null;
+            try {
+                if (!content) {
+                    throw new Error('لا يوجد محتوى للتنزيل');
+                }
+                if (!filename) {
+                    throw new Error('اسم الملف مطلوب');
+                }
+
+                const blob = new Blob([content], { type: type || 'text/plain' });
+                url = URL.createObjectURL(blob);
+
+                if (!url) {
+                    throw new Error('فشل في إنشاء رابط التنزيل');
+                }
+
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            } catch (error) {
+                console.error('خطأ في تنزيل الملف:', error);
+                showNotification('error', 'خطأ في التنزيل', 'فشل في تنزيل الملف: ' + error.message);
+            } finally {
+                if (url) {
+                    URL.revokeObjectURL(url);
+                }
+            }
         }
     </script>
 </body>
